@@ -1,0 +1,12 @@
+node_modules
+.next
+.env
+.env.local
+storage/uploads
+storage/demo
+storage/cache
+*.log
+dump.rdb
+tsconfig.tsbuildinfo
+.DS_Store
+coverage

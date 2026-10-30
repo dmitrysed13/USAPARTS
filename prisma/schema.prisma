@@ -1,0 +1,575 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  CONTENT
+  CUSTOMER
+}
+
+enum ProductCondition {
+  NEW
+  USED
+  REFURBISHED
+}
+
+enum StockStatus {
+  IN_STOCK
+  US_WAREHOUSE
+  IN_TRANSIT
+  ON_ORDER
+  OUT_OF_STOCK
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  PAID
+  ORDERED_US
+  SHIPPED
+  IN_TRANSIT
+  ARRIVED_WAREHOUSE
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentState {
+  NOT_CONNECTED
+  AWAITING_MANAGER
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum InquiryType {
+  QUESTION
+  AVAILABILITY
+  ORDER_FROM_US
+}
+
+enum VinRequestStatus {
+  NEW
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         UserRole  @default(CUSTOMER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  orders       Order[]
+  reviews      Review[]
+  articles     Article[] @relation("ArticleAuthor")
+
+  @@index([role])
+}
+
+model VehicleMake {
+  id              String                 @id @default(cuid())
+  name            String
+  slug            String                 @unique
+  country         String                 @default("USA")
+  isFeatured      Boolean                @default(false)
+  isActive        Boolean                @default(true)
+  sortOrder       Int                    @default(0)
+  intro           String?                @db.Text
+  seoTitle        String?
+  seoDescription  String?                @db.Text
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  models          VehicleModel[]
+  compatibilities ProductCompatibility[]
+
+  @@index([isActive, sortOrder])
+}
+
+model VehicleModel {
+  id              String                 @id @default(cuid())
+  makeId          String
+  make            VehicleMake            @relation(fields: [makeId], references: [id], onDelete: Cascade)
+  name            String
+  slug            String
+  isActive        Boolean                @default(true)
+  intro           String?                @db.Text
+  seoTitle        String?
+  seoDescription  String?                @db.Text
+  generations     VehicleGeneration[]
+  compatibilities ProductCompatibility[]
+
+  @@unique([makeId, slug])
+  @@index([makeId])
+}
+
+model VehicleGeneration {
+  id              String                 @id @default(cuid())
+  modelId         String
+  model           VehicleModel           @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  name            String
+  slug            String
+  yearFrom        Int
+  yearTo          Int
+  years           VehicleYear[]
+  compatibilities ProductCompatibility[]
+
+  @@unique([modelId, slug])
+  @@index([modelId])
+}
+
+model VehicleYear {
+  id           String            @id @default(cuid())
+  generationId String
+  generation   VehicleGeneration @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  year         Int
+  engines      Engine[]
+
+  @@unique([generationId, year])
+  @@index([year])
+}
+
+model Engine {
+  id              String                 @id @default(cuid())
+  yearId          String
+  year            VehicleYear            @relation(fields: [yearId], references: [id], onDelete: Cascade)
+  name            String
+  code            String
+  displacementL   Float?
+  fuel            String?
+  compatibilities ProductCompatibility[]
+
+  @@unique([yearId, code])
+  @@index([code])
+}
+
+model Category {
+  id             String     @id @default(cuid())
+  parentId       String?
+  parent         Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children       Category[] @relation("CategoryTree")
+  name           String
+  slug           String     @unique
+  intro          String?    @db.Text
+  seoTitle       String?
+  seoDescription String?    @db.Text
+  sortOrder      Int        @default(0)
+  isActive       Boolean    @default(true)
+  products       Product[]
+
+  @@index([parentId, sortOrder])
+}
+
+model Product {
+  id               String                 @id @default(cuid())
+  sku              String                 @unique
+  name             String
+  slug             String                 @unique
+  condition        ProductCondition
+  stockStatus      StockStatus
+  priceCents       Int?
+  currency         String                 @default("USD")
+  quantity         Int                    @default(0)
+  manufacturer     String?
+  description      String                 @db.Text
+  warranty         String?
+  deliveryMinDays  Int?
+  deliveryMaxDays  Int?
+  originCountry    String?
+  donorStockNumber String?
+  donorVin         String?
+  allowBackorder   Boolean                @default(false)
+  isPublished      Boolean                @default(false)
+  isDemo           Boolean                @default(false)
+  isFeatured       Boolean                @default(false)
+  categoryId       String
+  category         Category               @relation(fields: [categoryId], references: [id])
+  seoTitle         String?
+  seoDescription   String?                @db.Text
+  canonicalPath    String?
+  indexable        Boolean                @default(true)
+  searchText       String                 @db.Text
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  images           ProductImage[]
+  oemNumbers       OemNumber[]
+  specs            ProductSpec[]
+  compatibilities  ProductCompatibility[]
+  inventory        Inventory[]
+  orderItems       OrderItem[]
+  reviews          Review[]
+  relationsFrom    ProductRelation[]      @relation("RelationFrom")
+  relationsTo      ProductRelation[]      @relation("RelationTo")
+  landingLinks     LandingProduct[]
+
+  @@index([categoryId, isPublished])
+  @@index([stockStatus])
+  @@index([isFeatured, isPublished])
+  @@index([createdAt])
+  @@index([isPublished, indexable])
+}
+
+model ProductImage {
+  id         String  @id @default(cuid())
+  productId  String
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  storageKey String
+  alt        String
+  width      Int
+  height     Int
+  sortOrder  Int     @default(0)
+  mimeType   String
+
+  @@index([productId, sortOrder])
+}
+
+model OemNumber {
+  id         String  @id @default(cuid())
+  productId  String
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  number     String
+  normalized String
+  isPrimary  Boolean @default(false)
+
+  @@index([normalized])
+  @@index([productId])
+}
+
+model ProductSpec {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  value     String
+  sortOrder Int     @default(0)
+
+  @@index([productId, sortOrder])
+}
+
+model ProductCompatibility {
+  id           String             @id @default(cuid())
+  productId    String
+  product      Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  makeId       String
+  make         VehicleMake        @relation(fields: [makeId], references: [id])
+  modelId      String?
+  model        VehicleModel?      @relation(fields: [modelId], references: [id])
+  generationId String?
+  generation   VehicleGeneration? @relation(fields: [generationId], references: [id])
+  year         Int?
+  engineId     String?
+  engine       Engine?            @relation(fields: [engineId], references: [id])
+  note         String?
+
+  @@index([makeId, modelId, year])
+  @@index([productId])
+  @@index([engineId])
+  @@index([year])
+}
+
+model ProductRelation {
+  id     String  @id @default(cuid())
+  fromId String
+  toId   String
+  type   String
+  from   Product @relation("RelationFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to     Product @relation("RelationTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@unique([fromId, toId, type])
+  @@index([fromId, type])
+}
+
+model Inventory {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouse String
+  quantity  Int
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, warehouse])
+}
+
+model Customer {
+  id          String       @id @default(cuid())
+  userId      String?
+  name        String
+  email       String
+  phone       String
+  createdAt   DateTime     @default(now())
+  orders      Order[]
+  vinRequests VinRequest[]
+  inquiries   Inquiry[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+model Order {
+  id               String          @id @default(cuid())
+  number           String          @unique
+  accessToken      String          @unique
+  customerId       String
+  customer         Customer        @relation(fields: [customerId], references: [id])
+  userId           String?
+  user             User?           @relation(fields: [userId], references: [id])
+  status           OrderStatus     @default(NEW)
+  paymentState     PaymentState    @default(NOT_CONNECTED)
+  comment          String?         @db.Text
+  deliveryMethodId String?
+  deliveryMethod   DeliveryMethod? @relation(fields: [deliveryMethodId], references: [id])
+  deliveryAddress  String?         @db.Text
+  deliveryNote     String?         @db.Text
+  couponId         String?
+  coupon           Coupon?         @relation(fields: [couponId], references: [id])
+  subtotalCents    Int
+  discountCents    Int             @default(0)
+  deliveryCents    Int             @default(0)
+  totalCents       Int
+  currency         String          @default("USD")
+  paymentNote      String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  items            OrderItem[]
+
+  @@index([status, createdAt])
+  @@index([customerId])
+}
+
+model OrderItem {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String?
+  product        Product? @relation(fields: [productId], references: [id])
+  sku            String
+  name           String
+  unitPriceCents Int
+  quantity       Int
+  currency       String
+
+  @@index([orderId])
+}
+
+model Coupon {
+  id        String    @id @default(cuid())
+  code      String    @unique
+  type      String
+  amount    Int
+  isActive  Boolean   @default(true)
+  expiresAt DateTime?
+  note      String?
+  orders    Order[]
+}
+
+model DeliveryMethod {
+  id            String  @id @default(cuid())
+  code          String  @unique
+  name          String
+  description   String?
+  priceCents    Int?
+  adapter       String  @default("manual")
+  adapterStatus String  @default("not_connected")
+  isActive      Boolean @default(true)
+  orders        Order[]
+}
+
+model PaymentMethod {
+  id            String  @id @default(cuid())
+  code          String  @unique
+  name          String
+  adapter       String  @default("none")
+  adapterStatus String  @default("not_connected")
+  isActive      Boolean @default(true)
+}
+
+model VinRequest {
+  id              String           @id @default(cuid())
+  vin             String
+  vinValid        Boolean
+  makeName        String?
+  modelName       String?
+  year            Int?
+  partDescription String           @db.Text
+  phone           String
+  email           String
+  photoKey        String?
+  status          VinRequestStatus @default(NEW)
+  decoderStatus   String           @default("not_connected")
+  decoderPayload  Json?
+  customerId      String?
+  customer        Customer?        @relation(fields: [customerId], references: [id])
+  createdAt       DateTime         @default(now())
+
+  @@index([status, createdAt])
+  @@index([vin])
+}
+
+model Inquiry {
+  id         String      @id @default(cuid())
+  type       InquiryType
+  productId  String?
+  name       String
+  phone      String
+  email      String?
+  message    String      @db.Text
+  customerId String?
+  customer   Customer?   @relation(fields: [customerId], references: [id])
+  createdAt  DateTime    @default(now())
+  status     String      @default("NEW")
+
+  @@index([type, createdAt])
+  @@index([productId])
+}
+
+model Review {
+  id         String       @id @default(cuid())
+  productId  String?
+  product    Product?     @relation(fields: [productId], references: [id])
+  userId     String?
+  user       User?        @relation(fields: [userId], references: [id])
+  authorName String
+  rating     Int
+  body       String       @db.Text
+  isDemo     Boolean      @default(false)
+  status     ReviewStatus @default(PENDING)
+  createdAt  DateTime     @default(now())
+
+  @@index([status, createdAt])
+  @@index([productId])
+}
+
+model ArticleCategory {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  articles Article[]
+}
+
+model Article {
+  id             String           @id @default(cuid())
+  slug           String           @unique
+  title          String
+  excerpt        String           @db.Text
+  body           String           @db.Text
+  categoryId     String?
+  category       ArticleCategory? @relation(fields: [categoryId], references: [id])
+  authorId       String?
+  author         User?            @relation("ArticleAuthor", fields: [authorId], references: [id])
+  seoTitle       String?
+  seoDescription String?          @db.Text
+  publishedAt    DateTime?
+  isPublished    Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  faqs           ArticleFaq[]
+
+  @@index([isPublished, publishedAt])
+}
+
+model ArticleFaq {
+  id        String  @id @default(cuid())
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  question  String
+  answer    String  @db.Text
+  sortOrder Int     @default(0)
+
+  @@index([articleId, sortOrder])
+}
+
+model Page {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  body           String   @db.Text
+  seoTitle       String?
+  seoDescription String?  @db.Text
+  isPublished    Boolean  @default(true)
+  updatedAt      DateTime @updatedAt
+}
+
+model LandingPage {
+  id             String           @id @default(cuid())
+  slug           String           @unique
+  h1             String
+  body           String           @db.Text
+  seoTitle       String
+  seoDescription String           @db.Text
+  indexable      Boolean          @default(false)
+  isPublished    Boolean          @default(false)
+  makeSlug       String?
+  modelSlug      String?
+  year           Int?
+  categorySlug   String?
+  updatedAt      DateTime         @updatedAt
+  products       LandingProduct[]
+}
+
+model LandingProduct {
+  landingId String
+  productId String
+  landing   LandingPage @relation(fields: [landingId], references: [id], onDelete: Cascade)
+  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([landingId, productId])
+}
+
+model SeoTemplate {
+  id                  String   @id @default(cuid())
+  key                 String   @unique
+  titleTemplate       String
+  descriptionTemplate String   @db.Text
+  updatedAt           DateTime @updatedAt
+}
+
+model SlugTombstone {
+  id         String   @id @default(cuid())
+  path       String   @unique
+  httpStatus Int
+  note       String?
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity, createdAt])
+}
+
+model SiteSetting {
+  key   String @id
+  value String @db.Text
+}
+
+model Promotion {
+  id       String    @id @default(cuid())
+  title    String
+  body     String?   @db.Text
+  startsAt DateTime?
+  endsAt   DateTime?
+  isActive Boolean   @default(false)
+}
