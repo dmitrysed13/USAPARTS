@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #f3f5f8;
+  color: #243140;
+}
+
+::selection {
+  background: #0c2340;
+  color: #fff;
+}
+
+@layer components {
+  .page {
+    @apply mx-auto w-full max-w-page px-4;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-cta {
+    @apply btn bg-cta text-white hover:bg-cta-hover;
+  }
+  .btn-navy {
+    @apply btn bg-navy text-white hover:bg-navy-mid;
+  }
+  .btn-ghost {
+    @apply btn border border-line bg-white text-navy hover:border-navy;
+  }
+  .field {
+    @apply w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-graphite outline-none ring-navy/30 placeholder:text-slate-400 focus:border-navy focus:ring-2;
+  }
+  .card {
+    @apply rounded-xl border border-line bg-white shadow-card;
+  }
+  .prose-us h2 {
+    @apply mb-3 mt-8 text-2xl font-semibold text-navy;
+  }
+  .prose-us h3 {
+    @apply mb-2 mt-6 text-xl font-semibold text-navy;
+  }
+  .prose-us p {
+    @apply mb-4 leading-7 text-graphite;
+  }
+  .prose-us ul {
+    @apply mb-4 list-disc space-y-2 pl-5 leading-7;
+  }
+  .prose-us a {
+    @apply font-medium text-navy underline decoration-cta/60 underline-offset-4;
+  }
+}
+
+.hero-grid {
+  background-color: #0c2340;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
