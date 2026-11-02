@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { pages } from "../src/seo/pages.ts";
 import { siteOrigin } from "../src/seo/site.ts";
+import "./export-seo-csv.mjs";
 
 const origin = siteOrigin();
 

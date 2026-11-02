@@ -84,6 +84,9 @@ export function Footer({ onPrivacy }: FooterProps) {
             <SiteLink href="/podbor-po-vin/" className="text-sm text-mist hover:text-paper">
               Подбор по VIN
             </SiteLink>
+            <SiteLink href="/avtozapchasti/" className="text-sm text-mist hover:text-paper">
+              Каталог моделей
+            </SiteLink>
           </nav>
         </div>
       </Container>

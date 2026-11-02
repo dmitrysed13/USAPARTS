@@ -1,3 +1,4 @@
+import { catalogPages } from "./catalog/buildPages.ts";
 import type { SeoPage } from "./types.ts";
 
 const home: SeoPage = {
@@ -64,7 +65,7 @@ const services: SeoPage[] = [
       { name: "Подбор по VIN", path: "/podbor-po-vin/" },
       { name: "Доставка из США", path: "/dostavka-iz-ssha/" },
       { name: "Б/у запчасти", path: "/b-u-avtozapchasti/" },
-      { name: "Новые запчасти", path: "/novye-avtozapchasti/" },
+      { name: "Каталог моделей", path: "/avtozapchasti/" },
     ],
     serviceName: "Заказ автозапчастей из США",
   },
@@ -848,6 +849,9 @@ function brandPage(item: (typeof brands)[number]): SeoPage {
     ],
     faq: item.faq,
     related: [
+      ...(catalogPages.find((page) => page.kind === "hub" && page.brand === item.brand)
+        ? [{ name: `Модели ${item.brand}`, path: `/avtozapchasti/${item.path.slice(1)}` }]
+        : []),
       { name: "Подбор по VIN", path: "/podbor-po-vin/" },
       { name: "Двигатели", path: "/zapchasti/dvigatel/" },
       { name: "Кузов", path: "/zapchasti/kuzov/" },
@@ -886,7 +890,7 @@ function categoryPage(item: (typeof categories)[number]): SeoPage {
   };
 }
 
-export const pages: SeoPage[] = [home, ...services, ...brands.map(brandPage), ...categories.map(categoryPage)];
+export const pages: SeoPage[] = [home, ...services, ...brands.map(brandPage), ...categories.map(categoryPage), ...catalogPages];
 
 export function pageByPath(path: string): SeoPage | undefined {
   return pages.find((page) => page.path === path);

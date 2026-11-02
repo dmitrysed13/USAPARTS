@@ -16,7 +16,7 @@ const chrome = spawn(
     "--disable-gpu",
     "--no-sandbox",
     "--remote-debugging-port=9444",
-    "--user-data-dir=/tmp/chrome-seo-prerender",
+    `--user-data-dir=/tmp/chrome-seo-prerender-${process.pid}`,
     "about:blank",
   ],
   { stdio: "ignore" },
@@ -41,11 +41,17 @@ try {
   await new Promise((resolve) => ws.addEventListener("open", resolve));
   let seq = 0;
   const pending = new Map();
+  let loadWaiters = [];
   ws.addEventListener("message", (event) => {
     const data = JSON.parse(event.data);
     if (data.id && pending.has(data.id)) {
       pending.get(data.id)(data);
       pending.delete(data.id);
+    }
+    if (data.method === "Page.loadEventFired") {
+      const waiting = loadWaiters;
+      loadWaiters = [];
+      for (const resolve of waiting) resolve();
     }
   });
   const send = (method, params = {}) => {
@@ -53,31 +59,67 @@ try {
     ws.send(JSON.stringify({ id, method, params }));
     return new Promise((resolve) => pending.set(id, resolve));
   };
+  const waitForLoad = () =>
+    new Promise((resolve) => {
+      const timer = setTimeout(resolve, 8000);
+      loadWaiters.push(() => {
+        clearTimeout(timer);
+        resolve();
+      });
+    });
   await send("Page.enable");
 
   const routes = [
-    ...pages.map((item) => ({ path: item.path, heading: item.h1, out: item.path === "/" ? "dist/index.html" : `dist${item.path}index.html` })),
-    { path: "/__missing__/", heading: "Страница не найдена", out: "dist/404.html" },
+    ...pages.map((item) => ({
+      path: item.path,
+      heading: item.h1,
+      title: item.title,
+      canonical: item.path,
+      out: item.path === "/" ? "dist/index.html" : `dist${item.path}index.html`,
+    })),
+    {
+      path: "/__missing__/",
+      heading: "Страница не найдена",
+      title: "Страница не найдена | USAPARTS",
+      canonical: "/404.html",
+      out: "dist/404.html",
+    },
   ];
+  console.log(`prerender ${routes.length} routes`);
 
   for (const route of routes) {
+    const loaded = waitForLoad();
     await send("Page.navigate", { url: `http://127.0.0.1:${port}${route.path}` });
+    await loaded;
     let html = "";
-    for (let attempt = 0; attempt < 40; attempt += 1) {
-      await sleep(200);
+    for (let attempt = 0; attempt < 30; attempt += 1) {
       const result = await send("Runtime.evaluate", {
-        expression: "document.documentElement.outerHTML",
+        expression: `JSON.stringify({
+          title: document.title,
+          canonical: document.querySelector('link[rel="canonical"]')?.getAttribute("href") || "",
+          html: document.documentElement.outerHTML
+        })`,
         returnByValue: true,
       });
-      html = result.result?.result?.value ?? "";
-      if (html.includes(route.heading) && html.includes('data-seo="jsonld"') || (route.out.endsWith("404.html") && html.includes(route.heading))) break;
+      const snapshot = JSON.parse(result.result?.result?.value || "{}");
+      html = snapshot.html ?? "";
+      const ready =
+        snapshot.title === route.title &&
+        snapshot.canonical === route.canonical &&
+        html.includes(route.heading) &&
+        (route.out.endsWith("404.html") || html.includes('data-seo="jsonld"'));
+      if (ready) break;
+      await sleep(50);
+      html = "";
     }
     if (!html.includes(route.heading)) throw new Error(`Prerender missed heading for ${route.path}`);
+    if (!html.includes(`<title>${route.title}</title>`)) throw new Error(`Prerender missed title for ${route.path}`);
+    if (!html.includes(`href="${route.canonical}"`)) throw new Error(`Prerender missed canonical for ${route.path}`);
     if (html.includes("127.0.0.1")) throw new Error(`Prerender leaked the preview host on ${route.path}`);
     await mkdir(dirname(route.out), { recursive: true });
     await writeFile(route.out, `<!doctype html>\n${html.replace(/^<html/i, "<html")}`);
-    console.log(`prerendered ${route.path}`);
   }
+  console.log(`prerendered ${routes.length} routes`);
   ws.close();
 } finally {
   chrome.kill();

@@ -17,6 +17,9 @@ export type QuoteSeed = {
   token: number;
   brand: string;
   part: string;
+  model?: string;
+  year?: string;
+  focus?: "brand" | "part" | "vin" | "phone";
 };
 
 export type FieldErrors = Partial<Record<"brand" | "year" | "part" | "phone" | "name" | "vin" | "oem", string>>;

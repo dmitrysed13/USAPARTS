@@ -37,10 +37,12 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
   useEffect(() => {
     if (seed.token === 0) return;
     if (seed.brand) setBrand(seed.brand);
+    if (seed.model) setModel(seed.model);
+    if (seed.year) setYear(seed.year);
     if (seed.part) setPart(seed.part);
     setErrors({});
     reset();
-    const focusName = seed.brand ? "part" : "brand";
+    const focusName = seed.focus ?? (seed.brand ? "part" : "brand");
     const timer = window.setTimeout(() => {
       document.querySelector<HTMLElement>(`#podbor [name='${focusName}']`)?.focus();
     }, 180);

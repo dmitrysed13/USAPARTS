@@ -44,10 +44,13 @@ function faqEntity(items: PageFaq[]) {
   };
 }
 
+const collectionKinds = new Set(["catalog", "hub", "model", "part", "generation"]);
+
 export function pageGraph(page: SeoPage) {
   const url = absoluteUrl(page.path);
+  const isCollection = collectionKinds.has(page.kind);
   const webpage = {
-    "@type": "WebPage",
+    "@type": isCollection ? "CollectionPage" : "WebPage",
     "@id": `${page.path}#webpage`,
     url,
     name: page.h1,
@@ -91,7 +94,28 @@ export function pageGraph(page: SeoPage) {
       areaServed: { "@type": "Country", "name": "Беларусь" },
       provider: { "@type": "AutoPartsStore", name: company.name, telephone: "+375297920786" },
     });
-    if (page.path === "/kontakty/" || page.path === "/o-kompanii/") graph.push(organization());
+    if (page.path === "/kontakty/" || page.path === "/o-kompanii/" || isCollection) graph.push(organization());
+    if (isCollection) {
+      graph.push({
+        "@type": "WebSite",
+        "@id": "#website",
+        name: company.name,
+        url: siteOrigin() || undefined,
+        inLanguage: "ru",
+        publisher: { "@id": organizationId },
+      });
+    }
+    if (page.cards && page.cards.length > 0) {
+      graph.push({
+        "@type": "ItemList",
+        itemListElement: page.cards.map((card, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: card.title,
+          url: absoluteUrl(card.href),
+        })),
+      });
+    }
     if (page.faq.length > 0) graph.push(faqEntity(page.faq));
   }
 

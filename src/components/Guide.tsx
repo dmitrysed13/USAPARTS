@@ -48,6 +48,16 @@ export function Guide() {
           </SiteLink>
         </div>
 
+        <div className="mt-10 max-w-3xl">
+          <h2 className="display-2 text-balance">Каталог по моделям</h2>
+          <p className="mt-4 text-sm leading-relaxed text-mist">
+            Сорок моделей с американского рынка. У каждой есть свои категории. Поколение и двигатель попадают в заявку, но не создают отдельный адрес, пока для них нет своего текста.
+          </p>
+          <SiteLink href="/avtozapchasti/" className="mt-4 inline-flex text-sm font-semibold text-ember">
+            Открыть каталог моделей
+          </SiteLink>
+        </div>
+
         <div className="mt-10 grid gap-8 md:grid-cols-3">
           {groups.map((group) => (
             <nav key={group.kind} aria-label={group.title}>

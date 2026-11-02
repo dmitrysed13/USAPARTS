@@ -14,9 +14,16 @@ export type PageTable = {
   rows: Array<[string, string, string]>;
 };
 
+export type PageCard = { href: string; title: string; text: string };
+
+export type PageFitment = {
+  generations: { label: string; href?: string }[];
+  engines: string[];
+};
+
 export type SeoPage = {
   path: string;
-  kind: "home" | "service" | "brand" | "category";
+  kind: "home" | "service" | "brand" | "category" | "catalog" | "hub" | "model" | "part" | "generation";
   title: string;
   description: string;
   h1: string;
@@ -26,7 +33,11 @@ export type SeoPage = {
   table?: PageTable;
   faq: PageFaq[];
   related: Crumb[];
+  cards?: PageCard[];
+  fitment?: PageFitment;
+  visual?: "sedan" | "crossover" | "suv" | "coupe" | "wagon" | "ev";
   brand?: string;
+  modelName?: string;
   part?: string;
   serviceName: string;
 };

@@ -99,7 +99,7 @@ export default function App() {
             <Guide />
           </>
         ) : null}
-        {page && page.kind !== "home" ? <ContentPage path={path} onDraft={onDraft} onPrivacy={openPrivacy} /> : null}
+        {page && page.kind !== "home" ? <ContentPage key={path} path={path} onDraft={onDraft} onPrivacy={openPrivacy} /> : null}
         {!page ? <NotFound /> : null}
       </main>
       <Footer onPrivacy={openPrivacy} />
