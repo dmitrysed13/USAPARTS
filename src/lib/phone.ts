@@ -2,50 +2,52 @@ export function onlyDigits(value: string): string {
   return value.replace(/\D/g, "");
 }
 
-export function normalizeRuDigits(digits: string): string {
-  let normalized = digits;
-  if (!normalized) return "";
-  if (normalized.startsWith("8")) normalized = `7${normalized.slice(1)}`;
-  if (!normalized.startsWith("7")) normalized = `7${normalized}`;
-  return normalized.slice(0, 11);
+export function normalizeByDigits(digits: string): string {
+  if (!digits) return "";
+  if (digits === "3" || digits === "37") return digits;
+  if (digits === "8") return "375";
+  if (digits.startsWith("375")) return digits.slice(0, 12);
+  if (digits.startsWith("80")) return `375${digits.slice(2)}`.slice(0, 12);
+  return `375${digits}`.slice(0, 12);
 }
 
 export function formatPhone(raw: string): string {
-  const digits = normalizeRuDigits(onlyDigits(raw));
+  const digits = normalizeByDigits(onlyDigits(raw));
   if (!digits) return "";
+  if (digits === "3" || digits === "37") return `+${digits}`;
 
-  const rest = digits.slice(1);
-  let formatted = "+7";
+  const rest = digits.slice(3);
+  let formatted = "+375";
   if (rest.length === 0) return formatted;
 
-  formatted += ` (${rest.slice(0, 3)}`;
-  if (rest.length < 3) return formatted;
+  formatted += ` (${rest.slice(0, 2)}`;
+  if (rest.length < 2) return formatted;
 
-  formatted += `) ${rest.slice(3, 6)}`;
-  if (rest.length <= 6) return formatted;
+  formatted += `) ${rest.slice(2, 5)}`;
+  if (rest.length <= 5) return formatted;
 
-  formatted += `-${rest.slice(6, 8)}`;
-  if (rest.length <= 8) return formatted;
+  formatted += `-${rest.slice(5, 7)}`;
+  if (rest.length <= 7) return formatted;
 
-  formatted += `-${rest.slice(8, 10)}`;
+  formatted += `-${rest.slice(7, 9)}`;
   return formatted;
 }
 
 export function isCompletePhone(value: string): boolean {
-  return normalizeRuDigits(onlyDigits(value)).length === 11;
+  return normalizeByDigits(onlyDigits(value)).length === 12;
 }
 
 export function isPhoneEmpty(value: string): boolean {
-  return normalizeRuDigits(onlyDigits(value)).length <= 1;
+  return normalizeByDigits(onlyDigits(value)).length <= 3;
 }
 
 export function applyPhoneEdit(previous: string, incoming: string): string {
   if (onlyDigits(incoming).length === 0) return "";
 
-  const previousDigits = normalizeRuDigits(onlyDigits(previous));
-  const nextDigits = normalizeRuDigits(onlyDigits(incoming));
+  const previousDigits = normalizeByDigits(onlyDigits(previous));
+  const nextDigits = normalizeByDigits(onlyDigits(incoming));
   const deletedMaskCharacter =
-    incoming.length < previous.length && nextDigits === previousDigits && previousDigits.length > 1;
+    incoming.length < previous.length && nextDigits === previousDigits && previousDigits.length > 3;
 
   if (deletedMaskCharacter) return formatPhone(previousDigits.slice(0, -1));
   return formatPhone(incoming);

@@ -9,7 +9,7 @@ type FooterProps = {
 
 export function Footer({ onPrivacy }: FooterProps) {
   return (
-    <footer id="contacts" className="border-t border-line bg-ink pb-28 sm:pb-0">
+    <footer id="contacts" className="border-t border-line bg-ink pb-28 sm:pb-0 max-sm:pr-16">
       <Container className="grid gap-10 py-14 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <div className="relative min-h-64 overflow-hidden border border-line bg-[#0c1116]">
@@ -44,7 +44,7 @@ export function Footer({ onPrivacy }: FooterProps) {
 
         <div className="lg:col-span-4">
           <p className="eyebrow">Контакты</p>
-          <a href={company.phoneHref} className="mt-4 flex items-center gap-2 font-display text-4xl leading-none">
+          <a href={company.phoneHref} className="mt-4 flex items-center gap-2 font-display text-3xl leading-none whitespace-nowrap sm:text-4xl">
             <Phone className="h-6 w-6 text-ember" strokeWidth={1.75} aria-hidden="true" />
             {company.phoneDisplay}
           </a>

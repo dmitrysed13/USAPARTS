@@ -5,6 +5,7 @@ import { Footer } from "./components/Footer.tsx";
 import { Header } from "./components/Header.tsx";
 import { Hero } from "./components/Hero.tsx";
 import { LeadModal } from "./components/LeadModal.tsx";
+import { SideMessengers } from "./components/Messengers.tsx";
 import { MobileDock } from "./components/MobileDock.tsx";
 import { PrivacyDialog } from "./components/PrivacyDialog.tsx";
 import { Process } from "./components/Process.tsx";
@@ -52,7 +53,7 @@ export default function App() {
         К содержанию
       </a>
       <Header onCallback={openCallback} />
-      <main id="main">
+      <main id="main" className="max-sm:pr-16">
         <div id="top" className="hero-shell relative overflow-hidden">
           <div className="hero-grid pointer-events-none absolute inset-0" aria-hidden="true" />
           <div className="relative">
@@ -68,6 +69,7 @@ export default function App() {
         <Trust />
       </main>
       <Footer onPrivacy={openPrivacy} />
+      <SideMessengers />
       {modal ? null : <MobileDock onPick={() => goToQuote()} onCallback={openCallback} />}
       {modal ? (
         <LeadModal

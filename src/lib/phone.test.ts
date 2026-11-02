@@ -3,38 +3,39 @@ import { test } from "node:test";
 import { applyPhoneEdit, formatPhone, isCompletePhone } from "./phone.ts";
 import { hasErrors, validateCallback, validateQuote } from "./validation.ts";
 
-test("formats a 10-digit mobile as +7", () => {
-  assert.equal(formatPhone("9991234567"), "+7 (999) 123-45-67");
+test("formats a local Belarus mobile as +375", () => {
+  assert.equal(formatPhone("297920786"), "+375 (29) 792-07-86");
 });
 
-test("normalizes a leading 8 and ignores extra digits", () => {
-  assert.equal(formatPhone("899912345679999"), "+7 (999) 123-45-67");
+test("keeps an international number and the domestic 80 prefix", () => {
+  assert.equal(formatPhone("375297920786999"), "+375 (29) 792-07-86");
+  assert.equal(formatPhone("80297920786"), "+375 (29) 792-07-86");
 });
 
 test("keeps an already formatted number stable", () => {
-  assert.equal(formatPhone("+7 (999) 123-45-67"), "+7 (999) 123-45-67");
+  assert.equal(formatPhone("+375 (29) 792-07-86"), "+375 (29) 792-07-86");
 });
 
 test("types a number through the mask", () => {
   let value = "";
-  for (const char of "9991234567") {
+  for (const char of "297920786") {
     value = applyPhoneEdit(value, value + char);
   }
-  assert.equal(value, "+7 (999) 123-45-67");
+  assert.equal(value, "+375 (29) 792-07-86");
   assert.equal(isCompletePhone(value), true);
 });
 
 test("backspace on a mask character removes a digit", () => {
-  assert.equal(applyPhoneEdit("+7 (999) ", "+7 (999)"), "+7 (99");
+  assert.equal(applyPhoneEdit("+375 (29) ", "+375 (29)"), "+375 (2");
 });
 
 test("clears the field when digits are gone", () => {
-  assert.equal(applyPhoneEdit("+7", ""), "");
-  assert.equal(isCompletePhone("+7 (999)"), false);
+  assert.equal(applyPhoneEdit("+375", ""), "");
+  assert.equal(isCompletePhone("+375 (29)"), false);
 });
 
 test("requires a complete phone and the quote fields", () => {
-  const errors = validateQuote({ brand: "", year: "", part: " ", phone: "+7 (999)" });
+  const errors = validateQuote({ brand: "", year: "", part: " ", phone: "+375 (29)" });
   assert.equal(hasErrors(errors), true);
   assert.equal(errors.phone, "Введите телефон полностью");
   assert.equal(errors.brand, "Выберите марку");
@@ -43,12 +44,12 @@ test("requires a complete phone and the quote fields", () => {
     brand: "Jeep",
     year: "2018",
     part: "редуктор",
-    phone: "+7 (999) 123-45-67",
+    phone: "+375 (29) 792-07-86",
   });
   assert.equal(hasErrors(valid), false);
 });
 
 test("callback form requires only the phone", () => {
   assert.equal(hasErrors(validateCallback("")), true);
-  assert.equal(hasErrors(validateCallback("+7 (999) 123-45-67")), false);
+  assert.equal(hasErrors(validateCallback("+375 (29) 792-07-86")), false);
 });

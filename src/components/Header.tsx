@@ -49,7 +49,7 @@ export function Header({ onCallback }: HeaderProps) {
           <span className="font-display text-[1.7rem] leading-none tracking-[0.12em]">APARTS</span>
         </a>
 
-        <nav className="ml-8 hidden items-center gap-6 lg:flex" aria-label="Разделы страницы">
+        <nav className="ml-6 hidden items-center gap-4 lg:flex" aria-label="Разделы страницы">
           {nav.map((item) => (
             <a key={item.href} href={item.href} className="text-sm whitespace-nowrap text-mist transition-colors hover:text-paper">
               {item.label}
