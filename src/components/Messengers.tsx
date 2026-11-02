@@ -1,4 +1,5 @@
 import { company } from "../content.ts";
+import { track } from "../lib/analytics.ts";
 
 export function TelegramIcon() {
   return (
@@ -43,7 +44,7 @@ export function MessengerLinks({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {messengers.map((item) => (
-        <a key={item.key} className="icon-btn" href={item.href} target="_blank" rel="noreferrer" aria-label={`Написать в ${item.label}`}>
+        <a key={item.key} className="icon-btn" href={item.href} target="_blank" rel="noreferrer" aria-label={`Написать в ${item.label}`} onClick={() => track("messenger_click", { messenger: item.key, place: "links" })}>
           <item.icon />
         </a>
       ))}
@@ -62,6 +63,7 @@ export function SideMessengers() {
           rel="noreferrer"
           aria-label={`${item.label}: ${item.key === "telegram" ? "@dmitry_spa" : company.phoneDisplay}`}
           className={`grid h-12 w-12 place-items-center rounded-full text-white shadow-[0_10px_24px_-12px_rgba(0,0,0,0.8)] transition hover:-translate-x-0.5 ${item.tone}`}
+          onClick={() => track("messenger_click", { messenger: item.key, place: "side" })}
         >
           <item.icon />
         </a>

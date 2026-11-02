@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && node --experimental-strip-types scripts/generate-seo-files.mjs && vite build && node --experimental-strip-types scripts/prerender.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
-    "test": "node --experimental-strip-types --test src/lib/*.test.ts"
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts src/seo/*.test.ts"
   },
   "repository": {
     "type": "git",

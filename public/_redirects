@@ -1,0 +1,2 @@
+# Netlify: existing files win. Unknown paths return the real 404 page.
+/*  /404.html  404

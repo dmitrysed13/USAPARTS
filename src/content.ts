@@ -14,11 +14,11 @@ export const company = {
 };
 
 export const nav = [
-  { href: "#catalog", label: "Каталог" },
-  { href: "#benefits", label: "Преимущества" },
-  { href: "#process", label: "Как заказать" },
-  { href: "#reviews", label: "Отзывы" },
-  { href: "#contacts", label: "Контакты" },
+  { href: "/#catalog", label: "Каталог" },
+  { href: "/#benefits", label: "Преимущества" },
+  { href: "/#process", label: "Как заказать" },
+  { href: "/#reviews", label: "Отзывы" },
+  { href: "/kontakty/", label: "Контакты" },
 ] as const;
 
 export const brands = [
@@ -36,12 +36,12 @@ export const brands = [
 ] as const;
 
 export const featuredBrands = [
-  { name: "Ford", models: "F-150, Explorer, Mustang" },
-  { name: "Jeep", models: "Grand Cherokee, Wrangler" },
-  { name: "Dodge", models: "Ram, Durango, Challenger" },
-  { name: "Chevrolet", models: "Tahoe, Silverado, Camaro" },
-  { name: "Tesla", models: "Model 3, Model Y, Model S" },
-  { name: "Cadillac", models: "Escalade, XT5, CT5" },
+  { name: "Ford", models: "F-150, Explorer, Mustang", href: "/ford/" },
+  { name: "Jeep", models: "Grand Cherokee, Wrangler", href: "/jeep/" },
+  { name: "Dodge", models: "Ram, Durango, Challenger", href: "/dodge/" },
+  { name: "Chevrolet", models: "Tahoe, Silverado, Camaro", href: "/chevrolet/" },
+  { name: "Tesla", models: "Model 3, Model Y, Model S", href: "/tesla/" },
+  { name: "Cadillac", models: "Escalade, XT5, CT5", href: "/cadillac/" },
 ] as const;
 
 export const categories = [
@@ -50,43 +50,49 @@ export const categories = [
     title: "Двигатели и КПП",
     text: "Моторы, коробки, раздатки и навесное.",
     part: "Двигатель / КПП",
+    href: "/zapchasti/dvigatel/",
   },
   {
     id: "chassis",
     title: "Ходовая часть",
     text: "Рычаги, амортизаторы, редукторы, карданы.",
     part: "Ходовая часть",
+    href: "/zapchasti/podveska/",
   },
   {
     id: "brakes",
     title: "Тормозные системы",
     text: "Суппорты, диски, блоки ABS, магистрали.",
     part: "Тормозная система",
+    href: "/zapchasti/tormoznaya-sistema/",
   },
   {
     id: "body",
     title: "Кузовные детали",
     text: "Двери, крылья, бамперы, капот, стёкла.",
     part: "Кузовная деталь",
+    href: "/zapchasti/kuzov/",
   },
   {
     id: "electric",
     title: "Оптика и электрика",
     text: "Фары, фонари, блоки, проводка, датчики.",
     part: "Оптика / электрика",
+    href: "/zapchasti/optika/",
   },
   {
     id: "service",
     title: "Расходники для ТО",
     text: "Фильтры, колодки, свечи, жидкости.",
     part: "Расходники для ТО",
+    href: "",
   },
 ] as const;
 
 export const benefits = [
   {
-    title: "100% оригинал",
-    text: "Работаем напрямую с дилерами и аукционами в США.",
+    title: "Оригинал по каталогу",
+    text: "Номер сверяем по VIN. Если предлагаем аналог, пишем это до оплаты.",
     icon: "shield",
   },
   {

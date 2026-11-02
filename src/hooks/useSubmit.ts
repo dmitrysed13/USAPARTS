@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { track } from "../lib/analytics.ts";
 import { submitLead, type Lead } from "../lib/leads.ts";
 
 type LeadInput = Omit<Lead, "createdAt">;
@@ -22,6 +23,7 @@ export function useSubmit() {
 
     try {
       await submitLead({ ...lead, createdAt: new Date().toISOString() }, trap);
+      track("form_submit", { form: lead.kind });
       setStatus("done");
     } catch (error) {
       lock.current = false;

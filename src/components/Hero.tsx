@@ -19,12 +19,10 @@ export function Hero({ onPick, onCalculate }: HeroProps) {
       <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:gap-10">
         <div>
           <p className="eyebrow">Запчасти из США</p>
-          <h1 className="display mt-4 max-w-3xl text-balance">
-            Оригинальные запчасти для американских авто с доставкой от 15 до 30 дней
-          </h1>
+          <h1 className="display mt-4 max-w-3xl text-balance">Автозапчасти из США с доставкой в Беларусь</h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-mist sm:text-lg">
-            Новые и б/у детали для Ford, Chevrolet, Dodge, Jeep, Tesla, Cadillac, GMC, Chrysler, Lincoln напрямую из
-            США. Подбор по VIN-коду за 10 минут.
+            Новые и б/у оригинальные запчасти для Ford, Chevrolet, Jeep, Dodge и других американских авто. Подбор по
+            VIN, расчёт стоимости и доставка от 15 до 30 дней.
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <button type="button" className="btn btn-primary" onClick={onPick}>

@@ -2,7 +2,8 @@ import { Check } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { brands, callTimes, company, yearOptions } from "../content.ts";
 import { useSubmit } from "../hooks/useSubmit.ts";
-import { hasErrors, validateCallback, validateQuote, type QuoteDraft } from "../lib/validation.ts";
+import { track } from "../lib/analytics.ts";
+import { hasErrors, validateCallback, validateQuote, type PartCondition, type QuoteDraft } from "../lib/validation.ts";
 import { Dialog } from "./Dialog.tsx";
 import { PhoneField } from "./PhoneField.tsx";
 import { FieldError } from "./ui.tsx";
@@ -18,11 +19,16 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
   const [name, setName] = useState("");
   const [phone, setPhone] = useState(initial?.phone ?? "");
   const [brand, setBrand] = useState(initial?.brand ?? "");
+  const [model, setModel] = useState(initial?.model ?? "");
   const [year, setYear] = useState(initial?.year ?? "");
   const [part, setPart] = useState(initial?.part ?? "");
+  const [vin, setVin] = useState(initial?.vin ?? "");
+  const [oem, setOem] = useState(initial?.oem ?? "");
+  const [condition, setCondition] = useState<PartCondition>(initial?.condition ?? "");
   const [time, setTime] = useState<string>(callTimes[0]);
   const [comment, setComment] = useState("");
   const [trap, setTrap] = useState("");
+  const started = useRef(false);
   const [errors, setErrors] = useState<ReturnType<typeof validateQuote>>({});
   const { status, message, send } = useSubmit();
   const successRef = useRef<HTMLHeadingElement>(null);
@@ -35,7 +41,7 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const nextErrors = isQuote ? validateQuote({ brand, year, part, phone }) : validateCallback(phone);
+    const nextErrors = isQuote ? validateQuote({ brand, model, year, part, vin, oem, condition, phone }) : validateCallback(phone);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
@@ -44,8 +50,12 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
         kind,
         phone,
         brand: isQuote ? brand : "",
+        model: isQuote ? model.trim() : "",
         year: isQuote ? year : "",
         part: isQuote ? part.trim() : "",
+        vin: isQuote ? vin.trim().toUpperCase() : "",
+        oem: isQuote ? oem.trim() : "",
+        condition: isQuote ? condition : "",
         name: name.trim(),
         time: isQuote ? "" : time,
         comment: comment.trim(),
@@ -74,7 +84,16 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
           </button>
         </div>
       ) : (
-        <form className="relative grid gap-3" onSubmit={onSubmit} noValidate>
+        <form
+          className="relative grid gap-3"
+          onSubmit={onSubmit}
+          noValidate
+          onFocus={() => {
+            if (started.current) return;
+            started.current = true;
+            track("form_start", { form: isQuote ? "quote" : "callback" });
+          }}
+        >
           <div className="trap" aria-hidden="true">
             <label>
               Компания
@@ -136,18 +155,69 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
                 </select>
                 <FieldError id="modal-year-error">{errors.year}</FieldError>
               </label>
+              <label className="grid gap-1.5 text-sm" htmlFor="modal-model">
+                <span className="text-mist">Модель</span>
+                <input
+                  id="modal-model"
+                  className="field"
+                  value={model}
+                  placeholder="Mustang, Tahoe"
+                  onChange={(event) => setModel(event.target.value)}
+                />
+              </label>
               <label className="grid gap-1.5 text-sm" htmlFor="modal-part">
-                <span className="text-mist">Название детали / VIN-код</span>
+                <span className="text-mist">Название детали</span>
                 <input
                   id="modal-part"
                   className="field"
                   value={part}
-                  placeholder="Редуктор передний или VIN"
+                  placeholder="Капот, фара, двигатель"
                   aria-invalid={Boolean(errors.part) || undefined}
                   aria-describedby={errors.part ? "modal-part-error" : undefined}
                   onChange={(event) => setPart(event.target.value)}
                 />
                 <FieldError id="modal-part-error">{errors.part}</FieldError>
+              </label>
+              <label className="grid gap-1.5 text-sm" htmlFor="modal-vin">
+                <span className="text-mist">VIN</span>
+                <input
+                  id="modal-vin"
+                  className="field uppercase"
+                  value={vin}
+                  autoComplete="off"
+                  spellCheck={false}
+                  placeholder="17 знаков"
+                  aria-invalid={Boolean(errors.vin) || undefined}
+                  aria-describedby={errors.vin ? "modal-vin-error" : undefined}
+                  onChange={(event) => setVin(event.target.value)}
+                />
+                <FieldError id="modal-vin-error">{errors.vin}</FieldError>
+              </label>
+              <label className="grid gap-1.5 text-sm" htmlFor="modal-oem">
+                <span className="text-mist">OEM / артикул</span>
+                <input
+                  id="modal-oem"
+                  className="field"
+                  value={oem}
+                  placeholder="Если номер уже есть"
+                  aria-invalid={Boolean(errors.oem) || undefined}
+                  aria-describedby={errors.oem ? "modal-oem-error" : undefined}
+                  onChange={(event) => setOem(event.target.value)}
+                />
+                <FieldError id="modal-oem-error">{errors.oem}</FieldError>
+              </label>
+              <label className="grid gap-1.5 text-sm" htmlFor="modal-condition">
+                <span className="text-mist">Тип детали</span>
+                <select
+                  id="modal-condition"
+                  className="field"
+                  value={condition}
+                  onChange={(event) => setCondition(event.target.value as PartCondition)}
+                >
+                  <option value="">Новая или б/у</option>
+                  <option value="Новая">Новая</option>
+                  <option value="Б/у">Б/у</option>
+                </select>
               </label>
             </>
           ) : (

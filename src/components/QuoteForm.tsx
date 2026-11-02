@@ -2,7 +2,8 @@ import { ArrowRight, Check } from "lucide-react";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { brands, company, yearOptions } from "../content.ts";
 import { useSubmit } from "../hooks/useSubmit.ts";
-import { hasErrors, validateQuote, type FieldErrors, type QuoteDraft, type QuoteSeed } from "../lib/validation.ts";
+import { track } from "../lib/analytics.ts";
+import { hasErrors, validateQuote, type FieldErrors, type PartCondition, type QuoteDraft, type QuoteSeed } from "../lib/validation.ts";
 import { PhoneField } from "./PhoneField.tsx";
 import { FieldError } from "./ui.tsx";
 
@@ -14,10 +15,15 @@ type QuoteFormProps = {
 
 export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
   const [brand, setBrand] = useState("");
+  const [model, setModel] = useState("");
   const [year, setYear] = useState("");
   const [part, setPart] = useState("");
+  const [vin, setVin] = useState("");
+  const [oem, setOem] = useState("");
+  const [condition, setCondition] = useState<PartCondition>("");
   const [phone, setPhone] = useState("");
   const [trap, setTrap] = useState("");
+  const started = useRef(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const { status, message, send, reset } = useSubmit();
   const successRef = useRef<HTMLHeadingElement>(null);
@@ -25,8 +31,8 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
   const baseId = useId();
 
   useEffect(() => {
-    onDraft({ brand, year, part, phone });
-  }, [brand, year, part, phone, onDraft]);
+    onDraft({ brand, model, year, part, vin, oem, condition, phone });
+  }, [brand, condition, model, oem, onDraft, part, phone, vin, year]);
 
   useEffect(() => {
     if (seed.token === 0) return;
@@ -47,7 +53,7 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const nextErrors = validateQuote({ brand, year, part, phone });
+    const nextErrors = validateQuote({ brand, model, year, part, vin, oem, condition, phone });
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
@@ -56,8 +62,12 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
         kind: "quote",
         phone,
         brand,
+        model: model.trim(),
         year,
         part: part.trim(),
+        vin: vin.trim().toUpperCase(),
+        oem: oem.trim(),
+        condition,
         name: "",
         time: "",
         comment: "",
@@ -94,7 +104,16 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
           </div>
         </div>
       ) : (
-        <form className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-12" onSubmit={onSubmit} noValidate>
+        <form
+          className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-12"
+          onSubmit={onSubmit}
+          noValidate
+          onFocus={() => {
+            if (started.current) return;
+            started.current = true;
+            track("form_start", { form: "quote" });
+          }}
+        >
           <div className="trap" aria-hidden="true">
             <label>
               Компания
@@ -154,19 +173,78 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
             <FieldError id={`${baseId}-year-error`}>{errors.year}</FieldError>
           </label>
 
+          <label className="grid gap-1.5 text-sm sm:col-span-1 xl:col-span-3" htmlFor={`${baseId}-model`}>
+            <span className="text-mist">Модель</span>
+            <input
+              id={`${baseId}-model`}
+              name="model"
+              className="field"
+              placeholder="Mustang, Tahoe"
+              value={model}
+              onChange={(event) => setModel(event.target.value)}
+            />
+          </label>
+
+          <label className="grid gap-1.5 text-sm sm:col-span-1 xl:col-span-4" htmlFor={`${baseId}-condition`}>
+            <span className="text-mist">Тип детали</span>
+            <select
+              id={`${baseId}-condition`}
+              name="condition"
+              className="field"
+              value={condition}
+              onChange={(event) => setCondition(event.target.value as PartCondition)}
+            >
+              <option value="">Новая или б/у</option>
+              <option value="Новая">Новая</option>
+              <option value="Б/у">Б/у</option>
+            </select>
+          </label>
+
           <label className="grid gap-1.5 text-sm sm:col-span-2 xl:col-span-4" htmlFor={`${baseId}-part`}>
-            <span className="text-mist">Название детали / VIN-код</span>
+            <span className="text-mist">Название детали</span>
             <input
               id={`${baseId}-part`}
               name="part"
               className="field"
-              placeholder="Редуктор передний или VIN"
+              placeholder="Капот, фара, двигатель"
               value={part}
               aria-invalid={Boolean(errors.part) || undefined}
               aria-describedby={errors.part ? `${baseId}-part-error` : undefined}
               onChange={(event) => setPart(event.target.value)}
             />
             <FieldError id={`${baseId}-part-error`}>{errors.part}</FieldError>
+          </label>
+
+          <label className="grid gap-1.5 text-sm sm:col-span-1 xl:col-span-4" htmlFor={`${baseId}-vin`}>
+            <span className="text-mist">VIN</span>
+            <input
+              id={`${baseId}-vin`}
+              name="vin"
+              className="field uppercase"
+              autoComplete="off"
+              spellCheck={false}
+              placeholder="17 знаков"
+              value={vin}
+              aria-invalid={Boolean(errors.vin) || undefined}
+              aria-describedby={errors.vin ? `${baseId}-vin-error` : undefined}
+              onChange={(event) => setVin(event.target.value)}
+            />
+            <FieldError id={`${baseId}-vin-error`}>{errors.vin}</FieldError>
+          </label>
+
+          <label className="grid gap-1.5 text-sm sm:col-span-1 xl:col-span-4" htmlFor={`${baseId}-oem`}>
+            <span className="text-mist">OEM / артикул</span>
+            <input
+              id={`${baseId}-oem`}
+              name="oem"
+              className="field"
+              placeholder="Если номер уже есть"
+              value={oem}
+              aria-invalid={Boolean(errors.oem) || undefined}
+              aria-describedby={errors.oem ? `${baseId}-oem-error` : undefined}
+              onChange={(event) => setOem(event.target.value)}
+            />
+            <FieldError id={`${baseId}-oem-error`}>{errors.oem}</FieldError>
           </label>
 
           <label className="grid gap-1.5 text-sm sm:col-span-2 xl:col-span-3" htmlFor={`${baseId}-phone`}>

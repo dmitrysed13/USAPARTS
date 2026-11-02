@@ -35,19 +35,40 @@ test("clears the field when digits are gone", () => {
 });
 
 test("requires a complete phone and the quote fields", () => {
-  const errors = validateQuote({ brand: "", year: "", part: " ", phone: "+375 (29)" });
+  const errors = validateQuote({ ...validInput(), brand: "", year: "", part: " ", phone: "+375 (29)", vin: "" });
   assert.equal(hasErrors(errors), true);
   assert.equal(errors.phone, "Введите телефон полностью");
   assert.equal(errors.brand, "Выберите марку");
 
   const valid = validateQuote({
     brand: "Jeep",
+    model: "",
     year: "2018",
     part: "редуктор",
+    vin: "",
+    oem: "",
+    condition: "",
     phone: "+375 (29) 792-07-86",
   });
   assert.equal(hasErrors(valid), false);
+  assert.equal(
+    validateQuote({ ...validInput(), vin: "IO" }).vin,
+    "VIN состоит из 17 знаков, без букв I, O и Q",
+  );
 });
+
+function validInput() {
+  return {
+    brand: "Jeep",
+    model: "Grand Cherokee",
+    year: "2018",
+    part: "редуктор",
+    vin: "",
+    oem: "",
+    condition: "" as const,
+    phone: "+375 (29) 792-07-86",
+  };
+}
 
 test("callback form requires only the phone", () => {
   assert.equal(hasErrors(validateCallback("")), true);

@@ -6,8 +6,12 @@ export type Lead = {
   kind: LeadKind;
   phone: string;
   brand: string;
+  model: string;
   year: string;
   part: string;
+  vin: string;
+  oem: string;
+  condition: string;
   name: string;
   time: string;
   comment: string;
@@ -41,8 +45,12 @@ export function leadMail(lead: Lead): Record<string, string> {
     ["Телефон", lead.phone],
     ["Имя", lead.name],
     ["Марка", lead.brand],
+    ["Модель", lead.model],
     ["Год", lead.year],
-    ["Деталь или VIN", lead.part],
+    ["Деталь", lead.part],
+    ["VIN", lead.vin],
+    ["OEM / артикул", lead.oem],
+    ["Состояние", lead.condition],
     ["Удобное время", lead.time],
     ["Комментарий", lead.comment],
     ["Отправлено", sentAt(lead.createdAt)],

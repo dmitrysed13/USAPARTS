@@ -1,6 +1,8 @@
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { company, nav } from "../content.ts";
+import { track } from "../lib/analytics.ts";
 import { MessengerLinks } from "./Messengers.tsx";
+import { SiteLink } from "./SiteLink.tsx";
 import { Container } from "./ui.tsx";
 
 type FooterProps = {
@@ -44,7 +46,7 @@ export function Footer({ onPrivacy }: FooterProps) {
 
         <div className="lg:col-span-4">
           <p className="eyebrow">Контакты</p>
-          <a href={company.phoneHref} className="mt-4 flex items-center gap-2 font-display text-3xl leading-none whitespace-nowrap sm:text-4xl">
+          <a href={company.phoneHref} className="mt-4 flex items-center gap-2 font-display text-3xl leading-none whitespace-nowrap sm:text-4xl" onClick={() => track("phone_click", { place: "footer" })}>
             <Phone className="h-6 w-6 text-ember" strokeWidth={1.75} aria-hidden="true" />
             {company.phoneDisplay}
           </a>
@@ -69,13 +71,19 @@ export function Footer({ onPrivacy }: FooterProps) {
           <p className="eyebrow">Разделы</p>
           <nav className="mt-4 flex flex-col items-start gap-2" aria-label="Разделы в подвале">
             {nav.map((item) => (
-              <a key={item.href} href={item.href} className="text-sm text-mist hover:text-paper">
+              <SiteLink key={item.href} href={item.href} className="text-sm text-mist hover:text-paper">
                 {item.label}
-              </a>
+              </SiteLink>
             ))}
-            <a href="#podbor" className="text-sm text-mist hover:text-paper">
+            <SiteLink href="/#podbor" className="text-sm text-mist hover:text-paper">
               Подобрать запчасть
-            </a>
+            </SiteLink>
+            <SiteLink href="/dostavka-iz-ssha/" className="text-sm text-mist hover:text-paper">
+              Доставка
+            </SiteLink>
+            <SiteLink href="/podbor-po-vin/" className="text-sm text-mist hover:text-paper">
+              Подбор по VIN
+            </SiteLink>
           </nav>
         </div>
       </Container>

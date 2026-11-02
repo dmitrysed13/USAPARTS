@@ -62,7 +62,7 @@ export function Trust() {
             </div>
           </div>
 
-          <div>
+          <div className="min-w-0">
             <h3 className="font-display text-2xl tracking-wide">Отзывы</h3>
             <div className="mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible">
               {reviews.map((review) => (

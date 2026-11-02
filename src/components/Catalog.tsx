@@ -1,6 +1,7 @@
 import { CarFront, Cog, Disc3, Lightbulb, Wrench } from "lucide-react";
 import type { ReactNode } from "react";
 import { categories, featuredBrands } from "../content.ts";
+import { SiteLink } from "./SiteLink.tsx";
 import { Container, Reveal, SectionHeading } from "./ui.tsx";
 
 function ChassisIcon() {
@@ -36,23 +37,23 @@ export function Catalog({ onBrand, onCategory }: CatalogProps) {
             index="02"
             eyebrow="Каталог"
             title="Марки и узлы, которые привозим чаще всего"
-            text="Выберите марку или категорию — форма подбора откроется с уже заполненным полем."
+            text="Откройте страницу марки или узла, либо сразу заполните форму подбора."
           />
         </Reveal>
 
         <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3">
           {featuredBrands.map((brand, index) => (
             <Reveal key={brand.name} delay={index * 50} className="h-full">
-              <button
-                type="button"
-                className="card flex h-full w-full flex-col items-start px-4 py-5 text-left sm:px-5 sm:py-6"
-                onClick={() => onBrand(brand.name)}
-              >
+              <article className="card flex h-full w-full flex-col items-start px-4 py-5 text-left sm:px-5 sm:py-6">
                 <span className="text-[11px] tracking-[0.16em] text-mist uppercase">0{index + 1}</span>
-                <span className="mt-3 font-display text-3xl leading-none sm:text-4xl">{brand.name}</span>
+                <SiteLink href={brand.href} className="mt-3 font-display text-3xl leading-none hover:text-ember sm:text-4xl">
+                  {brand.name}
+                </SiteLink>
                 <span className="mt-3 text-sm leading-relaxed text-mist">{brand.models}</span>
-                <span className="mt-4 text-sm font-semibold text-ember">Подобрать</span>
-              </button>
+                <button type="button" className="mt-4 text-sm font-semibold text-ember" onClick={() => onBrand(brand.name)}>
+                  Подобрать
+                </button>
+              </article>
             </Reveal>
           ))}
         </div>
@@ -60,17 +61,22 @@ export function Catalog({ onBrand, onCategory }: CatalogProps) {
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category, index) => (
             <Reveal key={category.id} delay={index * 40} className="h-full">
-              <button
-                type="button"
-                className="card flex h-full w-full items-start gap-4 px-4 py-5 text-left sm:px-5"
-                onClick={() => onCategory(category.part)}
-              >
+              <article className="card flex h-full w-full items-start gap-4 px-4 py-5 text-left sm:px-5">
                 <span className="grid h-12 w-12 shrink-0 place-items-center bg-ember/12 text-ember">{icons[category.id]}</span>
                 <span>
-                  <span className="block text-base font-semibold">{category.title}</span>
+                  {category.href ? (
+                    <SiteLink href={category.href} className="block text-base font-semibold hover:text-ember">
+                      {category.title}
+                    </SiteLink>
+                  ) : (
+                    <span className="block text-base font-semibold">{category.title}</span>
+                  )}
                   <span className="mt-1 block text-sm leading-relaxed text-mist">{category.text}</span>
+                  <button type="button" className="mt-3 text-sm font-semibold text-ember" onClick={() => onCategory(category.part)}>
+                    Подобрать
+                  </button>
                 </span>
-              </button>
+              </article>
             </Reveal>
           ))}
         </div>

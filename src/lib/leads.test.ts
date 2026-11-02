@@ -7,8 +7,12 @@ const lead: Lead = {
   kind: "quote",
   phone: "+375 (29) 792-07-86",
   brand: "Ford",
+  model: "Explorer",
   year: "2018",
   part: "Фара левая",
+  vin: "1FMCU9GD5JUA00001",
+  oem: "FB5Z13008A",
+  condition: "Новая",
   name: "Игорь",
   time: "После 18:00",
   comment: "Нужен оригинал",
@@ -25,7 +29,8 @@ test("builds a mail for the company inbox", () => {
   const mail = leadMail(lead);
   assert.equal(mail._subject, "USAPARTS — Подбор детали");
   assert.equal(mail["Телефон"], "+375 (29) 792-07-86");
-  assert.equal(mail["Деталь или VIN"], "Фара левая");
+  assert.equal(mail["Деталь"], "Фара левая");
+  assert.equal(mail["VIN"], "1FMCU9GD5JUA00001");
   assert.match(mail["Отправлено"], /16:00/);
 });
 
