@@ -7,7 +7,7 @@ export const company = {
   telegram: "https://t.me/dmitry_spa",
   viber: "viber://chat?number=%2B375297920786",
   whatsapp: "https://wa.me/375297920786",
-  email: "hello@usaparts.ru",
+  email: "dmitry.chanoff@gmail.com",
   hours: "Ежедневно, 9:00–20:00",
   address: "г. Брест, ул. Московская, 364",
   addressNote: "Пункт выдачи. Визит по записи.",
