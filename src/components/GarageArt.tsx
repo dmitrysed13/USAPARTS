@@ -55,8 +55,8 @@ export function GarageArt() {
 
       <div className="mt-1 grid grid-cols-2 gap-3">
         <div className="border border-line bg-ink/70 px-3 py-3 backdrop-blur-sm">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-mist">Авиадоставка</p>
-          <p className="mt-1 font-display text-2xl leading-none">5–7 дней</p>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-mist">Доставка</p>
+          <p className="mt-1 font-display text-2xl leading-none">15–30 дней</p>
         </div>
         <div className="border border-line bg-ink/70 px-3 py-3 backdrop-blur-sm">
           <p className="text-[11px] uppercase tracking-[0.16em] text-mist">Подбор по VIN</p>

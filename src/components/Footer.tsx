@@ -61,7 +61,7 @@ export function Footer({ onPrivacy }: FooterProps) {
           </div>
           <div className="mt-6 text-sm leading-relaxed text-mist">
             <p className="font-semibold text-paper">{company.legalName}</p>
-            <p className="mt-1">ИНН и банковские реквизиты передаём в договоре до оплаты.</p>
+            <p className="mt-1">УНП {company.unp}</p>
           </div>
         </div>
 

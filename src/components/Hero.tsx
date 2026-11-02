@@ -9,7 +9,7 @@ type HeroProps = {
 
 const points = [
   { icon: ShieldCheck, label: "Дилеры и аукционы США" },
-  { icon: Plane, label: "Авиа от 5 дней" },
+  { icon: Plane, label: "Доставка 15–30 дней" },
   { icon: BadgeCheck, label: "Договор и страховка груза" },
 ];
 
@@ -20,7 +20,7 @@ export function Hero({ onPick, onCalculate }: HeroProps) {
         <div>
           <p className="eyebrow">Запчасти из США</p>
           <h1 className="display mt-4 max-w-3xl text-balance">
-            Оригинальные запчасти для американских авто с доставкой от 5 дней
+            Оригинальные запчасти для американских авто с доставкой от 15 до 30 дней
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-mist sm:text-lg">
             Новые и б/у детали для Ford, Chevrolet, Dodge, Jeep, Tesla, Cadillac, GMC, Chrysler, Lincoln напрямую из
