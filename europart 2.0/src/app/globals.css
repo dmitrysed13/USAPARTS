@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+:root {
+  --brand: #d0121a;
+  --brand-strong: #a50e14;
+  --brand-soft: #fdeced;
+  --ink: #121417;
+  --ink-muted: #5c6370;
+  --surface: #ffffff;
+  --surface-muted: #f4f5f7;
+  --line: #e4e7ec;
+  --panel: #17191d;
+  --panel-muted: #2a2e35;
+  --panel-foreground: #f5f6f8;
+  --success: #0f7a45;
+  --warning: #9a6700;
+  --danger: #b42318;
+  --shadow-card: 0 1px 2px rgb(18 20 23 / 0.05), 0 16px 40px rgb(18 20 23 / 0.06);
+}
+
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-line: var(--line);
+  --color-panel: var(--panel);
+  --color-panel-muted: var(--panel-muted);
+  --color-panel-foreground: var(--panel-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-manrope), "Segoe UI", sans-serif;
+  --font-display: var(--font-onest), var(--font-manrope), sans-serif;
+  --radius-control: 0.75rem;
+  --shadow-card: var(--shadow-card);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #f7c5c8;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 40;
+  border-radius: var(--radius-control);
+  background: var(--brand);
+  color: white;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
