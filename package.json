@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && node --experimental-strip-types scripts/generate-seo-files.mjs && vite build && node --experimental-strip-types scripts/prerender.mjs",
+    "start": "node server/serve.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
-    "test": "node --experimental-strip-types --test src/lib/*.test.ts src/seo/*.test.ts"
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts src/seo/*.test.ts server/leads.test.mjs"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
     "@fontsource/manrope": "^5.3.0",
     "@fontsource/oswald": "^5.3.0",
     "lucide-react": "^1.66.0",
+    "nodemailer": "^7.0.13",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

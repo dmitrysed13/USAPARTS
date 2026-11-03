@@ -183,8 +183,11 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
               className="field"
               placeholder="Mustang, Tahoe"
               value={model}
+              aria-invalid={Boolean(errors.model) || undefined}
+              aria-describedby={errors.model ? `${baseId}-model-error` : undefined}
               onChange={(event) => setModel(event.target.value)}
             />
+            <FieldError id={`${baseId}-model-error`}>{errors.model}</FieldError>
           </label>
 
           <label className="grid gap-1.5 text-sm sm:col-span-1 xl:col-span-4" htmlFor={`${baseId}-condition`}>

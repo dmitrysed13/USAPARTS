@@ -1,3 +1,5 @@
+import { resolveSiteOrigin } from "./origin.ts";
+
 function readEnv(name: string): string {
   const fromVite = import.meta.env?.[name];
   if (typeof fromVite === "string" && fromVite.trim()) return fromVite.trim();
@@ -7,13 +9,18 @@ function readEnv(name: string): string {
   return "";
 }
 
+function isProduction(): boolean {
+  if (typeof import.meta.env?.PROD === "boolean") return import.meta.env.PROD;
+  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
+  return proc?.env?.NODE_ENV === "production";
+}
+
 export function siteOrigin(): string {
-  return readEnv("VITE_SITE_URL").replace(/\/$/, "");
+  return resolveSiteOrigin(readEnv("VITE_SITE_URL"), isProduction());
 }
 
 export function absoluteUrl(path: string): string {
-  const origin = siteOrigin();
-  return origin ? `${origin}${path}` : path;
+  return `${siteOrigin()}${path}`;
 }
 
 export function publicToken(name: string): string {

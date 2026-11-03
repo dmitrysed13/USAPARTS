@@ -22,7 +22,7 @@ export type QuoteSeed = {
   focus?: "brand" | "part" | "vin" | "phone";
 };
 
-export type FieldErrors = Partial<Record<"brand" | "year" | "part" | "phone" | "name" | "vin" | "oem", string>>;
+export type FieldErrors = Partial<Record<"brand" | "model" | "year" | "part" | "phone" | "name" | "vin" | "oem", string>>;
 
 export function validateVin(value: string): boolean {
   return /^[A-HJ-NPR-Z0-9]{17}$/.test(value.trim().toUpperCase());
@@ -31,10 +31,12 @@ export function validateVin(value: string): boolean {
 export function validateQuote(input: QuoteDraft): FieldErrors {
   const errors: FieldErrors = {};
   if (!input.brand) errors.brand = "Выберите марку";
+  if (input.model.trim().length < 1) errors.model = "Укажите модель";
   if (!input.year) errors.year = "Укажите год выпуска";
   if (input.part.trim().length < 2) errors.part = "Напишите название детали";
   if (input.vin.trim() && !validateVin(input.vin)) errors.vin = "VIN состоит из 17 знаков, без букв I, O и Q";
   if (input.oem.trim() && input.oem.trim().length < 3) errors.oem = "Артикул слишком короткий";
+  if (!input.vin.trim() && input.oem.trim().length < 3 && !errors.vin) errors.vin = "Укажите VIN или OEM";
   if (!isCompletePhone(input.phone)) errors.phone = "Введите телефон полностью";
   return errors;
 }

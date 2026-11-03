@@ -1,2 +1,4 @@
-# Netlify: existing files win. Unknown paths return the real 404 page.
+# Netlify: lead endpoint, then unknown paths return the real 404 page.
+/api/leads   /.netlify/functions/leads  200
+/api/leads/  /.netlify/functions/leads  200
 /*  /404.html  404

@@ -162,8 +162,11 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
                   className="field"
                   value={model}
                   placeholder="Mustang, Tahoe"
+                  aria-invalid={Boolean(errors.model) || undefined}
+                  aria-describedby={errors.model ? "modal-model-error" : undefined}
                   onChange={(event) => setModel(event.target.value)}
                 />
+                <FieldError id="modal-model-error">{errors.model}</FieldError>
               </label>
               <label className="grid gap-1.5 text-sm" htmlFor="modal-part">
                 <span className="text-mist">Название детали</span>

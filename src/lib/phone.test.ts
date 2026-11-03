@@ -40,7 +40,7 @@ test("requires a complete phone and the quote fields", () => {
   assert.equal(errors.phone, "Введите телефон полностью");
   assert.equal(errors.brand, "Выберите марку");
 
-  const valid = validateQuote({
+  const incomplete = validateQuote({
     brand: "Jeep",
     model: "",
     year: "2018",
@@ -50,7 +50,12 @@ test("requires a complete phone and the quote fields", () => {
     condition: "",
     phone: "+375 (29) 792-07-86",
   });
+  assert.equal(incomplete.model, "Укажите модель");
+  assert.equal(incomplete.vin, "Укажите VIN или OEM");
+  const valid = validateQuote({ ...validInput(), vin: "1FMCU9GD5JUA00001" });
   assert.equal(hasErrors(valid), false);
+  const byOem = validateQuote({ ...validInput(), oem: "FB5Z13008A" });
+  assert.equal(hasErrors(byOem), false);
   assert.equal(
     validateQuote({ ...validInput(), vin: "IO" }).vin,
     "VIN состоит из 17 знаков, без букв I, O и Q",

@@ -3,6 +3,9 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { preview } from "vite";
 import { pages } from "../src/seo/pages.ts";
+import { assertProductionOrigin } from "../src/seo/origin.ts";
+
+const origin = assertProductionOrigin(process.env.VITE_SITE_URL ?? "");
 
 const port = 4173;
 const server = await preview({
@@ -74,14 +77,14 @@ try {
       path: item.path,
       heading: item.h1,
       title: item.title,
-      canonical: item.path,
+      canonical: `${origin}${item.path}`,
       out: item.path === "/" ? "dist/index.html" : `dist${item.path}index.html`,
     })),
     {
       path: "/__missing__/",
       heading: "Страница не найдена",
       title: "Страница не найдена | USAPARTS",
-      canonical: "/404.html",
+      canonical: `${origin}/404.html`,
       out: "dist/404.html",
     },
   ];
@@ -115,7 +118,10 @@ try {
     if (!html.includes(route.heading)) throw new Error(`Prerender missed heading for ${route.path}`);
     if (!html.includes(`<title>${route.title}</title>`)) throw new Error(`Prerender missed title for ${route.path}`);
     if (!html.includes(`href="${route.canonical}"`)) throw new Error(`Prerender missed canonical for ${route.path}`);
-    if (html.includes("127.0.0.1")) throw new Error(`Prerender leaked the preview host on ${route.path}`);
+    if (!route.out.endsWith("404.html") && !html.includes(`property="og:image" content="${origin}/favicon.svg"`)) {
+      throw new Error(`Prerender missed og:image for ${route.path}`);
+    }
+    if (html.includes("127.0.0.1") || html.includes("localhost")) throw new Error(`Prerender leaked a local host on ${route.path}`);
     await mkdir(dirname(route.out), { recursive: true });
     await writeFile(route.out, `<!doctype html>\n${html.replace(/^<html/i, "<html")}`);
   }

@@ -43,6 +43,8 @@ export function DocumentHead({ page, title, description, path, robots }: Documen
     upsertMeta("property", "og:type", "website");
     upsertMeta("property", "og:locale", "ru_RU");
     upsertMeta("property", "og:url", absoluteUrl(path));
+    const image = absoluteUrl("/favicon.svg");
+    if (image.startsWith("https://")) upsertMeta("property", "og:image", image);
     const google = publicToken("VITE_GOOGLE_SITE_VERIFICATION");
     const yandex = publicToken("VITE_YANDEX_VERIFICATION");
     if (google) upsertMeta("name", "google-site-verification", google);
