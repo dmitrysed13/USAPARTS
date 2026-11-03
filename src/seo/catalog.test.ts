@@ -53,6 +53,36 @@ test("electric models keep high-voltage parts separate", () => {
   assert.equal(camry?.priorities.includes("batareya"), false);
 });
 
+test("generation pages are linked and category copy is not one shared block", () => {
+  for (const path of ["/avtozapchasti/volkswagen/jetta/mk7/", "/avtozapchasti/bmw/x3/g01/", "/avtozapchasti/bmw/x5/g05/"]) {
+    const page = pages.find((item) => item.path === path);
+    assert.ok(page);
+    assert.ok(page.sections.length >= 3);
+    assert.equal(page.sections.some((section) => section.heading === "Почему заказывают у USAPARTS"), false);
+  }
+  const jetta = pages.find((page) => page.path === "/avtozapchasti/volkswagen/jetta/");
+  assert.ok(jetta?.related.some((link) => link.path === "/avtozapchasti/volkswagen/jetta/mk7/"));
+  const x3brakes = pages.find((page) => page.path === "/avtozapchasti/bmw/x3/tormoznaya-sistema/");
+  assert.ok(x3brakes?.related.some((link) => link.path === "/avtozapchasti/bmw/x3/g01/"));
+  assert.match(x3brakes?.h1 ?? "", /Тормозная система BMW X3/);
+  const fusionGlass = pages.find((page) => page.path === "/avtozapchasti/ford/fusion/stekla-i-zerkala/");
+  assert.match(fusionGlass?.title ?? "", /Стёкла и зеркала Ford Fusion/);
+  for (const model of catalogModels) {
+    assert.ok(paths.has(`/avtozapchasti/${model.brandSlug}/${model.slug}/tormoznaya-sistema/`));
+    assert.ok(paths.has(`/avtozapchasti/${model.brandSlug}/${model.slug}/stekla-i-zerkala/`));
+  }
+  assert.equal(paths.has("/avtozapchasti/bmw/x3/tormoza/"), false);
+  const seen = new Map<string, string>();
+  for (const page of pages.filter((item) => item.kind === "model" || item.kind === "part" || item.kind === "generation")) {
+    const texts = new Set([page.lead, ...page.sections.flatMap((section) => section.paragraphs), ...page.faq.map((item) => item.answer)]);
+    for (const text of texts) {
+      const previous = seen.get(text);
+      assert.equal(previous, undefined, `${text.slice(0, 80)} on ${previous} and ${page.path}`);
+      seen.set(text, page.path);
+    }
+  }
+});
+
 test("catalog schema has no invented offers", () => {
   const page = pages.find((item) => item.path === "/avtozapchasti/ford/mustang/");
   assert.ok(page);

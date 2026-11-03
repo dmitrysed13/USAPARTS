@@ -42,7 +42,7 @@ export const catalogModels: CatalogModel[] = [
     name: "Tiguan",
     slug: "tiguan",
     body: "crossover",
-    note: "Американский Tiguan части лет отличается от европейского длиной кузова. Бампер и оптика могут не совпасть без VIN.",
+    note: "Американский Tiguan может отличаться от европейского длиной кузова. Бампер и оптика без VIN могут не совпасть.",
     priorities: ["dvigatel", "kpp", "fary", "bampery", "ohlazhdenie", "podveska", "elektrika"],
     engines: ["1.4 TSI как запрос", "2.0 TSI как запрос"],
     generations: [{ code: "us", label: "американский рынок", note: "Длину кузова и год пишем в заявке, номер сверяем по VIN." }],
@@ -111,7 +111,7 @@ export const catalogModels: CatalogModel[] = [
     note: "Пятёрка меняет кузов по поколению. В заявке нужен код кузова, не только «BMW 5».",
     priorities: ["dvigatel", "kpp", "fary", "bampery", "podveska", "elektrika", "salon"],
     engines: ["код мотора по VIN"],
-    generations: [{ code: "g30", label: "G30 и соседние", note: "Код кузова пишем явно. Соседнее поколение не подставляем." }],
+    generations: [{ code: "g30", label: "кузов по VIN", note: "Код кузова пишем явно. Соседнее поколение не подставляем." }],
     similar: ["bmw/x3", "bmw/x5"],
   },
   {

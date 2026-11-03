@@ -1,6 +1,13 @@
-import type { PageFaq, SeoPage } from "../types.ts";
+import type { SeoPage } from "../types.ts";
 import { partCategoryBySlug } from "./categories.ts";
+import { generationStory, partCopy } from "./copy.ts";
 import { catalogModels, type CatalogModel } from "./models.ts";
+
+const requiredCategories = ["tormoznaya-sistema", "stekla-i-zerkala"];
+
+export function liveCategorySlugs(model: CatalogModel): string[] {
+  return [...model.priorities, ...requiredCategories.filter((slug) => !model.priorities.includes(slug))];
+}
 
 export type CatalogDraft = {
   path: string;
@@ -34,82 +41,31 @@ function describe(head: string, tail: string): string {
   return `${head} ${tail.slice(0, Math.max(room - 1, 0)).trimEnd()}…`;
 }
 
-function faqsForModel(model: CatalogModel): PageFaq[] {
+function faqsForModel(model: CatalogModel): SeoPage["faq"] {
   const generations = model.generations.map((item) => item.label).join(", ");
+  const name = `${model.brand} ${model.name}`;
   return [
     {
-      question: `Можно ли заказать запчасти для ${model.brand} ${model.name} из США?`,
-      answer: `${model.note} Ищем новую или б/у деталь и до оплаты показываем конкретный вариант.`,
+      question: `Можно ли заказать запчасти для ${name} из США?`,
+      answer: `${model.note} Для ${model.name} ищем новую или б/у деталь и до оплаты показываем конкретный вариант.`,
     },
     {
       question: `Как подобрать деталь на ${model.name} по VIN?`,
-      answer: `VIN отделяет поколение и ревизию. Для ${model.name} ориентиры такие: ${generations}. Номер детали сверяем по коду, а не по имени модели.`,
+      answer: `VIN отделяет поколение и ревизию ${model.name}. Ориентиры такие: ${generations}. Номер детали сверяем по коду, а не по имени модели.`,
     },
     {
-      question: `Что прислать, если OEM уже известен?`,
-      answer: `Артикул ускоряет поиск, но для ${model.name} VIN всё равно полезен: он подтверждает, что номер от этой ревизии.`,
+      question: `Что прислать, если OEM на ${model.name} уже известен?`,
+      answer: `Артикул ускоряет поиск ${model.name}, но VIN всё равно полезен: он подтверждает, что номер от этой ревизии.`,
     },
     {
       question: `Можно ли заказать б/у деталь на ${model.name}?`,
-      answer: "Да. Б/у показываем с фото лота и известными повреждениями. Новой её не называем.",
+      answer: `Да, для ${model.name} тоже. Б/у показываем с фото лота и известными повреждениями. Новой её не называем.`,
     },
     {
-      question: `Как считается доставка в Минск и по Беларуси?`,
-      answer: "После выкупа в США доставка занимает от 15 до 30 дней. Выдача в Бресте или отправка транспортной компанией, в том числе в Минск. Точный срок называем в расчёте.",
+      question: `Как считается доставка ${model.name} в Минск и по Беларуси?`,
+      answer: `Для ${model.name} после выкупа в США доставка занимает от 15 до 30 дней. Выдача в Бресте или отправка по Беларуси, в том числе в Минск.`,
     },
   ];
-}
-
-function faqsForPart(model: CatalogModel, name: string, ask: string): PageFaq[] {
-  const part = name.toLowerCase();
-  return [
-    {
-      question: `Как заказать ${part} для ${model.brand} ${model.name}?`,
-      answer: `${model.note} В заявке нужны ${ask}.`,
-    },
-    {
-      question: `Подойдёт ли ${part} от соседнего поколения ${model.name}?`,
-      answer: `Для ${model.name} соседние поколения не смешиваем. ${model.generations.map((item) => `${item.label}: ${item.note}`).join(" ")}`,
-    },
-    {
-      question: `Достаточно ли OEM, чтобы найти ${part} на ${model.name}?`,
-      answer: "Полный номер ускоряет поиск. VIN нужен, когда у узла несколько ревизий.",
-    },
-    {
-      question: `Почему у ${part} ${model.name} нет цены на странице?`,
-      answer: "Нет витрины с ценой и остатком. Стоимость считаем по конкретной детали и фиксируем в договоре до оплаты.",
-    },
-    {
-      question: `Б/у ${part} для ${model.name} называют новой?`,
-      answer: "Нет. В предложении прямо написано, новая это позиция или б/у с разборки.",
-    },
-  ];
-}
-
-function whySection(): SeoPage["sections"][number] {
-  return {
-    heading: "Почему заказывают у USAPARTS",
-    points: [
-      "Подбор по VIN и OEM",
-      "Новая деталь или б/у: состояние написано до оплаты",
-      "Поиск позиции в США",
-      "Проверка применимости до выкупа",
-      "Доставка в Беларусь и выдача в Бресте",
-      "Консультация до подтверждения заказа",
-    ],
-    paragraphs: ["Срок после выкупа в США — от 15 до 30 дней. Груз страхуем, цену фиксируем в договоре."],
-  };
-}
-
-function orderSection(model: CatalogModel): SeoPage["sections"][number] {
-  return {
-    heading: "Как проходит заказ",
-    paragraphs: [
-      `Оставляете VIN или OEM и название детали для ${model.brand} ${model.name}. Мы показываем вариант, цену фиксируем в договоре, затем выкупаем позицию в США.`,
-      "Доставка после выкупа занимает от 15 до 30 дней. Груз страхуем. Выдача в Бресте по записи или отправка по Беларуси.",
-    ],
-    points: ["Подбор по VIN и каталожному номеру", "Новая деталь или б/у, это пишем до оплаты", "Проверка применимости до выкупа"],
-  };
 }
 
 function hubPages(): SeoPage[] {
@@ -143,12 +99,15 @@ function hubPages(): SeoPage[] {
       faq: [
         {
           question: `Детали ${brand} общие между моделями?`,
-          answer: "Нет. Даже близкие модели сверяем отдельно. На странице модели написано, что именно нельзя смешивать.",
+          answer: `Нет. У ${brand} даже близкие модели сверяем отдельно. На странице модели написано, что именно нельзя смешивать.`,
         },
       ],
       cards: models.map((model) => ({ href: modelPath(model), title: model.name, text: model.note })),
       related: [
         { name: "Каталог", path: catalogPath },
+        ...(["ford", "chevrolet", "dodge", "jeep", "tesla", "cadillac", "gmc"].includes(slug)
+          ? [{ name: `Обзор ${brand}`, path: `/${slug}/` }]
+          : []),
         { name: "Подбор по VIN", path: "/podbor-po-vin/" },
         { name: "Доставка", path: "/dostavka-iz-ssha/" },
       ],
@@ -160,7 +119,7 @@ function hubPages(): SeoPage[] {
 
 function modelPage(model: CatalogModel, published: Set<string>): SeoPage {
   const path = modelPath(model);
-  const cards = model.priorities.map((slug) => {
+  const cards = liveCategorySlugs(model).map((slug) => {
     const category = partCategoryBySlug.get(slug);
     return {
       href: partPath(model, slug),
@@ -189,14 +148,18 @@ function modelPage(model: CatalogModel, published: Set<string>): SeoPage {
     modelName: model.name,
     sections: [
       {
-        heading: "Что важно для этой модели",
-        paragraphs: [model.note, "Поколения ниже сужают поиск. Каталога, который сам подтверждает совместимость каждой детали, на сайте нет: номер проверяем по VIN или OEM."],
+        heading: `Что важно для ${model.name}`,
+        paragraphs: [
+          model.note,
+          `Поколения ${model.name}: ${model.generations.map((item) => item.label).join(", ")}. Номер детали сверяем по VIN или OEM, не по названию поколения.`,
+        ],
       },
-      whySection(),
-      orderSection(model),
       {
-        heading: "Предложения",
-        paragraphs: ["Готовых карточек с ценой и наличием нет. Запрос уходит в подбор: присылаем конкретную новую или б/у позицию до оплаты."],
+        heading: `Как заказать деталь для ${model.name}`,
+        paragraphs: [
+          `В заявке на ${model.brand} ${model.name} нужны VIN или OEM и название узла. Новую и б/у позицию показываем до оплаты и не подменяем одну другой.`,
+          `После выкупа в США доставка для ${model.name} занимает от 15 до 30 дней. Выдача в Бресте или отправка по Беларуси.`,
+        ],
       },
     ],
     faq: faqsForModel(model),
@@ -209,6 +172,9 @@ function modelPage(model: CatalogModel, published: Set<string>): SeoPage {
       engines: model.engines,
     },
     related: [
+      ...model.generations
+        .filter((item) => item.publish)
+        .map((item) => ({ name: `${model.name} ${item.label}`, path: generationPath(model, item.code) })),
       ...model.similar
         .map((key) => catalogModels.find((item) => `${item.brandSlug}/${item.slug}` === key))
         .filter((item): item is CatalogModel => Boolean(item))
@@ -225,50 +191,40 @@ function partPage(model: CatalogModel, slug: string): SeoPage {
   const category = partCategoryBySlug.get(slug);
   const name = category?.h1 ?? slug;
   const path = partPath(model, slug);
-  const siblings = model.priorities.filter((item) => item !== slug).slice(0, 4);
+  const copy = category ? partCopy(model, category) : null;
+  const siblings = liveCategorySlugs(model).filter((item) => item !== slug);
+  const sameBrand = catalogModels
+    .filter((item) => item.brandSlug === model.brandSlug && item.slug !== model.slug && liveCategorySlugs(item).includes(slug))
+    .slice(0, 2);
   return {
     path,
     kind: "part",
     title: titleFor(`${name} ${model.brand} ${model.name} из США`),
-    description: describe(
-      `${name} ${model.brand} ${model.name} из США.`,
-      `Подбор по VIN: ${category?.ask ?? "номер узла"}. Доставка в Беларусь.`,
-    ),
+    description: describe(copy?.description ?? `${name} ${model.brand} ${model.name} из США.`, "Подбор по VIN."),
     h1: `${name} ${model.brand} ${model.name} из США`,
-    lead: `${name} для ${model.name}: новая или б/у деталь из США. В заявке нужны ${category?.ask ?? "VIN и название узла"}.`,
+    lead: copy?.lead ?? `${name} для ${model.name}.`,
     crumbs: [
       { name: "Главная", path: "/" },
       { name: "Каталог", path: catalogPath },
+      { name: model.brand, path: `/avtozapchasti/${model.brandSlug}/` },
       { name: model.name, path: modelPath(model) },
       { name: category?.name ?? name, path },
     ],
     brand: model.brand,
     modelName: model.name,
     part: category?.name ?? name,
-    sections: [
-      {
-        heading: "Как сужаем поиск",
-        paragraphs: [
-          model.note,
-          category?.evOnly
-            ? "Высоковольтный узел не объединяем с соседним компонентом. Батарея, инвертор и электромотор проверяются отдельно по году и ревизии."
-            : "Одинаковое название детали у другого поколения не считаем совместимостью.",
-        ],
-      },
-      whySection(),
-      orderSection(model),
-      {
-        heading: "Предложения",
-        paragraphs: ["Карточек с ценой и статусом склада нет. Форма ниже отправляет запрос на подбор этой категории."],
-      },
-    ],
-    faq: faqsForPart(model, name, category?.ask ?? "VIN"),
+    sections: copy?.sections ?? [],
+    faq: copy?.faq ?? [],
     cards: siblings.map((item) => {
       const sibling = partCategoryBySlug.get(item);
-      return { href: partPath(model, item), title: sibling?.name ?? item, text: sibling?.ask ?? "" };
+      return { href: partPath(model, item), title: sibling?.name ?? item, text: `Смежная категория ${model.name}` };
     }),
     related: [
       { name: model.name, path: modelPath(model) },
+      ...model.generations
+        .filter((item) => item.publish)
+        .map((item) => ({ name: `${model.name} ${item.label}`, path: generationPath(model, item.code) })),
+      ...sameBrand.map((item) => ({ name: `${name} ${item.name}`, path: partPath(item, slug) })),
       { name: "Подбор по VIN", path: "/podbor-po-vin/" },
       { name: "Доставка", path: "/dostavka-iz-ssha/" },
     ],
@@ -280,54 +236,32 @@ function generationPage(model: CatalogModel, code: string): SeoPage {
   const generation = model.generations.find((item) => item.code === code);
   const path = generationPath(model, code);
   const label = generation?.label ?? code;
+  const story = generation ? generationStory(model, generation) : null;
   return {
     path,
     kind: "generation",
-    title: titleFor(`${model.brand} ${model.name} ${label} из США`),
-    description: describe(
-      `Запчасти ${model.brand} ${model.name} ${label} из США.`,
-      generation?.note ?? "Подбор только внутри этого поколения.",
-    ),
-    h1: `Запчасти ${model.brand} ${model.name} ${label} из США`,
-    lead: generation?.note ?? `Поколение ${label} для ${model.name}.`,
+    title: story?.title ?? titleFor(`${model.brand} ${model.name} ${label} из США`),
+    description: story?.description ?? describe(`Запчасти ${model.brand} ${model.name} ${label} из США.`, "Подбор по VIN."),
+    h1: story?.h1 ?? `Запчасти ${model.brand} ${model.name} ${label} из США`,
+    lead: story?.lead ?? `Поколение ${label} для ${model.name}.`,
     crumbs: [
       { name: "Главная", path: "/" },
       { name: "Каталог", path: catalogPath },
+      { name: model.brand, path: `/avtozapchasti/${model.brandSlug}/` },
       { name: model.name, path: modelPath(model) },
       { name: label, path },
     ],
     brand: model.brand,
     modelName: `${model.name} ${label}`,
-    sections: [
-      {
-        heading: "Почему поколение отделено",
-        paragraphs: [model.note, generation?.note ?? "Поколение отделено от соседних кузовов.", "Страницы «поколение + категория» не открыты: без подтверждённой совместимости они повторяли бы общий текст."],
-      },
-    ],
-    faq: [
-      {
-        question: `Чем ${label} отличается при заказе ${model.brand} ${model.name}?`,
-        answer: generation?.note ?? `Поколение ${label} сверяем отдельно от соседних кузовов.`,
-      },
-      {
-        question: `Можно ли ставить детали другого поколения на ${model.name} ${label}?`,
-        answer: model.note,
-      },
-      {
-        question: `Какие категории открыты для ${model.name} ${label}?`,
-        answer: "Открыты общие категории модели. Страницы «поколение и категория» не опубликованы: совместимость каждого узла не подтверждена отдельным каталогом.",
-      },
-      {
-        question: `Как проверить деталь для ${model.name} ${label}?`,
-        answer: "По VIN или OEM. Год в заявке помогает сузить поиск, но сам по себе не подтверждает номер детали.",
-      },
-    ],
-    cards: model.priorities.slice(0, 6).map((slug) => {
+    sections: story?.sections ?? [],
+    faq: story?.faq ?? [],
+    cards: liveCategorySlugs(model).map((slug) => {
       const category = partCategoryBySlug.get(slug);
-      return { href: partPath(model, slug), title: category?.name ?? slug, text: "Общая категория модели, не отдельный фильтр поколения." };
+      return { href: partPath(model, slug), title: category?.name ?? slug, text: `Категория ${model.name}, номер всё равно сверяем по VIN` };
     }),
     related: [
       { name: model.name, path: modelPath(model) },
+      { name: model.brand, path: `/avtozapchasti/${model.brandSlug}/` },
       { name: "Подбор по VIN", path: "/podbor-po-vin/" },
     ],
     serviceName: `Запчасти ${model.brand} ${model.name} ${label}`,
@@ -380,7 +314,7 @@ export function buildCatalog(): { pages: SeoPage[]; drafts: CatalogDraft[] } {
       const path = generationPath(model, generation.code);
       if (generation.publish) generationPaths.add(path);
       else drafts.push({ path, status: "draft", reason: "Поколение описано на странице модели. Отдельного текста для индексации нет." });
-      for (const slug of model.priorities) {
+      for (const slug of liveCategorySlugs(model)) {
         drafts.push({
           path: `${path}${slug}/`,
           status: "draft",
@@ -389,7 +323,7 @@ export function buildCatalog(): { pages: SeoPage[]; drafts: CatalogDraft[] } {
       }
     }
     for (const category of partCategoryBySlug.values()) {
-      if (!model.priorities.includes(category.slug)) {
+      if (!liveCategorySlugs(model).includes(category.slug)) {
         drafts.push({
           path: partPath(model, category.slug),
           status: "draft",
@@ -401,7 +335,7 @@ export function buildCatalog(): { pages: SeoPage[]; drafts: CatalogDraft[] } {
 
   const published = new Set<string>(generationPaths);
   const models = catalogModels.map((model) => modelPage(model, published));
-  const parts = catalogModels.flatMap((model) => model.priorities.map((slug) => partPage(model, slug)));
+  const parts = catalogModels.flatMap((model) => liveCategorySlugs(model).map((slug) => partPage(model, slug)));
   const generations = catalogModels.flatMap((model) =>
     model.generations.filter((item) => item.publish).map((item) => generationPage(model, item.code)),
   );

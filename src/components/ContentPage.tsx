@@ -32,8 +32,6 @@ export function ContentPage({ path, onDraft, onPrivacy }: ContentPageProps) {
 
   const years = yearOptions();
   const showRequest = requestKinds.has(page.kind);
-  const selectedGeneration = page.fitment?.generations.find((item) => item.label === generation);
-
   const applyRequest = (focus: QuoteSeed["focus"]) => {
     const modelName = [page.modelName, generation].filter(Boolean).join(" ");
     const partName = [page.part, engine ? `ориентир: ${engine}` : ""].filter(Boolean).join(". ");
@@ -148,10 +146,18 @@ export function ContentPage({ path, onDraft, onPrivacy }: ContentPageProps) {
                 </select>
               </label>
             </div>
-            {selectedGeneration?.href ? (
-              <SiteLink href={selectedGeneration.href} className="mt-4 inline-flex text-sm font-semibold text-ember">
-                Страница поколения {selectedGeneration.label}
-              </SiteLink>
+            {page.fitment.generations.some((item) => item.href) ? (
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {page.fitment.generations
+                  .filter((item) => item.href)
+                  .map((item) => (
+                    <li key={item.href}>
+                      <SiteLink href={item.href ?? ""} className="inline-flex text-sm font-semibold text-ember">
+                        Страница поколения {item.label}
+                      </SiteLink>
+                    </li>
+                  ))}
+              </ul>
             ) : null}
             <button type="button" className="btn btn-ghost mt-4" onClick={() => applyRequest("part")}>
               Перенести в заявку

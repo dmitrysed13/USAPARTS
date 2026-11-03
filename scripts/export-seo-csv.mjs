@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { catalogDrafts } from "../src/seo/catalog/buildPages.ts";
+import { catalogDrafts, liveCategorySlugs } from "../src/seo/catalog/buildPages.ts";
 import { partCategories } from "../src/seo/catalog/categories.ts";
 import { catalogModels } from "../src/seo/catalog/models.ts";
 import { pages } from "../src/seo/pages.ts";
@@ -23,11 +23,11 @@ const partQueries = {
   fary: (brand, model) => [`фара ${brand} ${model}`, `фары ${brand} ${model}`],
   bampery: (brand, model) => [`бампер ${brand} ${model}`],
   podveska: (brand, model) => [`подвеска ${brand} ${model}`],
-  tormoza: (brand, model) => [`тормоза ${brand} ${model}`],
+  "tormoznaya-sistema": (brand, model) => [`тормоза ${brand} ${model}`],
   ohlazhdenie: (brand, model) => [`радиатор ${brand} ${model}`],
   elektrika: (brand, model) => [`электрика ${brand} ${model}`, `блок управления ${brand} ${model}`],
   salon: (brand, model) => [`салон ${brand} ${model}`, `сиденья ${brand} ${model}`],
-  stekla: (brand, model) => [`стекло ${brand} ${model}`, `зеркало ${brand} ${model}`],
+  "stekla-i-zerkala": (brand, model) => [`стекло ${brand} ${model}`, `зеркало ${brand} ${model}`],
   batareya: (brand, model) => [`батарея ${brand} ${model}`, `высоковольтная батарея ${brand} ${model}`],
   elektrodvigatel: (brand, model) => [`электродвигатель ${brand} ${model}`],
   invertor: (brand, model) => [`инвертор ${brand} ${model}`],
@@ -92,7 +92,7 @@ for (const model of catalogModels) {
     const maker = partQueries[category.slug];
     const list = maker(model.brand, model.name);
     list.push(`${list[0]} {год}`);
-    const live = model.priorities.includes(category.slug);
+    const live = liveCategorySlugs(model).includes(category.slug);
     clusters.push([
       `${model.brandSlug}-${model.slug}-${category.slug}`,
       "part",
