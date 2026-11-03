@@ -10,6 +10,8 @@
 - [SEO_SPECIFICATION.md](SEO_SPECIFICATION.md)
 - [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md)
 - [STAGE_2_REPORT.md](STAGE_2_REPORT.md)
+- [STAGE_3_REPORT.md](STAGE_3_REPORT.md)
+- [IMPORT_GUIDE.md](IMPORT_GUIDE.md)
 - [CATALOG_API.md](CATALOG_API.md)
 - [SEARCH_SPECIFICATION.md](SEARCH_SPECIFICATION.md)
 - [VIN_REQUEST_FLOW.md](VIN_REQUEST_FLOW.md)
@@ -28,7 +30,7 @@ npm run dev
 
 Приложение открывается на http://localhost:3000. Дизайн-система: http://localhost:3000/design-system. Проверка процессов: http://localhost:3000/api/health.
 
-Пароли в `docker-compose.yml` только для локальной базы. В production их заменяют секретами окружения.
+Пароли в `docker-compose.yml` только для локальной базы. В production их заменяют секретами окружения. Админка `/admin` открывается только если в `.env` задан `ADMIN_PASSWORD` длиной от 12 символов. Ссылки на админку в шапке витрины нет.
 
 После первого запуска базы примените миграцию каталога:
 

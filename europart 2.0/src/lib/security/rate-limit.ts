@@ -33,8 +33,10 @@ export function createRateLimiter(
 
 export const searchRateLimit = createRateLimiter(30, 60_000);
 export const vinRateLimit = createRateLimiter(5, 10 * 60_000);
+export const adminLoginRateLimit = createRateLimiter(8, 10 * 60_000);
 
 export function resetRateLimitsForTests(): void {
   searchRateLimit.reset();
   vinRateLimit.reset();
+  adminLoginRateLimit.reset();
 }

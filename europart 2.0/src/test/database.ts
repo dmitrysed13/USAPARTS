@@ -11,6 +11,10 @@ export async function resetCatalogTables(): Promise<void> {
   assertTestDatabase();
   await getPrismaClient().$executeRawUnsafe(`
     TRUNCATE TABLE
+      "ImportRow",
+      "ImportJob",
+      "ImportTemplate",
+      "AuditLog",
       "ProductOffer",
       "ProductCompatibility",
       "ProductIdentifier",

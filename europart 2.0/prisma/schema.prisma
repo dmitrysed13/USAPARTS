@@ -1,6 +1,6 @@
-// EUROPART 2.0 — stage 2 catalog schema.
-// Accounts, carts, orders and B2B organizations stay out of this migration.
-// Better Auth owns user tables in stage 4. Creating them now would collide with it.
+// EUROPART 2.0 catalog schema.
+// Stage 2 created the catalog. Stage 3 adds supplier contacts, import jobs and the audit log.
+// Accounts, carts, orders and B2B organizations stay out. Better Auth owns user tables later.
 
 generator client {
   provider = "prisma-client"
@@ -248,14 +248,21 @@ model ProductCompatibility {
 }
 
 model Supplier {
-  id         String         @id @default(uuid()) @db.Uuid
-  name       String
-  code       String         @unique
-  isActive   Boolean        @default(true)
-  createdAt  DateTime       @default(now()) @db.Timestamptz(3)
-  updatedAt  DateTime       @updatedAt @db.Timestamptz(3)
-  warehouses Warehouse[]
-  offers     ProductOffer[]
+  id                String           @id @default(uuid()) @db.Uuid
+  name              String
+  code              String           @unique
+  email             String?
+  phone             String?
+  note              String?
+  apiEnabled        Boolean          @default(false)
+  credentialsEnvKey String?
+  isActive          Boolean          @default(true)
+  createdAt         DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime         @updatedAt @db.Timestamptz(3)
+  warehouses        Warehouse[]
+  offers            ProductOffer[]
+  importTemplates   ImportTemplate[]
+  importJobs        ImportJob[]
 }
 
 model Warehouse {
@@ -266,9 +273,11 @@ model Warehouse {
   supplierId String?        @db.Uuid
   supplier   Supplier?      @relation(fields: [supplierId], references: [id], onDelete: Restrict)
   city       String?
+  isActive   Boolean        @default(true)
   createdAt  DateTime       @default(now()) @db.Timestamptz(3)
   updatedAt  DateTime       @updatedAt @db.Timestamptz(3)
   offers     ProductOffer[]
+  importJobs ImportJob[]
 
   @@index([supplierId])
 }
@@ -334,4 +343,88 @@ model SeoMetadata {
   updatedAt     DateTime      @updatedAt @db.Timestamptz(3)
 
   @@unique([entityType, entityId])
+}
+
+enum ImportJobStatus {
+  UPLOADED
+  READY
+  COMMITTED
+  ROLLED_BACK
+  FAILED
+}
+
+enum ImportRowAction {
+  CREATE
+  UPDATE
+  ERROR
+  DUPLICATE
+}
+
+model ImportTemplate {
+  id         String    @id @default(uuid()) @db.Uuid
+  supplierId String    @db.Uuid
+  supplier   Supplier  @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  name       String
+  mapping    Json
+  options    Json
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  jobs       ImportJob[]
+
+  @@unique([supplierId, name])
+  @@index([supplierId])
+}
+
+model ImportJob {
+  id          String          @id @default(uuid()) @db.Uuid
+  supplierId  String?         @db.Uuid
+  supplier    Supplier?       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  warehouseId String?         @db.Uuid
+  warehouse   Warehouse?      @relation(fields: [warehouseId], references: [id], onDelete: Restrict)
+  templateId  String?         @db.Uuid
+  template    ImportTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  sourceType  OfferSourceType
+  filename    String
+  status      ImportJobStatus @default(UPLOADED)
+  headers     Json
+  rawRows     Json
+  mapping     Json?
+  summary     Json?
+  createdAt   DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
+  rows        ImportRow[]
+
+  @@index([status, createdAt])
+  @@index([supplierId])
+}
+
+model ImportRow {
+  id          String           @id @default(uuid()) @db.Uuid
+  jobId       String           @db.Uuid
+  job         ImportJob        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  rowNumber   Int
+  normalized  Json
+  action      ImportRowAction
+  message     String?
+  productId   String?          @db.Uuid
+  offerId     String?          @db.Uuid
+  snapshot    Json?
+  applied     Boolean          @default(false)
+
+  @@unique([jobId, rowNumber])
+  @@index([jobId, action])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actor      String
+  action     String
+  entityType String
+  entityId   String
+  summary    String
+  changes    Json?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
 }
