@@ -2,6 +2,8 @@
 
 Первая миграция: `prisma/migrations/20261103140000_init_catalog_schema`.
 
+Вторая, только добавление: `prisma/migrations/20261103163000_admin_import_inventory`. Она не удаляет триграммные индексы первой миграции.
+
 Имя: `init_catalog_schema`. Провайдер: PostgreSQL. В начале включается расширение `pg_trgm`.
 
 ## Локально через Docker

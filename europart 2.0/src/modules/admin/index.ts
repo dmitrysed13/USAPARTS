@@ -2,6 +2,7 @@ import type { AppModule } from "@/modules/types";
 
 export const adminModule = {
   id: "admin",
-  stage: 6,
-  summary: "Управление каталогом, заказами, клиентами и SEO.",
+  stage: 3,
+  summary:
+    "Поставщики, склады, черновики товаров и журнал. Заказы и роли пользователей ещё не подключены.",
 } satisfies AppModule;
