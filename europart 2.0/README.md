@@ -1,6 +1,6 @@
 # EUROPART 2.0
 
-Новая платформа магазина автозапчастей. Каталог, корзина и личный кабинет ещё не подключены. Действующий сайт: https://europart.by/
+Новая платформа магазина автозапчастей. Каталог, поиск и заявка по VIN читают PostgreSQL. Корзина, оплата и личный кабинет ещё не подключены. Действующий сайт: https://europart.by/
 
 Документы:
 
@@ -9,6 +9,11 @@
 - [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)
 - [SEO_SPECIFICATION.md](SEO_SPECIFICATION.md)
 - [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md)
+- [STAGE_2_REPORT.md](STAGE_2_REPORT.md)
+- [CATALOG_API.md](CATALOG_API.md)
+- [SEARCH_SPECIFICATION.md](SEARCH_SPECIFICATION.md)
+- [VIN_REQUEST_FLOW.md](VIN_REQUEST_FLOW.md)
+- [DATABASE_MIGRATION_GUIDE.md](DATABASE_MIGRATION_GUIDE.md)
 
 ## Локальный запуск
 
@@ -25,12 +30,14 @@ npm run dev
 
 Пароли в `docker-compose.yml` только для локальной базы. В production их заменяют секретами окружения.
 
-База на этапе 1 без таблиц. Миграция появится на этапе 2:
+После первого запуска базы примените миграцию каталога:
 
 ```bash
 npm run db:validate
-npm run db:migrate
+npx prisma migrate deploy
 ```
+
+Команда `npm run db:migrate` вызывает `prisma migrate dev` и нужна, когда схема меняется локально. Повторный `migrate deploy` на уже обновлённой базе ничего не переписывает. Подробности: [DATABASE_MIGRATION_GUIDE.md](DATABASE_MIGRATION_GUIDE.md).
 
 ## Проверки
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SearchField } from "@/components/catalog/search-field";
 import { buttonClassName } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { company, formatAddress } from "@/config/company";
@@ -7,8 +8,9 @@ import { company, formatAddress } from "@/config/company";
 export const metadata: Metadata = {
   title: "Автозапчасти",
   description:
-    "EUROPART, ООО «БелТРЭК», Брест. Новая платформа магазина ещё без каталога. Заказы принимаются на действующем сайте и по телефону.",
+    "EUROPART, ООО «БелТРЭК», Брест. Каталог открыт и ждёт реальный ассортимент. Корзины и онлайн-оплаты пока нет.",
   alternates: { canonical: "/" },
+  robots: { index: false, follow: false },
 };
 
 const currentSteps = [
@@ -29,19 +31,24 @@ export default function HomePage() {
               Автозапчасти EUROPART
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-panel-foreground/78">
-              Новая платформа магазина готовится к запуску. Каталога, цен и корзины здесь
-              пока нет. Заявку можно оставить на действующем сайте или по телефону.
+              Каталог открыт. Товары, цены и наличие появятся после загрузки реального
+              ассортимента. Корзины и онлайн-оплаты здесь пока нет.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a className={buttonClassName("primary")} href={`tel:${company.phoneTel}`}>
-                {company.phoneDisplay}
-              </a>
+            <div className="mt-8 max-w-xl">
+              <SearchField />
+            </div>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <Link className={buttonClassName("primary")} href="/catalog">
+                Открыть каталог
+              </Link>
+              <Link className={buttonClassName("secondary-on-dark")} href="/vin-search">
+                Заявка по VIN
+              </Link>
               <a
-                className={buttonClassName("secondary-on-dark")}
-                href={company.currentWebsite}
-                rel="noopener noreferrer"
+                className={buttonClassName("ghost-on-dark")}
+                href={`tel:${company.phoneTel}`}
               >
-                Действующий сайт
+                {company.phoneDisplay}
               </a>
             </div>
           </div>
@@ -135,18 +142,6 @@ export default function HomePage() {
               ))}
             </ul>
           </address>
-        </Container>
-      </section>
-
-      <section className="border-t border-line py-12">
-        <Container className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <p className="max-w-xl text-sm leading-6 text-ink-muted">
-            Цвета, шрифты, кнопки, поля и состояния интерфейса собраны отдельно от
-            каталога.
-          </p>
-          <Link className={buttonClassName("secondary")} href="/design-system">
-            Открыть дизайн-систему
-          </Link>
         </Container>
       </section>
     </>

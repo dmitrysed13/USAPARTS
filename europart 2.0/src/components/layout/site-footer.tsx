@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/ui/container";
 import { company, formatAddress } from "@/config/company";
@@ -24,6 +25,17 @@ export function SiteFooter() {
           <p className="mt-3 text-panel-foreground/70">
             {company.hours.map((slot) => `${slot.days}: ${slot.time}`).join(" · ")}
           </p>
+          <nav
+            aria-label="Служебные страницы"
+            className="mt-4 flex flex-wrap gap-x-4 gap-y-2"
+          >
+            <Link className="hover:text-white" href="/privacy">
+              Данные заявки
+            </Link>
+            <Link className="hover:text-white" href="/design-system">
+              Дизайн-система
+            </Link>
+          </nav>
         </div>
       </Container>
     </footer>

@@ -10,11 +10,16 @@ export default function NotFound() {
         Страница не найдена
       </h1>
       <p className="mt-4 max-w-xl text-lg leading-8 text-ink-muted">
-        Такой страницы на новой платформе нет. Каталог ещё не опубликован.
+        Такой страницы нет. Откройте каталог или вернитесь на главную.
       </p>
-      <Link className={`${buttonClassName("primary")} mt-8`} href="/">
-        На главную
-      </Link>
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <Link className={buttonClassName("primary")} href="/catalog">
+          Каталог
+        </Link>
+        <Link className={buttonClassName("secondary")} href="/">
+          На главную
+        </Link>
+      </div>
     </Container>
   );
 }

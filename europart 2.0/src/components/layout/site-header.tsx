@@ -3,8 +3,10 @@ import { Logo } from "@/components/brand/logo";
 import { Container } from "@/components/ui/container";
 
 const links = [
+  { href: "/catalog", label: "Каталог" },
+  { href: "/brands", label: "Марки" },
+  { href: "/vin-search", label: "VIN" },
   { href: "/#contacts", label: "Контакты" },
-  { href: "/design-system", label: "Дизайн-система" },
 ] as const;
 
 export function SiteHeader() {

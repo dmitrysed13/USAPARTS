@@ -2,6 +2,6 @@ import type { AppModule } from "@/modules/types";
 
 export const catalogModule = {
   id: "catalog",
-  stage: 3,
-  summary: "Категории, карточки товаров и публичный каталог.",
+  stage: 2,
+  summary: "Категории, карточки и публичный каталог. Корзина не входит в этот модуль.",
 } satisfies AppModule;

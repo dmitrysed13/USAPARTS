@@ -19,7 +19,7 @@ const onest = Onest({
 });
 
 const description =
-  "Новая платформа EUROPART готовится к запуску. Каталог и оформление заказа ещё не подключены. Заявку можно оставить на europart.by или по телефону в Бресте.";
+  "EUROPART, ООО «БелТРЭК», Брест. Каталог автозапчастей и заявка по VIN. Корзина и онлайн-оплата ещё не подключены.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
