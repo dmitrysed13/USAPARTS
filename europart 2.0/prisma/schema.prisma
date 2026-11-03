@@ -1,0 +1,12 @@
+// EUROPART 2.0
+// Business models are specified in DATABASE_SCHEMA.md and land in stage 2.
+// Stage 1 only configures the PostgreSQL connection and the Prisma Client generator.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
