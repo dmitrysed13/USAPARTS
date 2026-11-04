@@ -113,29 +113,37 @@ export async function processLead({ body, ip, now, mailer, telegram, state, log 
     log({ event: "lead", result: "duplicate", kind: lead.kind });
     return { status: 200, body: { ok: true, duplicate: true } };
   }
-  if (!mailer) {
+  if (!mailer && !telegram) {
     log({ event: "lead", result: "unconfigured", kind: lead.kind });
     return { status: 503, body: { ok: false, error: "unconfigured" } };
   }
   const message = leadText(lead);
-  try {
-    await mailer.send(message);
-  } catch {
+  let delivered = false;
+  if (telegram) {
+    try {
+      await telegram(message.text);
+      delivered = true;
+    } catch {
+      log({ event: "lead", result: "telegram_failed", kind: lead.kind });
+    }
+  }
+  if (mailer) {
+    try {
+      await mailer.send(message);
+      delivered = true;
+    } catch {
+      log({ event: "lead", result: "failed", kind: lead.kind });
+    }
+  }
+  if (!delivered) {
     recent.push(now);
     state.hits.set(key, recent);
-    log({ event: "lead", result: "failed", kind: lead.kind });
+    log({ event: "lead", result: "undelivered", kind: lead.kind });
     return { status: 502, body: { ok: false, error: "delivery" } };
   }
   recent.push(now);
   state.hits.set(key, recent);
   state.seen.set(signature, now);
-  if (telegram) {
-    try {
-      await telegram(message.text);
-    } catch {
-      log({ event: "lead", result: "telegram_failed", kind: lead.kind });
-    }
-  }
   log({ event: "lead", result: "sent", kind: lead.kind });
   return { status: 200, body: { ok: true } };
 }

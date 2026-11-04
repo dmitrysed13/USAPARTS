@@ -89,6 +89,24 @@ test("missing mail settings do not report success", async () => {
   assert.equal(result.body.ok, false);
 });
 
+test("telegram delivery is enough when mail is not configured", async () => {
+  const notes = [];
+  const result = await processLead({
+    body: quote,
+    ip: "10.0.0.6",
+    now: 1_000,
+    mailer: null,
+    telegram: async (text) => {
+      notes.push(text);
+    },
+    state: createLeadState(),
+  });
+  assert.equal(result.status, 200);
+  assert.equal(result.body.ok, true);
+  assert.match(notes[0], /1HGCM82633A123456/);
+  assert.match(notes[0], /Mustang/);
+});
+
 test("mail failure and the sixth request are not success", async () => {
   const state = createLeadState();
   const broken = { async send() { throw new Error("smtp down"); } };

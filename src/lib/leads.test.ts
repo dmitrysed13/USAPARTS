@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
-import { submitLead, type Lead } from "./leads.ts";
+import { submitLead, TelegramHandoff, type Lead } from "./leads.ts";
 
 const lead: Lead = {
   kind: "quote",
@@ -50,11 +50,24 @@ test("sends the honeypot to the server instead of pretending success locally", a
   assert.match(body, /"company":"bot"/);
 });
 
-test("rejects a refused delivery and a network failure", async () => {
+test("opens Telegram when the server cannot deliver", async () => {
   globalThis.fetch = (async () => new Response(JSON.stringify({ ok: false }), { status: 503 })) as typeof fetch;
-  await assert.rejects(submitLead(lead, ""), /Не удалось отправить заявку/);
+  const error = await submitLead(lead, "").then(
+    () => null,
+    (reason: unknown) => reason,
+  );
+  assert.ok(error instanceof TelegramHandoff);
+  assert.match(error.href, /^https:\/\/t\.me\/dmitry_spa\?text=/);
+  assert.match(decodeURIComponent(error.href), /Капот/);
+  assert.match(error.text, /1HGCM82633A123456/);
+
   globalThis.fetch = (async () => {
     throw new Error("offline");
   }) as typeof fetch;
+  await assert.rejects(submitLead(lead, ""), TelegramHandoff);
+});
+
+test("keeps a validation refusal as an error", async () => {
+  globalThis.fetch = (async () => new Response(JSON.stringify({ ok: false }), { status: 400 })) as typeof fetch;
   await assert.rejects(submitLead(lead, ""), /Не удалось отправить заявку/);
 });

@@ -36,7 +36,7 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
   const isQuote = kind === "quote";
 
   useEffect(() => {
-    if (status === "done") successRef.current?.focus();
+    if (status === "done" || status === "telegram") successRef.current?.focus();
   }, [status]);
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -66,7 +66,22 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
 
   return (
     <Dialog title={isQuote ? "Рассчитать стоимость" : "Заказать звонок"} titleId="lead-title" onClose={onClose}>
-      {status === "done" ? (
+      {status === "telegram" ? (
+        <div role="status" aria-live="polite">
+          <span className="grid h-12 w-12 place-items-center bg-ember text-[#1a0c00]">
+            <Check className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <h3 ref={successRef} tabIndex={-1} className="mt-4 font-display text-3xl leading-none outline-none">
+            Откройте Telegram
+          </h3>
+          <p className="mt-3 text-sm leading-relaxed text-mist">
+            Заявка собрана для @dmitry_spa. Если чат не открылся сам, нажмите кнопку и отправьте сообщение.
+          </p>
+          <a className="btn btn-primary mt-5" href={message} target="_blank" rel="noreferrer">
+            Открыть чат @dmitry_spa
+          </a>
+        </div>
+      ) : status === "done" ? (
         <div role="status" aria-live="polite">
           <span className="grid h-12 w-12 place-items-center bg-ember text-[#1a0c00]">
             <Check className="h-5 w-5" aria-hidden="true" />
