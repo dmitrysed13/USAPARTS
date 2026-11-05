@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Автозапчасти из Европы по доступным ценам — новые и контрактные. Доставка по Беларуси, России и Казахстану. Брест, ул. Московская 364.">
+	<title>Автозапчасти из Европы — новые и контрактные</title>
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="favicon.ico">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="fonts/bebasneue.css">
+	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/media.css">
+</head>
+<body>
+	<a class="skip-link" href="#sec1">Перейти к содержимому</a>
+
+	<header class="site-header" id="header">
+		<div class="container header-inner">
+			<a href="#sec1" class="logo" aria-label="Автозапчасти — на главную">
+				<img src="img/logo.png" alt="Автозапчасти" width="160" height="50">
+			</a>
+
+			<nav class="main-nav" aria-label="Основная навигация">
+				<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Открыть меню">
+					<span></span>
+					<span></span>
+					<span></span>
+				</button>
+				<ul class="nav-desktop" id="nav-menu-desktop">
+					<li><a href="#sec3">Запчасти</a></li>
+					<li><a href="#sec4">Доставка / оплата</a></li>
+					<li><a href="#sec6">Схема работы</a></li>
+					<li><a href="#sec7">Отзывы</a></li>
+					<li><a href="#sec8">Контакты</a></li>
+				</ul>
+			</nav>
+
+			<div class="contact">
+				<a href="tel:+375297920786" class="tel">+375 29 792 07 86</a>
+				<span>Звонок по Беларуси бесплатный</span>
+			</div>
+		</div>
+	</header>
+
+	<div class="mobile-nav" id="nav-menu" hidden>
+		<ul>
+			<li><a href="#sec3">Запчасти</a></li>
+			<li><a href="#sec4">Доставка / оплата</a></li>
+			<li><a href="#sec6">Схема работы</a></li>
+			<li><a href="#sec7">Отзывы</a></li>
+			<li><a href="#sec8">Контакты</a></li>
+		</ul>
+	</div>
+
+	<main>
+		<section id="sec1" class="hero">
+			<div class="hero-bg" aria-hidden="true"></div>
+			<div class="container hero-grid">
+				<div class="hero-copy reveal">
+					<p class="brand-mark">Автозапчасти</p>
+					<h1>Из Европы <span>по доступным ценам</span></h1>
+					<p class="hero-lead">Новые и контрактные запчасти с профессиональной подборкой под ваш автомобиль</p>
+					<div class="hero-actions">
+						<a href="#f1" class="btn btn-primary">Купить запчасть</a>
+						<a href="#sec3" class="btn btn-ghost">Смотреть каталог</a>
+					</div>
+				</div>
+
+				<div class="hero-visual reveal reveal-delay">
+					<img
+						src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=900&q=80"
+						alt="Премиальный автомобиль"
+						class="hero-car"
+						width="720"
+						height="450"
+						decoding="async">
+					<span class="hero-badge" aria-hidden="true">TOP</span>
+				</div>
+
+				<form action="mail.php" method="post" id="f1" class="hero-form reveal reveal-delay-2" novalidate>
+					<input type="hidden" name="subject" value="Купить запчасть — Первая форма">
+					<p class="form-title">Быстрая заявка</p>
+					<label class="sr-only" for="f1-name">Ваше имя</label>
+					<input type="text" id="f1-name" required name="name" placeholder="Ваше имя" autocomplete="name">
+					<label class="sr-only" for="f1-phone">Телефон</label>
+					<input type="tel" id="f1-phone" required name="phone" placeholder="Телефон" autocomplete="tel">
+					<label class="sr-only" for="f1-vin">VIN кузова</label>
+					<input type="text" id="f1-vin" name="vin" placeholder="VIN кузова" autocomplete="off">
+					<label class="sr-only" for="f1-part">Название запчасти</label>
+					<input type="text" id="f1-part" name="zapchast" placeholder="Название запчасти">
+					<button type="submit">Купить <strong>запчасть</strong></button>
+				</form>
+			</div>
+
+			<ul class="brand-strip" aria-label="Марки автомобилей">
+				<li><img src="img/toyota.png" alt="Toyota" width="96" height="48" loading="lazy"></li>
+				<li><img src="img/lexus.png" alt="Lexus" width="96" height="48" loading="lazy"></li>
+				<li><img src="img/nisan.png" alt="Nissan" width="96" height="48" loading="lazy"></li>
+				<li><img src="img/infiniti.png" alt="Infiniti" width="96" height="48" loading="lazy"></li>
+				<li><img src="img/mitshubishi.png" alt="Mitsubishi" width="96" height="48" loading="lazy"></li>
+				<li><img src="img/subaru.png" alt="Subaru" width="96" height="48" loading="lazy"></li>
+				<li><img src="img/honda.png" alt="Honda" width="96" height="48" loading="lazy"></li>
+				<li><img src="img/acura.png" alt="Acura" width="96" height="48" loading="lazy"></li>
+			</ul>
+		</section>
+
+		<section id="sec2" class="features">
+			<div class="container">
+				<ul class="features-grid">
+					<li class="feature-card reveal">
+						<div class="feature-icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+						</div>
+						<p><strong>Собственная доставка</strong><br>Отправка по РБ, РФ и Казахстану</p>
+					</li>
+					<li class="feature-card reveal reveal-delay">
+						<div class="feature-icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+						</div>
+						<p><strong>Профессиональный подбор</strong><br>Товар под вашу заявку</p>
+					</li>
+					<li class="feature-card reveal reveal-delay-2">
+						<div class="feature-icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+						</div>
+						<p><strong>Все формы расчёта</strong><br>Наличные, карты и электронные кошельки</p>
+					</li>
+					<li class="feature-card reveal reveal-delay-3">
+						<div class="feature-icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+						</div>
+						<p><strong>Масла и жидкости Motul</strong><br>Возможна доставка расходников</p>
+					</li>
+				</ul>
+			</div>
+		</section>
+
+		<section id="sec3" class="catalog">
+			<div class="container">
+				<header class="section-head reveal">
+					<span class="section-deco" aria-hidden="true">◆</span>
+					<h2>Каталог автозапчастей</h2>
+					<p>Выберите категорию — поможем подобрать деталь</p>
+				</header>
+				<ul class="catalog-grid">
+					<li class="catalog-item reveal">
+						<button type="button" class="catalog-btn buying" aria-label="Заказать: Двигатели">
+							<img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=300&h=300&q=80" alt="" width="120" height="120" loading="lazy">
+						</button>
+						<span>Двигатели</span>
+					</li>
+					<li class="catalog-item reveal">
+						<button type="button" class="catalog-btn buying" aria-label="Заказать: АКПП / КПП">
+							<img src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=300&h=300&q=80" alt="" width="120" height="120" loading="lazy">
+						</button>
+						<span>АКПП / КПП</span>
+					</li>
+					<li class="catalog-item reveal">
+						<button type="button" class="catalog-btn buying" aria-label="Заказать: Кузовные детали">
+							<img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=300&h=300&q=80" alt="" width="120" height="120" loading="lazy">
+						</button>
+						<span>Кузовные детали</span>
+					</li>
+					<li class="catalog-item reveal">
+						<button type="button" class="catalog-btn buying" aria-label="Заказать: Детали подвески">
+							<img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=300&h=300&q=80" alt="" width="120" height="120" loading="lazy">
+						</button>
+						<span>Детали подвески</span>
+					</li>
+					<li class="catalog-item reveal">
+						<button type="button" class="catalog-btn buying" aria-label="Заказать: Автостекла">
+							<img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=300&h=300&q=80" alt="" width="120" height="120" loading="lazy">
+						</button>
+						<span>Автостекла</span>
+					</li>
+					<li class="catalog-item reveal">
+						<button type="button" class="catalog-btn buying" aria-label="Заказать: Оптика">
+							<img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=300&h=300&q=80" alt="" width="120" height="120" loading="lazy">
+						</button>
+						<span>Оптика</span>
+					</li>
+					<li class="catalog-item reveal">
+						<button type="button" class="catalog-btn buying" aria-label="Заказать: Расходные материалы">
+							<img src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=300&h=300&q=80" alt="" width="120" height="120" loading="lazy">
+						</button>
+						<span>Расходные материалы</span>
+					</li>
+					<li class="catalog-item reveal">
+						<button type="button" class="catalog-btn buying" aria-label="Заказать: Масла и рабочие жидкости">
+							<img src="https://images.unsplash.com/photo-1635784092110-c04b8e0e4a54?auto=format&fit=crop&w=300&h=300&q=80" alt="" width="120" height="120" loading="lazy">
+						</button>
+						<span>Масла и рабочие жидкости</span>
+					</li>
+				</ul>
+			</div>
+		</section>
+
+		<section id="sec4" class="delivery">
+			<div class="container delivery-grid">
+				<div class="delivery-col reveal">
+					<h3>Доставка</h3>
+					<ul class="info-list">
+						<li>
+							<span class="info-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+							<div>
+								<strong>Самовывоз</strong>
+								<span>Брест, ул. Московская, 364</span>
+							</div>
+						</li>
+						<li>
+							<span class="info-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>
+							<div>
+								<strong>Доставка по городу</strong>
+								<span>1 день · CDEK и курьеры</span>
+							</div>
+						</li>
+						<li>
+							<span class="info-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+							<div>
+								<strong>Доставка по РБ и РФ</strong>
+								<span>Почта и транспортные компании</span>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="delivery-col reveal reveal-delay">
+					<h3>Оплата</h3>
+					<ul class="info-list info-list--alt">
+						<li>
+							<span class="info-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg></span>
+							<div>
+								<strong>Наличными</strong>
+								<span>Расчёт по факту получения</span>
+							</div>
+						</li>
+						<li>
+							<span class="info-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span>
+							<div>
+								<strong>Картами</strong>
+								<span>Visa, MasterCard, Maestro</span>
+							</div>
+						</li>
+						<li>
+							<span class="info-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg></span>
+							<div>
+								<strong>Электронные кошельки</strong>
+								<span>Qiwi, WebMoney, ЮMoney</span>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+
+		<section id="sec5" class="lead-form">
+			<div class="container">
+				<header class="section-head section-head--light reveal">
+					<h2><span>Не нашли нужную автозапчасть?</span> Заполните форму — найдём за 5 минут</h2>
+				</header>
+				<form action="mail.php" method="post" id="f2" class="form-row reveal" novalidate>
+					<input type="hidden" name="subject" value="Не нашли нужную автозапчасть?">
+					<label class="sr-only" for="f2-name">Ваше имя</label>
+					<input type="text" id="f2-name" required name="name" placeholder="Ваше имя" autocomplete="name">
+					<label class="sr-only" for="f2-phone">Телефон</label>
+					<input type="tel" id="f2-phone" required name="phone" placeholder="Телефон" autocomplete="tel">
+					<label class="sr-only" for="f2-vin">VIN кузова</label>
+					<input type="text" id="f2-vin" name="vin" placeholder="VIN кузова" autocomplete="off">
+					<label class="sr-only" for="f2-part">Название запчасти</label>
+					<input type="text" id="f2-part" name="zapchast" placeholder="Название запчасти">
+					<button type="submit">Отправить</button>
+				</form>
+			</div>
+		</section>
+
+		<section id="sec6" class="workflow">
+			<div class="container">
+				<header class="section-head reveal">
+					<h2>Как мы работаем</h2>
+					<p>Четыре простых шага от заявки до получения</p>
+				</header>
+				<div class="workflow-layout">
+					<div class="workflow-visual reveal" aria-hidden="true">
+						<img
+							src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=700&q=80"
+							alt=""
+							width="420"
+							height="560"
+							loading="lazy">
+					</div>
+					<ol class="workflow-steps">
+						<li class="reveal">
+							<div class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+							<p>Оставляете <button type="button" class="text-link buying">заявку на сайте</button></p>
+						</li>
+						<li class="reveal reveal-delay">
+							<div class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/></svg></div>
+							<p>Мы связываемся с вами, подтверждаем заказ и отвечаем на вопросы</p>
+						</li>
+						<li class="reveal reveal-delay-2">
+							<div class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+							<p>Оплачиваете удобным вам <a href="#sec4">способом</a></p>
+						</li>
+						<li class="reveal reveal-delay-3">
+							<div class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+							<p>Забираете в сервисе или получаете удобным <a href="#sec4">вариантом доставки</a></p>
+						</li>
+					</ol>
+				</div>
+			</div>
+		</section>
+
+		<section id="sec7" class="reviews">
+			<div class="container">
+				<header class="section-head reveal">
+					<h2>Отзывы</h2>
+					<p>Реальные впечатления клиентов из Бреста и Беларуси</p>
+				</header>
+				<div class="reviews-grid">
+					<article class="review-card reveal">
+						<header class="review-card__head">
+							<img class="review-card__avatar" src="https://i.pravatar.cc/96?img=12" alt="" width="48" height="48" loading="lazy">
+							<div class="review-card__meta">
+								<strong class="review-card__name">Алексей К.</strong>
+								<span class="review-card__place">Брест</span>
+							</div>
+							<time class="review-card__date" datetime="2026-03-14">14 марта 2026</time>
+						</header>
+						<div class="review-card__stars" aria-label="Оценка: 5 из 5">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+						</div>
+						<p class="review-card__text">Нужна была передняя фара на Camry. Оставил заявку вечером, утром уже перезвонили, уточнили VIN и через два дня забрал деталь на Московской. Цена нормальная, без «сюрпризов» на месте.</p>
+					</article>
+
+					<article class="review-card reveal reveal-delay">
+						<header class="review-card__head">
+							<img class="review-card__avatar" src="https://i.pravatar.cc/96?img=32" alt="" width="48" height="48" loading="lazy">
+							<div class="review-card__meta">
+								<strong class="review-card__name">Марина С.</strong>
+								<span class="review-card__place">Брест</span>
+							</div>
+							<time class="review-card__date" datetime="2026-02-27">27 февраля 2026</time>
+						</header>
+						<div class="review-card__stars" aria-label="Оценка: 5 из 5">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+						</div>
+						<p class="review-card__text">Искала амортизаторы на Outlander. Подсказали, что лучше взять оригинал, а не дешёвый аналог — объяснили почему. По времени чуть дольше ждала, чем хотелось, но деталь подошла с первого раза. Спасибо менеджеру Дмитрию.</p>
+					</article>
+
+					<article class="review-card reveal reveal-delay-2">
+						<header class="review-card__head">
+							<img class="review-card__avatar" src="https://i.pravatar.cc/96?img=15" alt="" width="48" height="48" loading="lazy">
+							<div class="review-card__meta">
+								<strong class="review-card__name">Игорь В.</strong>
+								<span class="review-card__place">Жабинка</span>
+							</div>
+							<time class="review-card__date" datetime="2026-01-19">19 января 2026</time>
+						</header>
+						<div class="review-card__stars" aria-label="Оценка: 4 из 5">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg class="is-empty" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+						</div>
+						<p class="review-card__text">Брал контрактный стартер. Работает. Минус один балл только за то, что с доставкой в Жабинку вышло на день позже обещанного. По телефону предупредили заранее — это плюс. В целом обращусь ещё.</p>
+					</article>
+
+					<article class="review-card reveal reveal-delay-3">
+						<header class="review-card__head">
+							<img class="review-card__avatar" src="https://i.pravatar.cc/96?img=47" alt="" width="48" height="48" loading="lazy">
+							<div class="review-card__meta">
+								<strong class="review-card__name">Ольга П.</strong>
+								<span class="review-card__place">Барановичи</span>
+							</div>
+							<time class="review-card__date" datetime="2025-12-08">8 декабря 2025</time>
+						</header>
+						<div class="review-card__stars" aria-label="Оценка: 5 из 5">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+						</div>
+						<p class="review-card__text">Заказывала комплект колодок и масло Motul. Ответили быстро, в WhatsApp скинули фото товара до отправки. Упаковали аккуратно, всё пришло целым. Приятно, когда общаются спокойно и по делу, без лишней суеты.</p>
+					</article>
+
+					<article class="review-card reveal">
+						<header class="review-card__head">
+							<img class="review-card__avatar" src="https://i.pravatar.cc/96?img=68" alt="" width="48" height="48" loading="lazy">
+							<div class="review-card__meta">
+								<strong class="review-card__name">Сергей М.</strong>
+								<span class="review-card__place">Брест</span>
+							</div>
+							<time class="review-card__date" datetime="2025-11-21">21 ноября 2025</time>
+						</header>
+						<div class="review-card__stars" aria-label="Оценка: 5 из 5">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+						</div>
+						<p class="review-card__text">Самовывоз на Московской, 364. Зашёл, назвал номер заявки — сразу вынесли зеркало боковое на Honda. Проверили вместе крепления. Без очередей и лишних разговоров. Для меня так и должно работать.</p>
+					</article>
+				</div>
+			</div>
+		</section>
+
+		<section id="sec8" class="contact-section">
+			<div class="container">
+				<header class="section-head section-head--light reveal">
+					<h2>Контакты</h2>
+					<p>Уточните детали по доставке по номеру <a href="tel:+375297920786">+375 29 792 07 86</a> или заполните форму</p>
+				</header>
+				<form action="mail2.php" method="post" id="f3" class="form-row form-row--3 reveal" novalidate>
+					<input type="hidden" name="subject" value="Узнать стоимость доставки">
+					<label class="sr-only" for="f3-name">Ваше имя</label>
+					<input type="text" id="f3-name" required name="name" placeholder="Ваше имя" autocomplete="name">
+					<label class="sr-only" for="f3-phone">Телефон</label>
+					<input type="tel" id="f3-phone" required name="phone" placeholder="Телефон" autocomplete="tel">
+					<label class="sr-only" for="f3-marka">Марка автомобиля</label>
+					<input type="text" id="f3-marka" required name="marka" placeholder="Марка автомобиля" autocomplete="off">
+					<button type="submit">Отправить</button>
+				</form>
+
+				<div class="contacts-layout reveal" id="map">
+					<div class="contacts-card">
+						<h3>Как нас найти</h3>
+						<ul class="contacts-meta">
+							<li>
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+								<span>Брест, ул. Московская, 364<br>ООО «БелТРЭК»</span>
+							</li>
+							<li>
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/></svg>
+								<a href="tel:+375297920786">+375 29 792 07 86</a>
+							</li>
+							<li>
+								<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+								<span>пн–пт: 9:00–21:00<br>сб–вс: 11:00–19:00</span>
+							</li>
+							<li>
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+								<a href="mailto:dmitry.sed13@gmail.com">dmitry.sed13@gmail.com</a>
+							</li>
+						</ul>
+						<a href="#yandex-map" class="btn btn-ghost">Смотреть на карте</a>
+					</div>
+					<div class="map-wrap">
+						<div id="yandex-map" role="region" aria-label="Карта: Брест, ул. Московская, 364"></div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer id="footer" class="site-footer">
+		<div class="container footer-grid">
+			<div class="footer-brand">
+				<img src="img/logo2.png" alt="Автозапчасти" class="flogo" width="180" height="60" loading="lazy">
+				<a href="tel:+375297920786" class="ftel">+375 29 792 07 86</a>
+			</div>
+			<div class="footer-rekv">
+				<h3>Реквизиты</h3>
+				<p>ООО «БелТРЭК»<br>Брест, ул. Московская, 364<br>
+					<a href="mailto:dmitry.sed13@gmail.com">dmitry.sed13@gmail.com</a>
+				</p>
+				<a href="#yandex-map" class="vmap">Смотреть на карте</a>
+			</div>
+			<div class="footer-hours">
+				<h3>Режим работы</h3>
+				<p>пн–пт: 9:00–21:00<br>сб–вс: 11:00–19:00</p>
+				<button type="button" class="btn btn-primary buying">Купить запчасти</button>
+			</div>
+		</div>
+	</footer>
+
+	<div class="modal" id="modal" hidden>
+		<div class="modal-backdrop" data-close-modal></div>
+		<div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+			<form action="mail3.php" method="post" id="f4" class="modal-form" novalidate>
+				<input type="hidden" name="subject" value="Оставить заявку — Всплывающая форма">
+				<button type="button" class="modal-close" data-close-modal aria-label="Закрыть">&times;</button>
+				<p id="modal-title"><strong>Заполните форму</strong><br>и наш консультант перезвонит вам в течение 9 минут</p>
+				<label class="sr-only" for="f4-name">Ваше имя</label>
+				<input type="text" id="f4-name" required name="name" placeholder="Ваше имя" autocomplete="name">
+				<label class="sr-only" for="f4-email">Ваш E-mail</label>
+				<input type="email" id="f4-email" required name="email" placeholder="Ваш E-mail" autocomplete="email">
+				<label class="sr-only" for="f4-phone">Ваш телефон</label>
+				<input type="tel" id="f4-phone" required name="phone" placeholder="Ваш телефон" autocomplete="tel">
+				<button type="submit">Оставить заявку</button>
+			</form>
+			<div class="modal-form" id="thanks" hidden>
+				<p><strong>Ваша заявка принята!</strong><br><br>Спасибо! Заявка успешно принята в обработку. С вами свяжутся в течение 9 минут.</p>
+				<button type="button" class="ok" data-close-modal>ОК</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="messenger-buttons" aria-label="Мессенджеры">
+		<a class="messenger-button messenger-button--tg" href="https://t.me/dmitry_spa" target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+		</a>
+		<a class="messenger-button messenger-button--viber" href="viber://chat?number=%2B375297920786" aria-label="Написать в Viber">
+			<svg viewBox="0 0 24 24" aria-hidden="true">
+				<path fill="#7360F2" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0z"/>
+				<path fill="#fff" d="M17.2 14.35c-.28-.14-1.65-.81-1.9-.91-.26-.09-.44-.14-.63.14-.19.28-.72.91-.89 1.1-.16.18-.33.2-.61.07-.28-.14-1.18-.44-2.25-1.39-.83-.74-1.39-1.66-1.55-1.94-.16-.28-.02-.43.12-.57.13-.12.28-.33.42-.49.14-.16.19-.28.28-.47.09-.19.05-.35-.02-.49-.07-.14-.63-1.51-.86-2.07-.23-.54-.46-.47-.63-.48h-.53c-.19 0-.49.07-.74.35-.26.28-.97.95-.97 2.31s.99 2.68 1.13 2.86c.14.19 1.95 2.97 4.72 4.16 2.77 1.19 2.77.79 3.27.74.5-.05 1.61-.66 1.84-1.29.23-.64.23-1.18.16-1.3-.07-.11-.26-.18-.55-.32z"/>
+			</svg>
+		</a>
+		<a class="messenger-button messenger-button--wa" href="https://wa.me/375256843298" target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+		</a>
+	</div>
+
+	<a class="phone-fab" href="tel:+375297920786" aria-label="Позвонить"></a>
+	<a href="#sec1" class="to-top" id="to-top" aria-label="Наверх">Наверх</a>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU"></script>
+	<script src="js/jquery.maskedinput.min.js"></script>
+	<script src="js/jquery.validate.min.js"></script>
+	<script src="js/yandex-map.js"></script>
+	<script src="js/common.js"></script>
+</body>
+</html>
