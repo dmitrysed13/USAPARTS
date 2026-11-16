@@ -1,0 +1,207 @@
+export const company = {
+  name: "USAPARTS",
+  legalName: "ИП Чанов Дмитрий Анатольевич",
+  unp: "291502887",
+  phoneDisplay: "+375 (29) 792-07-86",
+  phoneHref: "tel:+375297920786",
+  telegram: "https://t.me/dmitry_spa",
+  viber: "viber://chat?number=%2B375297920786",
+  whatsapp: "https://wa.me/375297920786",
+  email: "dmitry.chanoff@gmail.com",
+  hours: "Ежедневно, 9:00–20:00",
+  address: "г. Брест, ул. Московская, 364",
+  addressNote: "Пункт выдачи. Визит по записи.",
+};
+
+export const nav = [
+  { href: "/#catalog", label: "Каталог" },
+  { href: "/#benefits", label: "Преимущества" },
+  { href: "/#process", label: "Как заказать" },
+  { href: "/#reviews", label: "Отзывы" },
+  { href: "/kontakty/", label: "Контакты" },
+] as const;
+
+export const brands = [
+  "Ford",
+  "Chevrolet",
+  "Dodge",
+  "Jeep",
+  "Tesla",
+  "Cadillac",
+  "GMC",
+  "Chrysler",
+  "Lincoln",
+  "RAM",
+  "Audi",
+  "BMW",
+  "Buick",
+  "Honda",
+  "Hyundai",
+  "Kia",
+  "Lexus",
+  "Mazda",
+  "Nissan",
+  "Subaru",
+  "Toyota",
+  "Volkswagen",
+  "Volvo",
+  "Другая марка",
+] as const;
+
+export const featuredBrands = [
+  { name: "Ford", models: "F-150, Explorer, Mustang", href: "/ford/" },
+  { name: "Jeep", models: "Grand Cherokee, Wrangler", href: "/jeep/" },
+  { name: "Dodge", models: "Ram, Durango, Challenger", href: "/dodge/" },
+  { name: "Chevrolet", models: "Tahoe, Silverado, Camaro", href: "/chevrolet/" },
+  { name: "Tesla", models: "Model 3, Model Y, Model S", href: "/tesla/" },
+  { name: "Cadillac", models: "Escalade, XT5, CT5", href: "/cadillac/" },
+] as const;
+
+export const categories = [
+  {
+    id: "engine",
+    title: "Двигатели и КПП",
+    text: "Моторы, коробки, раздатки и навесное.",
+    part: "Двигатель / КПП",
+    href: "/zapchasti/dvigatel/",
+  },
+  {
+    id: "chassis",
+    title: "Ходовая часть",
+    text: "Рычаги, амортизаторы, редукторы, карданы.",
+    part: "Ходовая часть",
+    href: "/zapchasti/podveska/",
+  },
+  {
+    id: "brakes",
+    title: "Тормозные системы",
+    text: "Суппорты, диски, блоки ABS, магистрали.",
+    part: "Тормозная система",
+    href: "/zapchasti/tormoznaya-sistema/",
+  },
+  {
+    id: "body",
+    title: "Кузовные детали",
+    text: "Двери, крылья, бамперы, капот, стёкла.",
+    part: "Кузовная деталь",
+    href: "/zapchasti/kuzov/",
+  },
+  {
+    id: "electric",
+    title: "Оптика и электрика",
+    text: "Фары, фонари, блоки, проводка, датчики.",
+    part: "Оптика / электрика",
+    href: "/zapchasti/optika/",
+  },
+  {
+    id: "service",
+    title: "Расходники для ТО",
+    text: "Фильтры, колодки, свечи, жидкости.",
+    part: "Расходники для ТО",
+    href: "",
+  },
+] as const;
+
+export const benefits = [
+  {
+    title: "Оригинал по каталогу",
+    text: "Номер сверяем по VIN. Если предлагаем аналог, пишем это до оплаты.",
+    icon: "shield",
+  },
+  {
+    title: "Срок доставки",
+    text: "От 15 до 30 дней после выкупа детали в США.",
+    icon: "plane",
+  },
+  {
+    title: "Точный подбор",
+    text: "Проверяем каждую деталь по оригинальным каталогам и VIN.",
+    icon: "scan",
+  },
+  {
+    title: "Официальный договор",
+    text: "Фиксированная цена, страховка груза, предоставление чеков.",
+    icon: "file",
+  },
+] as const;
+
+export const steps = [
+  {
+    title: "Оставляете заявку",
+    text: "VIN или название детали.",
+  },
+  {
+    title: "Менеджер предлагает варианты",
+    text: "Оригинал, качественный аналог или б\u2060/\u2060у с разборок.",
+  },
+  {
+    title: "Вносите предоплату",
+    text: "Мы выкупаем деталь в США.",
+  },
+  {
+    title: "Доставляем",
+    text: "В руки или отправляем ТК по всей стране.",
+  },
+] as const;
+
+export const faqs = [
+  {
+    question: "За сколько приходит заказ?",
+    answer:
+      "Доставка занимает от 15 до 30 дней после выкупа детали в США. Точный срок по вашей позиции называем до оплаты.",
+  },
+  {
+    question: "Можно ли вернуть деталь?",
+    answer:
+      "Номер сверяем с VIN до выкупа. Если ошибка на нашей стороне — меняем деталь или возвращаем оплату. Срок и условия возврата написаны в договоре, его присылаем до перевода.",
+  },
+  {
+    question: "Как проверяете б/у с аукционов?",
+    answer:
+      "По каждому лоту показываем фото, пробег и список повреждений. Б/у не называем новой. Ничего не выкупаем, пока вы не подтвердите конкретный вариант.",
+  },
+  {
+    question: "Как проходит оплата?",
+    answer:
+      "Цена в договоре включает деталь, доставку и нашу работу. После согласования она не меняется. Груз страхуем. Вместе с выдачей отдаём чеки и закрывающие документы.",
+  },
+  {
+    question: "Можно заказать без VIN?",
+    answer:
+      "Да, если есть точный артикул. Для оптики, кузова, электрики и подвески VIN сильно снижает риск другой ревизии. Подбор по коду занимает около 10 минут.",
+  },
+  {
+    question: "Доставляете в мой город?",
+    answer:
+      "Да. Отдаём в пункте выдачи или сдаём в транспортную компанию по всей стране. Трек-номер присылаем, когда груз прошёл таможню и уехал в ТК.",
+  },
+] as const;
+
+export const reviews = [
+  {
+    caption: "Игорь, Jeep Grand Cherokee, заказывал редуктор",
+    text: "На WK2 нужен был передний редуктор. Прислали два лота с фото и пробегом, выкупили тот, что я выбрал. Пришло в срок, забрал на выдаче, встал без переделок.",
+  },
+  {
+    caption: "Марина, Ford Explorer, заказывала фару",
+    text: "Фары на рестайлинг отличаются разъёмом. Подобрали по VIN, пришла оригинальная, с чеком дилера. Поставили без вопросов.",
+  },
+  {
+    caption: "Алексей, Dodge Ram 1500, заказывал двигатель",
+    text: "Мотор 5.7 везли из США. До оплаты зафиксировали цену в договоре, по дороге был трек. Сервис принял агрегат, запустился штатно.",
+  },
+  {
+    caption: "Денис, Tesla Model 3, заказывал рычаги",
+    text: "Рычаги локально были только под заказ на месяц. Нашли на складе в США, доставка заняла около трёх недель.",
+  },
+] as const;
+
+export const callTimes = ["Как можно скорее", "Утро, 9:00–12:00", "День, 12:00–17:00", "Вечер, 17:00–20:00"] as const;
+
+export function yearOptions(now = new Date().getFullYear()): string[] {
+  const start = 1985;
+  const end = Math.max(now, 2026);
+  const years: string[] = [];
+  for (let year = end; year >= start; year -= 1) years.push(String(year));
+  return years;
+}
