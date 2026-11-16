@@ -8,7 +8,7 @@
     "build": "tsc --noEmit && node --experimental-strip-types scripts/generate-seo-files.mjs && vite build && node --experimental-strip-types scripts/prerender.mjs",
     "start": "node server/serve.mjs",
     "preview": "vite preview --host 0.0.0.0 --port 4173",
-    "test": "node --experimental-strip-types --test src/lib/*.test.ts src/seo/*.test.ts server/leads.test.mjs"
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts src/seo/*.test.ts server/*.test.mjs"
   },
   "repository": {
     "type": "git",

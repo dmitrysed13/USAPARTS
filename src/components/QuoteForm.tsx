@@ -25,7 +25,7 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
   const [trap, setTrap] = useState("");
   const started = useRef(false);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const { status, message, send, reset } = useSubmit();
+  const { status, message, mailto, send, reset } = useSubmit();
   const successRef = useRef<HTMLHeadingElement>(null);
   const years = yearOptions();
   const baseId = useId();
@@ -50,7 +50,7 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
   }, [seed, reset]);
 
   useEffect(() => {
-    if (status === "done" || status === "telegram") successRef.current?.focus();
+    if (status === "done" || status === "mail") successRef.current?.focus();
   }, [status]);
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -88,21 +88,26 @@ export function QuoteForm({ seed, onDraft, onPrivacy }: QuoteFormProps) {
         <p className="max-w-xs text-sm leading-relaxed text-mist">Ответим в рабочее время, обычно в течение 10 минут.</p>
       </div>
 
-      {status === "telegram" ? (
+      {status === "mail" ? (
         <div className="mt-6 flex items-start gap-4 border border-line bg-ink/60 p-5" role="status" aria-live="polite">
           <span className="grid h-12 w-12 shrink-0 place-items-center bg-ember text-[#1a0c00]">
             <Check className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
           </span>
           <div>
             <h3 ref={successRef} tabIndex={-1} className="font-display text-3xl leading-none outline-none">
-              Откройте Telegram
+              Письмо на почту
             </h3>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-mist">
-              Заявка собрана для @dmitry_spa. Если чат не открылся сам, нажмите кнопку и отправьте сообщение. Текст заявки уже в ссылке и в буфере обмена.
+              Заявка собрана для {company.email}. Если письмо не открылось само, нажмите кнопку и отправьте его. Текст уже в письме и в буфере обмена.
             </p>
-            <a className="btn btn-primary mt-4" href={message} target="_blank" rel="noreferrer">
-              Открыть чат @dmitry_spa
-            </a>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a className="btn btn-primary" href={mailto}>
+                Открыть письмо
+              </a>
+              <a className="btn btn-ghost" href={message} target="_blank" rel="noreferrer">
+                Открыть в Gmail
+              </a>
+            </div>
           </div>
         </div>
       ) : status === "done" ? (

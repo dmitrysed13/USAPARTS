@@ -30,13 +30,13 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
   const [trap, setTrap] = useState("");
   const started = useRef(false);
   const [errors, setErrors] = useState<ReturnType<typeof validateQuote>>({});
-  const { status, message, send } = useSubmit();
+  const { status, message, mailto, send } = useSubmit();
   const successRef = useRef<HTMLHeadingElement>(null);
   const years = yearOptions();
   const isQuote = kind === "quote";
 
   useEffect(() => {
-    if (status === "done" || status === "telegram") successRef.current?.focus();
+    if (status === "done" || status === "mail") successRef.current?.focus();
   }, [status]);
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -66,20 +66,25 @@ export function LeadModal({ kind, initial, onClose, onPrivacy }: LeadModalProps)
 
   return (
     <Dialog title={isQuote ? "Рассчитать стоимость" : "Заказать звонок"} titleId="lead-title" onClose={onClose}>
-      {status === "telegram" ? (
+      {status === "mail" ? (
         <div role="status" aria-live="polite">
           <span className="grid h-12 w-12 place-items-center bg-ember text-[#1a0c00]">
             <Check className="h-5 w-5" aria-hidden="true" />
           </span>
           <h3 ref={successRef} tabIndex={-1} className="mt-4 font-display text-3xl leading-none outline-none">
-            Откройте Telegram
+            Письмо на почту
           </h3>
           <p className="mt-3 text-sm leading-relaxed text-mist">
-            Заявка собрана для @dmitry_spa. Если чат не открылся сам, нажмите кнопку и отправьте сообщение.
+            Заявка собрана для {company.email}. Если письмо не открылось само, нажмите кнопку и отправьте его.
           </p>
-          <a className="btn btn-primary mt-5" href={message} target="_blank" rel="noreferrer">
-            Открыть чат @dmitry_spa
-          </a>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <a className="btn btn-primary" href={mailto}>
+              Открыть письмо
+            </a>
+            <a className="btn btn-ghost" href={message} target="_blank" rel="noreferrer">
+              Открыть в Gmail
+            </a>
+          </div>
         </div>
       ) : status === "done" ? (
         <div role="status" aria-live="polite">
