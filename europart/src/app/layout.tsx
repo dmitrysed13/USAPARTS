@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Manrope, Onest } from "next/font/google";
+import { SelectedVehicleBanner } from "@/components/catalog/selected-vehicle";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { company } from "@/config/company";
@@ -57,6 +59,9 @@ export default function RootLayout({
           К содержанию
         </a>
         <SiteHeader />
+        <Suspense fallback={null}>
+          <SelectedVehicleBanner />
+        </Suspense>
         <main id="content" className="flex-1">
           {children}
         </main>

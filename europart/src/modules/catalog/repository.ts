@@ -3,7 +3,11 @@ import "server-only";
 import { Prisma, type PrismaClient } from "@/generated/prisma/client";
 import { withDatabase } from "@/lib/db/errors";
 import { getPrismaClient } from "@/lib/db/prisma";
-import { categoryAndDescendantIds, type CatalogFilters } from "@/modules/catalog/filters";
+import {
+  categoryAndDescendantIds,
+  type CatalogFilters,
+  type FitmentScopeInput,
+} from "@/modules/catalog/filters";
 import { toPublicProduct, type PublicProduct } from "@/modules/catalog/public-dto";
 import type { SearchQuery } from "@/modules/catalog/search-params";
 import { literalSearchText } from "@/modules/catalog/search-params";
@@ -65,19 +69,24 @@ const productDetailInclude = {
     where: { confidence: "VERIFIED" },
     select: {
       confidence: true,
+      vehicleEngine: { select: { name: true, slug: true, isActive: true } },
       vehicleModification: {
         select: {
           name: true,
+          slug: true,
           yearFrom: true,
           yearTo: true,
+          isActive: true,
           generation: {
             select: {
               name: true,
               slug: true,
+              isActive: true,
               model: {
                 select: {
                   name: true,
                   slug: true,
+                  isActive: true,
                   brand: { select: { name: true, slug: true, isActive: true } },
                 },
               },
@@ -110,7 +119,14 @@ function mapProduct(
   const compatibility =
     withFitment && "compatibilities" in row
       ? row.compatibilities
-          .filter((item) => item.vehicleModification.generation.model.brand.isActive)
+          .filter(
+            (item) =>
+              item.vehicleModification.isActive &&
+              item.vehicleModification.generation.isActive &&
+              item.vehicleModification.generation.model.isActive &&
+              item.vehicleModification.generation.model.brand.isActive &&
+              (!item.vehicleEngine || item.vehicleEngine.isActive),
+          )
           .map((item) => ({
             confidence: item.confidence,
             brandName: item.vehicleModification.generation.model.brand.name,
@@ -120,6 +136,9 @@ function mapProduct(
             generationName: item.vehicleModification.generation.name,
             generationSlug: item.vehicleModification.generation.slug,
             modificationName: item.vehicleModification.name,
+            modificationSlug: item.vehicleModification.slug,
+            engineName: item.vehicleEngine?.name,
+            engineSlug: item.vehicleEngine?.slug,
             yearFrom: item.vehicleModification.yearFrom,
             yearTo: item.vehicleModification.yearTo,
           }))
@@ -223,6 +242,19 @@ export async function getCategoryPageContext(
   if (!category) {
     return null;
   }
+  const categoryIds = categoryAndDescendantIds(rows, category.id);
+  const productCount = await withDatabase(() =>
+    db().product.count({
+      where: {
+        ...publishedWhere(),
+        categoryId: { in: categoryIds },
+      },
+    }),
+  );
+  // Empty category trees are not indexable public combo pages.
+  if (productCount === 0) {
+    return null;
+  }
   const byId = new Map(rows.map((row) => [row.id, row]));
   const breadcrumb: { name: string; slug: string }[] = [];
   const seen = new Set<string>();
@@ -243,7 +275,85 @@ export async function getCategoryPageContext(
     category,
     children,
     breadcrumb,
-    categoryIds: categoryAndDescendantIds(rows, category.id),
+    categoryIds,
+  };
+}
+
+export function fitmentProductWhere(scope: FitmentScopeInput): Prisma.ProductWhereInput {
+  const yearFrom = scope.yearFrom;
+  const yearTo = scope.yearTo;
+  const modificationFilters: Prisma.VehicleModificationWhereInput = {
+    isActive: true,
+    ...(scope.modificationId ? { id: scope.modificationId } : {}),
+    ...(scope.generationId ? { generationId: scope.generationId } : {}),
+    ...(scope.fuelType
+      ? {
+          OR: [
+            { fuelType: { equals: scope.fuelType, mode: "insensitive" } },
+            {
+              engines: {
+                some: {
+                  isActive: true,
+                  fuelType: { equals: scope.fuelType, mode: "insensitive" },
+                },
+              },
+            },
+          ],
+        }
+      : {}),
+    ...(yearFrom !== undefined || yearTo !== undefined
+      ? {
+          AND: [
+            ...(yearTo !== undefined
+              ? [
+                  {
+                    OR: [{ yearFrom: null }, { yearFrom: { lte: yearTo } }],
+                  } satisfies Prisma.VehicleModificationWhereInput,
+                ]
+              : []),
+            ...(yearFrom !== undefined
+              ? [
+                  {
+                    OR: [{ yearTo: null }, { yearTo: { gte: yearFrom } }],
+                  } satisfies Prisma.VehicleModificationWhereInput,
+                ]
+              : []),
+          ],
+        }
+      : {}),
+    generation: {
+      isActive: true,
+      ...(scope.modelId ? { modelId: scope.modelId } : {}),
+      model: {
+        isActive: true,
+        ...(scope.brandId ? { brandId: scope.brandId } : {}),
+        brand: { isActive: true },
+      },
+    },
+  };
+
+  return {
+    compatibilities: {
+      some: {
+        confidence: "VERIFIED",
+        ...(scope.engineId
+          ? {
+              OR: [
+                { vehicleEngineId: scope.engineId },
+                ...(scope.modificationId
+                  ? [
+                      {
+                        vehicleEngineId: null as string | null,
+                        vehicleModificationId: scope.modificationId,
+                      },
+                    ]
+                  : []),
+              ],
+            }
+          : {}),
+        vehicleModification: modificationFilters,
+      },
+    },
   };
 }
 
@@ -317,11 +427,15 @@ export async function listPublishedProducts(
   filters: CatalogFilters,
   scope: Prisma.ProductWhereInput,
 ): Promise<ProductPage> {
+  const categoryFilter = filters.category
+    ? { category: { slug: filters.category, isActive: true } }
+    : {};
   const where: Prisma.ProductWhereInput = {
     AND: [
       publishedWhere(),
       scope,
       offerConstraint(filters),
+      categoryFilter,
       filters.condition ? { condition: filters.condition } : {},
       filters.productType ? { productType: filters.productType } : {},
       filters.partBrand ? { partBrand: { slug: filters.partBrand, isActive: true } } : {},
@@ -376,32 +490,14 @@ export async function getPublishedProduct(slug: string): Promise<PublicProduct |
   return row ? mapProduct(row, true) : null;
 }
 
-export async function listCategoriesForFitment(scope: {
-  brandId?: string;
-  modelId?: string;
-  generationId?: string;
-}): Promise<{ name: string; slug: string; description: string | null }[]> {
+export async function listCategoriesForFitment(
+  scope: FitmentScopeInput,
+): Promise<{ name: string; slug: string; description: string | null }[]> {
   const rows = await withDatabase(() =>
     db().product.findMany({
       where: {
         ...publishedWhere(),
-        compatibilities: {
-          some: {
-            confidence: "VERIFIED",
-            vehicleModification: {
-              ...(scope.generationId ? { generationId: scope.generationId } : {}),
-              generation: {
-                isActive: true,
-                ...(scope.modelId ? { modelId: scope.modelId } : {}),
-                model: {
-                  isActive: true,
-                  ...(scope.brandId ? { brandId: scope.brandId } : {}),
-                  brand: { isActive: true },
-                },
-              },
-            },
-          },
-        },
+        ...fitmentProductWhere(scope),
       },
       distinct: ["categoryId"],
       select: {
@@ -418,6 +514,25 @@ export async function listCategoriesForFitment(scope: {
         left.sortOrder - right.sortOrder || left.name.localeCompare(right.name, "ru"),
     )
     .map(({ name, slug, description }) => ({ name, slug, description }));
+}
+
+/** Returns false when a vehicle+category combo has no published products. */
+export async function hasPublishedFitmentProducts(
+  scope: FitmentScopeInput,
+  categorySlug?: string,
+): Promise<boolean> {
+  const count = await withDatabase(() =>
+    db().product.count({
+      where: {
+        ...publishedWhere(),
+        ...fitmentProductWhere(scope),
+        ...(categorySlug
+          ? { category: { slug: categorySlug, isActive: true } }
+          : {}),
+      },
+    }),
+  );
+  return count > 0;
 }
 
 function scoreExpression(

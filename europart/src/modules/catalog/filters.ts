@@ -17,6 +17,11 @@ export type CatalogFilters = {
   partBrand?: string;
   priceMin?: number;
   priceMax?: number;
+  /** Category slug within a vehicle scope (server-side). */
+  category?: string;
+  yearFrom?: number;
+  yearTo?: number;
+  fuelType?: string;
 };
 
 const sorts = new Set<CatalogSort>(["name_asc", "name_desc", "newest"]);
@@ -59,6 +64,10 @@ export function parseCatalogFilters(
   const productType = one(input.productType);
   const stock = one(input.availability);
   const partBrand = one(input.partBrand);
+  const category = one(input.category);
+  const fuelType = one(input.fuelType);
+  const yearFrom = boundedNumber(one(input.yearFrom), 2100);
+  const yearTo = boundedNumber(one(input.yearTo), 2100);
   return {
     page: Number.isInteger(page) && page >= 1 && page <= 1000 ? page : 1,
     pageSize,
@@ -78,6 +87,11 @@ export function parseCatalogFilters(
     partBrand: partBrand && partBrand.length <= 80 ? partBrand : undefined,
     priceMin: boundedNumber(one(input.priceMin), 1_000_000),
     priceMax: boundedNumber(one(input.priceMax), 1_000_000),
+    category: category && category.length <= 80 ? category : undefined,
+    yearFrom:
+      yearFrom !== undefined && yearFrom >= 1950 ? Math.floor(yearFrom) : undefined,
+    yearTo: yearTo !== undefined && yearTo >= 1950 ? Math.floor(yearTo) : undefined,
+    fuelType: fuelType && fuelType.length <= 40 ? fuelType : undefined,
   };
 }
 
@@ -138,6 +152,30 @@ export function catalogHref(path: string, filters: CatalogFilters, page: number)
   if (filters.priceMax !== undefined) {
     params.set("priceMax", String(filters.priceMax));
   }
+  if (filters.category) {
+    params.set("category", filters.category);
+  }
+  if (filters.yearFrom !== undefined) {
+    params.set("yearFrom", String(filters.yearFrom));
+  }
+  if (filters.yearTo !== undefined) {
+    params.set("yearTo", String(filters.yearTo));
+  }
+  if (filters.fuelType) {
+    params.set("fuelType", filters.fuelType);
+  }
   const query = params.toString();
   return query ? `${path}?${query}` : path;
 }
+
+/** Fitment product scope for Make→…→Engine hierarchy levels. */
+export type FitmentScopeInput = {
+  brandId?: string;
+  modelId?: string;
+  generationId?: string;
+  modificationId?: string;
+  engineId?: string;
+  yearFrom?: number;
+  yearTo?: number;
+  fuelType?: string;
+};
