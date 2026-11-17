@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-SITE = "https://usaparts.by"
+SITE = "https://uspart.by"
 BRAND_NAME = "USAPARTS"
 PHONE = "+375 (29) 792-07-86"
 PHONE_E164 = "+375297920786"
@@ -1112,11 +1112,11 @@ def write_sitemap(name: str, locs: list[str]) -> None:
 def write_support_files(urls: dict[str, list[str]]) -> None:
     index = """<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap><loc>https://usaparts.by/sitemap/categories.xml</loc></sitemap>
-  <sitemap><loc>https://usaparts.by/sitemap/brands.xml</loc></sitemap>
-  <sitemap><loc>https://usaparts.by/sitemap/models.xml</loc></sitemap>
-  <sitemap><loc>https://usaparts.by/sitemap/seo-pages.xml</loc></sitemap>
-  <sitemap><loc>https://usaparts.by/sitemap/products-1.xml</loc></sitemap>
+  <sitemap><loc>https://uspart.by/sitemap/categories.xml</loc></sitemap>
+  <sitemap><loc>https://uspart.by/sitemap/brands.xml</loc></sitemap>
+  <sitemap><loc>https://uspart.by/sitemap/models.xml</loc></sitemap>
+  <sitemap><loc>https://uspart.by/sitemap/seo-pages.xml</loc></sitemap>
+  <sitemap><loc>https://uspart.by/sitemap/products-1.xml</loc></sitemap>
 </sitemapindex>
 """
     (ROOT / "sitemap.xml").write_text(index, encoding="utf-8")
@@ -1143,7 +1143,7 @@ Disallow: /*?view=
 Disallow: /*?per_page=
 Disallow: /*?filter=
 
-Sitemap: https://usaparts.by/sitemap.xml
+Sitemap: https://uspart.by/sitemap.xml
 """
     (ROOT / "robots.txt").write_text(robots, encoding="utf-8")
 
@@ -1151,28 +1151,28 @@ Sitemap: https://usaparts.by/sitemap.xml
 
 RewriteEngine On
 RewriteCond %{HTTPS} off
-RewriteRule ^ https://usaparts.by%{REQUEST_URI} [L,R=301]
+RewriteRule ^ https://uspart.by%{REQUEST_URI} [L,R=301]
 RewriteCond %{HTTP_HOST} ^www\\.usaparts\\.by$ [NC]
-RewriteRule ^ https://usaparts.by%{REQUEST_URI} [L,R=301]
+RewriteRule ^ https://uspart.by%{REQUEST_URI} [L,R=301]
 """
     (ROOT / ".htaccess").write_text(htaccess, encoding="utf-8")
 
     nginx = """# Вставить в server-блоки хостинга.
 server {
     listen 80;
-    server_name usaparts.by www.usaparts.by;
-    return 301 https://usaparts.by$request_uri;
+    server_name uspart.by www.uspart.by;
+    return 301 https://uspart.by$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name www.usaparts.by;
-    return 301 https://usaparts.by$request_uri;
+    server_name www.uspart.by;
+    return 301 https://uspart.by$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name usaparts.by;
+    server_name uspart.by;
     root /path/to/site;
     index index.html index.php;
 

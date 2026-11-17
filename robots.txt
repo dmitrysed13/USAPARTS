@@ -18,4 +18,4 @@ Disallow: /*?view=
 Disallow: /*?per_page=
 Disallow: /*?filter=
 
-Sitemap: https://usaparts.by/sitemap.xml
+Sitemap: https://uspart.by/sitemap.xml
