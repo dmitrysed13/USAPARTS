@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { TrackOnMount } from "@/components/analytics/track-on-mount";
 import { PageSkeleton } from "@/components/catalog/page-skeleton";
 import { CheckoutForm } from "@/components/commerce/checkout-form";
 import { Container } from "@/components/ui/container";
@@ -60,6 +61,17 @@ async function CheckoutContent() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.9fr)]">
+      <TrackOnMount
+        name="begin_checkout"
+        params={{
+          value:
+            cart.subtotalCents != null
+              ? Number((cart.subtotalCents / 100).toFixed(2))
+              : undefined,
+          currency: "BYN",
+          items: cart.lines.length,
+        }}
+      />
       <div>
         <CheckoutForm
           deliveryMethods={methods.map((method) => quoteDeliveryMethod(method))}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Manrope, Onest } from "next/font/google";
+import { AnalyticsBootstrap } from "@/components/analytics/analytics-bootstrap";
 import { SelectedVehicleBanner } from "@/components/catalog/selected-vehicle";
 import { StorefrontRedirectGate } from "@/components/seo/redirect-gate";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -29,6 +30,7 @@ const description =
 export async function generateMetadata(): Promise<Metadata> {
   const open = envIndexingFlag();
   let verification: Metadata["verification"];
+  let other: Metadata["other"];
   try {
     const ids = await getSeoAnalyticsIds();
     verification = {
@@ -36,16 +38,17 @@ export async function generateMetadata(): Promise<Metadata> {
       ...(ids.yandexWebmasterVerification
         ? { yandex: ids.yandexWebmasterVerification }
         : {}),
-      other: {
-        ...(ids.ga4MeasurementId ? { "europart-ga4-id": ids.ga4MeasurementId } : {}),
-        ...(ids.yandexMetrikaId ? { "europart-metrika-id": ids.yandexMetrikaId } : {}),
-        ...(ids.googleMerchantId
-          ? { "europart-merchant-id": ids.googleMerchantId }
-          : {}),
-      },
+    };
+    other = {
+      ...(ids.ga4MeasurementId ? { "europart-ga4-id": ids.ga4MeasurementId } : {}),
+      ...(ids.yandexMetrikaId ? { "europart-metrika-id": ids.yandexMetrikaId } : {}),
+      ...(ids.googleMerchantId
+        ? { "europart-merchant-id": ids.googleMerchantId }
+        : {}),
     };
   } catch {
     verification = undefined;
+    other = undefined;
   }
 
   return {
@@ -60,6 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ? { index: true, follow: true }
       : { index: false, follow: false },
     verification,
+    other,
     openGraph: {
       type: "website",
       locale: "ru_BY",
@@ -81,6 +85,9 @@ export default function RootLayout({
       className={`${manrope.variable} ${onest.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        <Suspense fallback={null}>
+          <AnalyticsBootstrap />
+        </Suspense>
         <Suspense fallback={null}>
           <StorefrontRedirectGate />
         </Suspense>

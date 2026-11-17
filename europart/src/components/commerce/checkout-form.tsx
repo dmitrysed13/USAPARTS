@@ -2,8 +2,11 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { getClientAttributionPayload } from "@/components/analytics/browser-cookies";
 import { buttonClassName } from "@/components/ui/button";
 import { Field, controlClassName } from "@/components/ui/field";
+import { purchaseOrderCreatedParams } from "@/modules/analytics/purchase-gate";
+import { trackAnalyticsEvent } from "@/modules/analytics/track";
 
 export type CheckoutDeliveryOption = {
   methodId: string;
@@ -52,6 +55,7 @@ export function CheckoutForm({
         const form = new FormData(event.currentTarget);
         startTransition(async () => {
           setError(null);
+          const attribution = getClientAttributionPayload();
           const response = await fetch("/api/checkout", {
             method: "POST",
             headers: { "content-type": "application/json" },
@@ -64,15 +68,31 @@ export function CheckoutForm({
               comment: String(form.get("comment") ?? ""),
               deliveryMethodId: methodId,
               checkoutMode: mode,
+              attribution,
             }),
           });
           const data = (await response.json()) as {
             message?: string;
             accessToken?: string;
+            number?: string;
+            totalCents?: number;
+            currency?: string;
+            checkoutMode?: string;
           };
           if (!response.ok || !data.accessToken) {
             setError(data.message ?? "Заказ не создан.");
             return;
+          }
+          if (data.number && typeof data.totalCents === "number") {
+            trackAnalyticsEvent({
+              name: "purchase_order_created",
+              params: purchaseOrderCreatedParams({
+                number: data.number,
+                totalCents: data.totalCents,
+                currency: data.currency ?? "BYN",
+                checkoutMode: data.checkoutMode ?? mode,
+              }),
+            });
           }
           router.push(`/order/${data.accessToken}`);
         });

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { buttonClassName } from "@/components/ui/button";
 import { controlClassName, Field } from "@/components/ui/field";
+import { trackAnalyticsEvent } from "@/modules/analytics/track";
 
 type VinFormValues = {
   vin: string;
@@ -75,6 +76,14 @@ export function VinRequestForm({
     } | null;
 
     if (response.status === 201 && body?.message) {
+      // Never send VIN / contact fields to analytics — only a success flag.
+      trackAnalyticsEvent({
+        name: "vin_search",
+        params: {
+          success: true,
+          has_part_number: Boolean(values.partNumber.trim()),
+        },
+      });
       setSuccess({ message: body.message, notice: body.vinNotice ?? null });
       return;
     }
