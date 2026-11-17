@@ -1,0 +1,30 @@
+{
+  "description": "John Craddock internal fields → Bamper import CSV columns",
+  "bamper_csv": {
+    "encoding": "utf-8-sig",
+    "delimiter": ";",
+    "lineterminator": "\n"
+  },
+  "columns": [
+    {"bamper": "article", "source": "article", "required": false},
+    {"bamper": "oem", "source": "oem", "required": false},
+    {"bamper": "name", "source": "name", "required": true},
+    {"bamper": "brand", "source": "brand", "required": false},
+    {"bamper": "category", "source": "category_path", "required": false},
+    {"bamper": "price", "source": "price", "required": false},
+    {"bamper": "currency", "source": "currency", "required": false},
+    {"bamper": "availability", "source": "availability", "required": false},
+    {"bamper": "description", "source": "description", "required": false},
+    {"bamper": "fitment", "source": "fitment", "required": false},
+    {"bamper": "cross_numbers", "source": "cross_numbers", "required": false},
+    {"bamper": "image_main", "source": "image_main_path", "required": false},
+    {"bamper": "image_extra", "source": "image_extra_paths", "required": false},
+    {"bamper": "source_url", "source": "url", "required": true},
+    {"bamper": "parse_date", "source": "parse_date", "required": false}
+  ],
+  "notes": [
+    "Leave missing fields empty; never invent price/stock/images.",
+    "price is JSON-LD offers.price (GBP; samples are inc. VAT).",
+    "brand is only set when inferred from a known manufacturer token in the name."
+  ]
+}

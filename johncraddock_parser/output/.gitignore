@@ -1,0 +1,7 @@
+johncraddock.sqlite3
+logs/
+images/
+exports/
+*.csv
+parse_report.md
+!.gitignore
