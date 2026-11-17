@@ -1,6 +1,6 @@
 import { connection } from "next/server";
 import type { VinRequestStatus } from "@/generated/prisma/client";
-import { requireAdminApi } from "@/modules/admin/guard";
+import { requireAdminApiAsync } from "@/modules/admin/guard";
 import { adminJson, fail, publicError } from "@/modules/admin/respond";
 import { getPrismaClient } from "@/lib/db/prisma";
 import { withDatabase } from "@/lib/db/errors";
@@ -23,7 +23,7 @@ export async function GET(
   context: { params: Promise<{ id: string }> },
 ) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "vin");
   if (!gate.ok) {
     return gate.response;
   }
@@ -72,7 +72,7 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> },
 ) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "vin");
   if (!gate.ok) {
     return gate.response;
   }

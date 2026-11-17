@@ -1,11 +1,11 @@
 import { connection } from "next/server";
-import { requireAdminApi } from "@/modules/admin/guard";
+import { requireAdminApiAsync } from "@/modules/admin/guard";
 import { adminJson, fail, publicError } from "@/modules/admin/respond";
 import { createFxRate, listFxRates } from "@/modules/commerce/fx-rates";
 
 export async function GET(request: Request) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "prices");
   if (!gate.ok) {
     return gate.response;
   }
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "prices");
   if (!gate.ok) {
     return gate.response;
   }

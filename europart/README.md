@@ -13,6 +13,7 @@
 - [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md)
 - [IMPORT_GUIDE.md](IMPORT_GUIDE.md)
 - [DATABASE_MIGRATION_GUIDE.md](DATABASE_MIGRATION_GUIDE.md)
+- [PRODUCTION.md](PRODUCTION.md) — env matrix, Docker, redirects, go-live blockers
 
 ## Локальный запуск
 
@@ -41,6 +42,8 @@ npm run typecheck
 npm run lint
 npm run test
 npm run build
+# after `npm run start` (or deployed URL):
+# BASE_URL=http://127.0.0.1:3000 npm run smoke
 ```
 
 ## Маршруты (SSR)

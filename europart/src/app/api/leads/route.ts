@@ -1,6 +1,8 @@
 import { connection } from "next/server";
 import { ATTR_FIRST_COOKIE, ATTR_LAST_COOKIE } from "@/modules/analytics/attribution";
 import { clientIpFromHeaders } from "@/lib/http/client-ip";
+import { LEAD_BODY_MAX, readJsonBody } from "@/lib/security/request-body";
+import { leadRateLimit, rateLimitResponse } from "@/lib/security/rate-limit";
 import { createLead } from "@/modules/commerce/leads";
 
 function cookieValue(request: Request, name: string): string | null {
@@ -18,8 +20,22 @@ function cookieValue(request: Request, name: string): string | null {
 
 export async function POST(request: Request) {
   await connection();
+  const limited = leadRateLimit.consume(clientIpFromHeaders(request.headers));
+  if (!limited.ok) {
+    return rateLimitResponse(limited.retryAfterSeconds);
+  }
   try {
-    const body = (await request.json()) as Record<string, unknown>;
+    const parsed = await readJsonBody(request, LEAD_BODY_MAX);
+    if (!parsed.ok) {
+      return Response.json(
+        { message: parsed.message },
+        { status: parsed.status, headers: { "cache-control": "no-store" } },
+      );
+    }
+    const body =
+      parsed.value && typeof parsed.value === "object"
+        ? (parsed.value as Record<string, unknown>)
+        : {};
     const attribution =
       body.attribution && typeof body.attribution === "object"
         ? (body.attribution as Record<string, unknown>)

@@ -1,12 +1,12 @@
 import { connection } from "next/server";
-import { requireAdminApi } from "@/modules/admin/guard";
+import { requireAdminApiAsync } from "@/modules/admin/guard";
 import { adminJson, fail, publicError } from "@/modules/admin/respond";
 import { listOffers, upsertOffer } from "@/modules/inventory/offers";
 import { toManagerPriceView } from "@/modules/commerce/retail-pricing";
 
 export async function GET(request: Request) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "stock");
   if (!gate.ok) {
     return gate.response;
   }
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "stock");
   if (!gate.ok) {
     return gate.response;
   }

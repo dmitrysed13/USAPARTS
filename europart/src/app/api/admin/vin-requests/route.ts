@@ -1,12 +1,12 @@
 import { connection } from "next/server";
-import { requireAdminApi } from "@/modules/admin/guard";
+import { requireAdminApiAsync } from "@/modules/admin/guard";
 import { adminJson, fail, publicError } from "@/modules/admin/respond";
 import { getPrismaClient } from "@/lib/db/prisma";
 import { withDatabase } from "@/lib/db/errors";
 
 export async function GET(request: Request) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "vin");
   if (!gate.ok) {
     return gate.response;
   }

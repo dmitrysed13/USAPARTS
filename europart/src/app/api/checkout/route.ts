@@ -1,5 +1,14 @@
 import { connection } from "next/server";
 import { ATTR_FIRST_COOKIE, ATTR_LAST_COOKIE } from "@/modules/analytics/attribution";
+import { clientIpFromHeaders } from "@/lib/http/client-ip";
+import {
+  CHECKOUT_BODY_MAX,
+  readJsonBody,
+} from "@/lib/security/request-body";
+import {
+  checkoutRateLimit,
+  rateLimitResponse,
+} from "@/lib/security/rate-limit";
 import { cartSetCookieHeader, readCartFromRequest } from "@/modules/commerce/cart-http";
 import { placeOrder } from "@/modules/commerce/checkout";
 import { resolveCartSecret } from "@/modules/commerce/cart-cookie";
@@ -37,11 +46,25 @@ export async function GET() {
 
 export async function POST(request: Request) {
   await connection();
+  const limited = checkoutRateLimit.consume(clientIpFromHeaders(request.headers));
+  if (!limited.ok) {
+    return rateLimitResponse(limited.retryAfterSeconds);
+  }
   try {
     if (!resolveCartSecret()) {
       throw new Error("Корзина недоступна: задайте CART_SECRET.");
     }
-    const body = (await request.json()) as Record<string, unknown>;
+    const parsed = await readJsonBody(request, CHECKOUT_BODY_MAX);
+    if (!parsed.ok) {
+      return Response.json(
+        { message: parsed.message },
+        { status: parsed.status, headers: { "cache-control": "no-store" } },
+      );
+    }
+    const body =
+      parsed.value && typeof parsed.value === "object"
+        ? (parsed.value as Record<string, unknown>)
+        : {};
     const lines = readCartFromRequest(request);
     const attribution =
       body.attribution && typeof body.attribution === "object"

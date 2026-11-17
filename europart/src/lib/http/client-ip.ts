@@ -1,4 +1,6 @@
-export function clientIpFromHeaders(headers: Headers): string {
+type HeaderReader = { get(name: string): string | null };
+
+export function clientIpFromHeaders(headers: HeaderReader): string {
   const forwarded = headers.get("x-forwarded-for");
   const first = forwarded?.split(",")[0]?.trim();
   if (first) {
