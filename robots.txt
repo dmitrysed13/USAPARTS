@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+Disallow: /search
+Disallow: /cart
+Disallow: /checkout
+Disallow: /compare
+Disallow: /send.php
+Disallow: /build_seo.py
+Disallow: /nginx-seo.conf
+
+Disallow: /*?sort=
+Disallow: /*?order=
+Disallow: /*?price=
+Disallow: /*?price_from=
+Disallow: /*?price_to=
+Disallow: /*?view=
+Disallow: /*?per_page=
+Disallow: /*?filter=
+
+Sitemap: https://usaparts.by/sitemap.xml

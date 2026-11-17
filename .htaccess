@@ -1,0 +1,7 @@
+DirectoryIndex index.html index.php
+
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://usaparts.by%{REQUEST_URI} [L,R=301]
+RewriteCond %{HTTP_HOST} ^www\.usaparts\.by$ [NC]
+RewriteRule ^ https://usaparts.by%{REQUEST_URI} [L,R=301]
