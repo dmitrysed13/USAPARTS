@@ -1152,7 +1152,7 @@ Sitemap: https://uspart.by/sitemap.xml
 RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://uspart.by%{REQUEST_URI} [L,R=301]
-RewriteCond %{HTTP_HOST} ^www\\.usaparts\\.by$ [NC]
+RewriteCond %{HTTP_HOST} ^www\\.uspart\\.by$ [NC]
 RewriteRule ^ https://uspart.by%{REQUEST_URI} [L,R=301]
 """
     (ROOT / ".htaccess").write_text(htaccess, encoding="utf-8")
