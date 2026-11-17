@@ -41,9 +41,8 @@ export default function PrivacyPage() {
       <section className="grid gap-3">
         <h2 className="font-display text-2xl font-semibold">Кто это видит</h2>
         <p className="leading-7">
-          Публичного списка заявок нет. Запись доступна через базу данных оператору
-          компании. Отдельного кабинета сотрудника на этом этапе нет, поэтому доступ
-          ограничивается доступом к серверу базы.
+          Публичного списка заявок нет. Записи доступны сотрудникам с соответствующими
+          правами в админке (VIN leads) и через защищённый admin API.
         </p>
       </section>
       <section className="grid gap-3">

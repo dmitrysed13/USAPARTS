@@ -30,7 +30,10 @@ export async function resetCatalogTables(): Promise<void> {
       "VinRequest",
       "Warehouse",
       "Supplier",
-      "SeoMetadata"
+      "SeoMetadata",
+      "RedirectRule",
+      "CompanySettings",
+      "StaffUser"
     RESTART IDENTITY CASCADE
   `);
 }

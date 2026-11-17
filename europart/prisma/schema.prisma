@@ -863,3 +863,56 @@ model SeoMetadata {
 
   @@unique([entityType, entityId])
 }
+
+/// Staff roles for admin panel RBAC (server-enforced). Better Auth may replace sessions later.
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  WAREHOUSE_MANAGER
+  SEO_MANAGER
+  B2B_MANAGER
+}
+
+model StaffUser {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  name         String
+  role         AdminRole
+  passwordHash String
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@index([role, isActive])
+}
+
+/// Singleton company profile for admin. Storefront only reads when publishToStorefront=true.
+model CompanySettings {
+  id                 String   @id @default(uuid()) @db.Uuid
+  orgName            String?
+  legalName          String?
+  unp                String?
+  legalAddress       String?
+  actualAddress      String?
+  phones             String?
+  email              String?
+  hours              String?
+  /// Explicit publish gate — empty/incomplete rows must stay off the storefront.
+  publishToStorefront Boolean @default(false)
+  updatedAt          DateTime @updatedAt @db.Timestamptz(3)
+  createdAt          DateTime @default(now()) @db.Timestamptz(3)
+}
+
+/// Structural redirects for SEO stage; admin CRUD ready, engine later.
+model RedirectRule {
+  id        String   @id @default(uuid()) @db.Uuid
+  fromPath  String   @unique
+  toPath    String
+  isActive  Boolean  @default(true)
+  note      String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([isActive])
+}

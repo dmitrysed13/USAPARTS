@@ -5,7 +5,8 @@ import { SearchField } from "@/components/catalog/search-field";
 import { VehiclePicker } from "@/components/catalog/vehicle-picker";
 import { buttonClassName } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { company, formatAddress } from "@/config/company";
+import { company as staticCompany } from "@/config/company";
+import { getStorefrontCompany } from "@/modules/admin/company-settings";
 import { readSelectedVehicle } from "@/modules/fitment/vehicle-http";
 
 export const metadata: Metadata = {
@@ -42,6 +43,42 @@ async function HomeVehiclePicker() {
   );
 }
 
+async function HomeContacts() {
+  const company = await getStorefrontCompany();
+  return (
+    <address className="rounded-2xl bg-surface-muted p-6 not-italic">
+      {company.showLegalBlock ? (
+        <>
+          <p className="font-semibold">{company.legalName}</p>
+          {company.unp ? <p className="mt-1 text-sm">УНП {company.unp}</p> : null}
+          {company.legalAddress ? <p className="mt-2">{company.legalAddress}</p> : null}
+          {company.actualAddress ? (
+            <p className="mt-1 text-sm text-ink-muted">{company.actualAddress}</p>
+          ) : null}
+        </>
+      ) : (
+        <p className="font-semibold">EUROPART</p>
+      )}
+      <p className="mt-4">
+        <a className="font-semibold text-brand" href={`tel:${company.phoneTel}`}>
+          {company.phoneDisplay}
+        </a>
+      </p>
+      <p className="mt-4">
+        <a
+          className="underline decoration-line underline-offset-4"
+          href={`mailto:${company.email}`}
+        >
+          {company.email}
+        </a>
+      </p>
+      {company.hoursText ? (
+        <p className="mt-4 text-sm text-ink-muted">{company.hoursText}</p>
+      ) : null}
+    </address>
+  );
+}
+
 export default function HomePage() {
   return (
     <>
@@ -69,9 +106,9 @@ export default function HomePage() {
               </Link>
               <a
                 className={buttonClassName("ghost-on-dark")}
-                href={`tel:${company.phoneTel}`}
+                href={`tel:${staticCompany.phoneTel}`}
               >
-                {company.phoneDisplay}
+                {staticCompany.phoneDisplay}
               </a>
             </div>
           </div>
@@ -144,35 +181,19 @@ export default function HomePage() {
               Контакты
             </h2>
             <p className="mt-3 text-ink-muted">
-              Данные сверены с публичной страницей europart.by. УНП, банк и юридические
-              тексты на ней не были указаны.
+              Контакты с витрины. Юр. блоки и УНП появляются только после явной публикации
+              полного профиля в админке — пустые и фейковые реквизиты не показываем.
             </p>
           </div>
-          <address className="rounded-2xl bg-surface-muted p-6 not-italic">
-            <p className="font-semibold">{company.legalName}</p>
-            <p className="mt-2">{formatAddress()}</p>
-            <p className="mt-4">
-              <a className="font-semibold text-brand" href={`tel:${company.phoneTel}`}>
-                {company.phoneDisplay}
-              </a>
-            </p>
-            <p className="text-sm text-ink-muted">{company.phoneNote}</p>
-            <p className="mt-4">
-              <a
-                className="underline decoration-line underline-offset-4"
-                href={`mailto:${company.email}`}
-              >
-                {company.email}
-              </a>
-            </p>
-            <ul className="mt-4 space-y-1 text-sm text-ink-muted">
-              {company.hours.map((slot) => (
-                <li key={slot.days}>
-                  {slot.days}: {slot.time}
-                </li>
-              ))}
-            </ul>
-          </address>
+          <Suspense
+            fallback={
+              <address className="rounded-2xl bg-surface-muted p-6 not-italic">
+                <p className="font-semibold">EUROPART</p>
+              </address>
+            }
+          >
+            <HomeContacts />
+          </Suspense>
         </Container>
       </section>
     </>
