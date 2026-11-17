@@ -35,5 +35,5 @@ Dashboard; Products; Categories; Makes/Models/Generations/Modifications/Engines;
 
 ## Verification
 
-- typecheck, lint, unit (70), build — green
+- typecheck, lint, unit (70), integration (13), build — green
 - Next.js security upgrade nudge deferred (ask separately)
