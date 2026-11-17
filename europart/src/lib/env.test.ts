@@ -20,8 +20,8 @@ describe("environment", () => {
     expect(parsed.DATABASE_URL).toContain("postgresql://");
   });
 
-  it("requires the production origin, database and auth secret together", () => {
-    expect(() => assertProductionEnv({})).toThrow(/production/);
+  it("requires the production origin, database and secrets together", () => {
+    expect(() => assertProductionEnv({})).toThrow(/production|NEXT_PUBLIC_SITE_URL/);
     expect(() =>
       assertProductionEnv({
         NODE_ENV: "production",
@@ -30,5 +30,20 @@ describe("environment", () => {
         BETTER_AUTH_SECRET: "this-is-a-test-secret-with-32-chars",
       }),
     ).not.toThrow();
+    expect(() =>
+      assertProductionEnv({
+        NEXT_PUBLIC_SITE_URL: "https://europart.by",
+        DATABASE_URL: "postgresql://user:pass@db:5432/europart",
+        ADMIN_SESSION_SECRET: "admin-session-16+",
+        CART_SECRET: "cart-secret-16chars",
+      }),
+    ).not.toThrow();
+    expect(() =>
+      assertProductionEnv({
+        NEXT_PUBLIC_SITE_URL: "https://europart.by",
+        DATABASE_URL: "postgresql://user:pass@db:5432/europart",
+        ADMIN_API_TOKEN: "admin-api-token-16",
+      }),
+    ).toThrow(/CART_SECRET/);
   });
 });

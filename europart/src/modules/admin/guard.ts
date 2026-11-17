@@ -51,6 +51,10 @@ export type AdminGate =
   | { ok: true; via: "token" | "session"; session?: AdminSessionPayload }
   | { ok: false; response: Response };
 
+/**
+ * Token-only gate (no session cookie). Prefer `requireAdminApiAsync` in App Router
+ * handlers so staff sessions and RBAC permissions are enforced.
+ */
 export function requireAdminApi(
   request: Request,
   permission?: AdminPermission,
@@ -68,8 +72,6 @@ export function requireAdminApi(
     return { ok: true, via: "token" };
   }
 
-  // Session cookie is checked asynchronously by requireAdminApiAsync for pages/API.
-  void permission;
   if (!expected) {
     return {
       ok: false,

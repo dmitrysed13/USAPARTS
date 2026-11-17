@@ -1,12 +1,12 @@
 import { connection } from "next/server";
-import { requireAdminApi } from "@/modules/admin/guard";
+import { requireAdminApiAsync } from "@/modules/admin/guard";
 import { adminJson, fail, publicError } from "@/modules/admin/respond";
 import { listActiveCategories } from "@/modules/catalog/repository";
 import { createCategory, vehicleAdminError } from "@/modules/fitment/vehicles";
 
 export async function GET(request: Request) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "categories");
   if (!gate.ok) {
     return gate.response;
   }
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "categories");
   if (!gate.ok) {
     return gate.response;
   }

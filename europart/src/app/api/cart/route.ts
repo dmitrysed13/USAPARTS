@@ -1,4 +1,7 @@
 import { connection } from "next/server";
+import { clientIpFromHeaders } from "@/lib/http/client-ip";
+import { CART_BODY_MAX, readJsonBody } from "@/lib/security/request-body";
+import { cartRateLimit, rateLimitResponse } from "@/lib/security/rate-limit";
 import { cartSetCookieHeader, mutateCart, readCartFromRequest } from "@/modules/commerce/cart-http";
 import { resolveCartLines } from "@/modules/commerce/cart-service";
 import { resolveCartSecret } from "@/modules/commerce/cart-cookie";
@@ -26,12 +29,26 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   await connection();
+  const limited = cartRateLimit.consume(clientIpFromHeaders(request.headers));
+  if (!limited.ok) {
+    return rateLimitResponse(limited.retryAfterSeconds);
+  }
   try {
-    const body = (await request.json()) as {
-      offerId?: string;
-      quantity?: number;
-      clear?: boolean;
-    };
+    const parsed = await readJsonBody(request, CART_BODY_MAX);
+    if (!parsed.ok) {
+      return Response.json(
+        { message: parsed.message },
+        { status: parsed.status, headers: { "cache-control": "no-store" } },
+      );
+    }
+    const body =
+      parsed.value && typeof parsed.value === "object"
+        ? (parsed.value as {
+            offerId?: string;
+            quantity?: number;
+            clear?: boolean;
+          })
+        : {};
     if (body.clear) {
       const setCookie = cartSetCookieHeader([]);
       if (!setCookie) {

@@ -1,12 +1,12 @@
 import { connection } from "next/server";
-import { requireAdminApi } from "@/modules/admin/guard";
+import { requireAdminApiAsync } from "@/modules/admin/guard";
 import { adminJson } from "@/modules/admin/respond";
 import { listOrders } from "@/modules/commerce/orders";
 import { orderStatusLabels, type OrderStatusId } from "@/modules/commerce/order-status";
 
 export async function GET(request: Request) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "orders");
   if (!gate.ok) {
     return gate.response;
   }
