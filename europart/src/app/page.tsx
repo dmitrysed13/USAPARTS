@@ -8,7 +8,7 @@ import { company, formatAddress } from "@/config/company";
 export const metadata: Metadata = {
   title: "Автозапчасти",
   description:
-    "EUROPART — европейские автозапчасти для Беларуси. Каталог ждёт реальный ассортимент. Корзины и онлайн-оплаты пока нет.",
+    "EUROPART — европейские автозапчасти для Беларуси. Каталог ждёт реальный ассортимент. Заказ через менеджера; онлайн-оплата — только при подключённом провайдере.",
   alternates: { canonical: "/" },
   robots: { index: false, follow: false },
 };

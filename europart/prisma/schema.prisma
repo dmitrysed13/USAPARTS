@@ -78,11 +78,19 @@ enum VinRequestStatus {
 
 enum OrderStatus {
   NEW
+  UNDER_REVIEW
+  AWAITING_CONFIRMATION
   CONFIRMED
+  AWAITING_PAYMENT
+  PAID
   PROCESSING
+  ORDERED_FROM_SUPPLIER
   SHIPPED
+  DELIVERED
+  /// Legacy alias from foundation draft; prefer DELIVERED.
   COMPLETED
   CANCELLED
+  RETURN
 }
 
 enum PaymentState {
@@ -90,6 +98,20 @@ enum PaymentState {
   AWAITING
   PAID
   FAILED
+  REFUNDED
+}
+
+enum CheckoutMode {
+  MANAGER
+  ONLINE
+}
+
+enum PaymentTransactionStatus {
+  CREATED
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
   REFUNDED
 }
 
@@ -455,6 +477,7 @@ model ProductOffer {
   updatedAt          DateTime          @updatedAt @db.Timestamptz(3)
   createdAt          DateTime          @default(now()) @db.Timestamptz(3)
   priceHistory       OfferPriceHistory[]
+  orderItems         OrderItem[]
 
   @@index([productId, availabilityStatus])
   @@index([productId, status])
@@ -632,46 +655,135 @@ model VinRequest {
   @@index([vin])
 }
 
-/// Guest/customer order draft for commerce stage. Checkout UI not wired yet.
+model DeliveryMethod {
+  id                    String   @id @default(uuid()) @db.Uuid
+  code                  String   @unique
+  name                  String
+  description           String?
+  requiresAddress       Boolean  @default(false)
+  /// Catalog hint only — checkout does not auto-trust this as final without manager confirm when flagged.
+  basePriceCents        Int?
+  etaDaysMin            Int?
+  etaDaysMax            Int?
+  managerConfirmsCost   Boolean  @default(true)
+  managerConfirmsEta    Boolean  @default(true)
+  isActive              Boolean  @default(true)
+  sortOrder             Int      @default(0)
+  createdAt             DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime @updatedAt @db.Timestamptz(3)
+  orders                Order[]
+
+  @@index([isActive, sortOrder])
+}
+
 model Order {
-  id              String       @id @default(uuid()) @db.Uuid
-  number          String       @unique
-  accessToken     String       @unique
-  status          OrderStatus  @default(NEW)
-  paymentState    PaymentState @default(NOT_CONNECTED)
-  customerName    String
-  customerPhone   String?
-  customerEmail   String?
-  comment         String?
-  deliveryMethod  String?
-  deliveryAddress String?
-  deliveryNote    String?
-  subtotalCents   Int
-  discountCents   Int          @default(0)
-  deliveryCents   Int          @default(0)
-  totalCents      Int
-  currency        String       @default("BYN") @db.Char(3)
-  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime     @updatedAt @db.Timestamptz(3)
-  items           OrderItem[]
+  id                           String        @id @default(uuid()) @db.Uuid
+  number                       String        @unique
+  accessToken                  String        @unique
+  status                       OrderStatus   @default(NEW)
+  paymentState                 PaymentState  @default(NOT_CONNECTED)
+  checkoutMode                 CheckoutMode  @default(MANAGER)
+  customerName                 String
+  customerPhone                String?
+  customerEmail                String?
+  customerCity                 String?
+  comment                      String?
+  deliveryMethodId             String?       @db.Uuid
+  deliveryMethodRef            DeliveryMethod? @relation(fields: [deliveryMethodId], references: [id], onDelete: Restrict)
+  /// Legacy free-text label kept for older rows / display fallback.
+  deliveryMethod               String?
+  deliveryAddress              String?
+  deliveryNote                 String?
+  deliveryEtaText              String?
+  deliveryCostConfirmedByManager Boolean     @default(false)
+  deliveryEtaConfirmedByManager  Boolean     @default(false)
+  paymentNote                  String?
+  subtotalCents                Int
+  discountCents                Int           @default(0)
+  deliveryCents                Int           @default(0)
+  totalCents                   Int
+  currency                     String        @default("BYN") @db.Char(3)
+  createdAt                    DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt                    DateTime      @updatedAt @db.Timestamptz(3)
+  items                        OrderItem[]
+  statusHistory                OrderStatusHistory[]
+  paymentTransactions          PaymentTransaction[]
 
   @@index([status, createdAt])
+  @@index([deliveryMethodId])
 }
 
 model OrderItem {
-  id             String  @id @default(uuid()) @db.Uuid
-  orderId        String  @db.Uuid
-  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId      String? @db.Uuid
-  product        Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
-  sku            String
-  name           String
-  unitPriceCents Int
-  quantity       Int
-  currency       String  @default("BYN") @db.Char(3)
+  id                String    @id @default(uuid()) @db.Uuid
+  orderId           String    @db.Uuid
+  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId         String?   @db.Uuid
+  product           Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
+  offerId           String?   @db.Uuid
+  offer             ProductOffer? @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  sku               String
+  name              String
+  unitPriceCents    Int
+  quantity          Int
+  currency          String    @default("BYN") @db.Char(3)
+  /// Offer.updatedAt captured at checkout for freshness audits.
+  offerUpdatedAt    DateTime? @db.Timestamptz(3)
+  priceCapturedAt   DateTime  @default(now()) @db.Timestamptz(3)
 
   @@index([orderId])
   @@index([productId])
+  @@index([offerId])
+}
+
+model OrderStatusHistory {
+  id         String       @id @default(uuid()) @db.Uuid
+  orderId    String       @db.Uuid
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus OrderStatus?
+  toStatus   OrderStatus
+  actor      String
+  note       String?
+  createdAt  DateTime     @default(now()) @db.Timestamptz(3)
+
+  @@index([orderId, createdAt])
+}
+
+model PaymentTransaction {
+  id              String                   @id @default(uuid()) @db.Uuid
+  orderId         String                   @db.Uuid
+  order           Order                    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider        String
+  externalId      String?
+  status          PaymentTransactionStatus @default(CREATED)
+  amountCents     Int
+  currency        String                   @default("BYN") @db.Char(3)
+  idempotencyKey  String                   @unique
+  failureReason   String?
+  metadata        Json?
+  createdAt       DateTime                 @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime                 @updatedAt @db.Timestamptz(3)
+  webhooks        PaymentWebhook[]
+
+  @@index([orderId, createdAt])
+  @@index([provider, externalId])
+  @@index([status])
+}
+
+model PaymentWebhook {
+  id              String              @id @default(uuid()) @db.Uuid
+  provider        String
+  eventId         String
+  signatureValid  Boolean
+  payload         Json
+  processed       Boolean             @default(false)
+  processError    String?
+  transactionId   String?             @db.Uuid
+  transaction     PaymentTransaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
+  processedAt     DateTime?           @db.Timestamptz(3)
+
+  @@unique([provider, eventId])
+  @@index([createdAt])
 }
 
 /// Leads for rare parts / price requests / B2B — SMTP + Telegram later.

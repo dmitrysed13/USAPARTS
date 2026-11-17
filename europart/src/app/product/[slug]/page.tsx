@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
+import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { buttonClassName } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { formatLeadTime } from "@/modules/commerce/availability";
@@ -168,8 +169,16 @@ export default async function ProductPage({
               </Link>
             )}
           </div>
+          <AddToCartButton
+            disabledReason={
+              product.price
+                ? null
+                : "Без розничной цены доступен только запрос менеджеру."
+            }
+            offerId={product.price ? product.offerId : null}
+          />
           <Link
-            className={buttonClassName("primary")}
+            className={buttonClassName("secondary")}
             href={`/vin-search?${requestParams.toString()}`}
           >
             Отправить запрос менеджеру

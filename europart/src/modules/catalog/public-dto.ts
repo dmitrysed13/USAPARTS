@@ -45,11 +45,14 @@ export type PublicProduct = {
   identifiers: PublicIdentifier[];
   compatibility: PublicCompatibility[];
   price: { amount: string; currency: string } | null;
+  /** Selected sellable offer for cart; null when no public price/offer. */
+  offerId: string | null;
   availability: PublicAvailability;
   leadTimeDays: number | null;
 };
 
 export type InternalOfferView = {
+  offerId?: string;
   retailPrice: MoneyValue | null;
   currency: string;
   availabilityStatus: OfferAvailability;
@@ -113,12 +116,13 @@ function minorUnits(value: MoneyValue | null): number | null {
 
 export function selectPublicOffer(offers: InternalOfferView[]): {
   price: PublicProduct["price"];
+  offerId: string | null;
   availability: PublicAvailability;
   leadTimeDays: number | null;
 } {
   const active = offers.filter((offer) => !offer.status || offer.status === "ACTIVE");
   if (active.length === 0) {
-    return { price: null, availability: "unknown", leadTimeDays: null };
+    return { price: null, offerId: null, availability: "unknown", leadTimeDays: null };
   }
 
   const ranked = [...active].sort((left, right) => {
@@ -144,6 +148,7 @@ export function selectPublicOffer(offers: InternalOfferView[]): {
   const amount = chosen.retailPrice ? chosen.retailPrice.toFixed(2) : null;
   return {
     price: amount ? { amount, currency: chosen.currency.trim() || "BYN" } : null,
+    offerId: chosen.offerId ?? null,
     availability: publicAvailability[status],
     leadTimeDays: status === "UNKNOWN" ? null : chosen.leadTime,
   };
@@ -208,6 +213,7 @@ export function toPublicProduct(input: {
         yearTo: row.yearTo,
       })),
     price: offer.price,
+    offerId: offer.offerId,
     availability: offer.availability,
     leadTimeDays: offer.leadTimeDays,
   };

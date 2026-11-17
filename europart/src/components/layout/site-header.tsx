@@ -6,6 +6,7 @@ const links = [
   { href: "/catalog", label: "Каталог" },
   { href: "/brands", label: "Марки" },
   { href: "/vin-search", label: "VIN" },
+  { href: "/cart", label: "Корзина" },
   { href: "/#contacts", label: "Контакты" },
 ] as const;
 

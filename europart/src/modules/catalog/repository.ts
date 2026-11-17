@@ -39,6 +39,7 @@ const categorySelect = {
 } as const;
 
 const publicOfferSelect = {
+  id: true,
   retailPrice: true,
   currency: true,
   availabilityStatus: true,
@@ -146,6 +147,7 @@ function mapProduct(
     identifiers: row.identifiers,
     compatibility,
     offers: row.offers.map((offer) => ({
+      offerId: offer.id,
       retailPrice: offer.retailPrice,
       currency: offer.currency,
       availabilityStatus: offer.availabilityStatus,

@@ -4,6 +4,7 @@
 | --- | --- |
 | `20261117120000_init_europart3_schema` | Foundation: vehicles + catalog + draft offers/orders |
 | `20261117180000_offers_suppliers_prices_stock` | §5: supplier metadata, offer stock/pricing fields, FX, markup, import, sync log, audit |
+| `20261117190000_cart_orders_payments` | §6: order statuses, delivery methods, payment tx/webhooks, order item offer snapshots |
 
 Провайдер: PostgreSQL. В init включается `pg_trgm`.
 

@@ -58,6 +58,7 @@ describe("public product DTO", () => {
     const serialized = JSON.stringify(product);
 
     expect(product.price).toEqual({ amount: "50.00", currency: "BYN" });
+    expect(product.offerId).toBeNull();
     expect(product.availability).toBe("in_stock");
     expect(product.oem).toBe("1K0 615 301 AA");
     expect(product.compatibility).toHaveLength(1);
@@ -83,11 +84,13 @@ describe("public product DTO", () => {
       ]),
     ).toEqual({
       price: { amount: "10.00", currency: "BYN" },
+      offerId: null,
       availability: "unknown",
       leadTimeDays: null,
     });
     expect(selectPublicOffer([])).toEqual({
       price: null,
+      offerId: null,
       availability: "unknown",
       leadTimeDays: null,
     });
@@ -97,6 +100,7 @@ describe("public product DTO", () => {
     expect(
       selectPublicOffer([
         {
+          offerId: "offer-1",
           retailPrice: { toFixed: () => "22.00" },
           currency: "BYN",
           availabilityStatus: "IN_STOCK",
@@ -107,6 +111,7 @@ describe("public product DTO", () => {
       ]),
     ).toEqual({
       price: { amount: "22.00", currency: "BYN" },
+      offerId: "offer-1",
       availability: "unknown",
       leadTimeDays: null,
     });
