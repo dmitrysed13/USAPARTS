@@ -4,19 +4,28 @@ import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { SearchField } from "@/components/catalog/search-field";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/state";
-import { closedMetadata } from "@/lib/seo/closed";
+import { JsonLdScript } from "@/components/seo/json-ld";
 import {
   listActiveCategories,
   listCategoriesWithProducts,
 } from "@/modules/catalog/repository";
 import { listVehicleBrands } from "@/modules/fitment/repository";
+import { buildSeo } from "@/modules/seo/generator";
+import { isIndexingEnabled } from "@/modules/seo/policy";
+import { breadcrumbJsonLd } from "@/modules/seo/schema";
 
-export const metadata = closedMetadata({
-  title: "Каталог",
-  description:
-    "Категории и марки EUROPART. Товары появляются после загрузки реального ассортимента.",
-  canonical: "/catalog",
-});
+export async function generateMetadata() {
+  await connection();
+  const withProducts = await listCategoriesWithProducts();
+  const indexingEnabled = await isIndexingEnabled();
+  return buildSeo({
+    kind: "catalog",
+    vars: {},
+    path: "/catalog",
+    indexingEnabled,
+    hasQualityContent: withProducts.length > 0,
+  }).metadata;
+}
 
 export default async function CatalogPage() {
   await connection();
@@ -29,6 +38,12 @@ export default async function CatalogPage() {
 
   return (
     <Container className="grid gap-12 py-10">
+      <JsonLdScript
+        data={breadcrumbJsonLd([
+          { name: "Главная", path: "/" },
+          { name: "Каталог", path: "/catalog" },
+        ])}
+      />
       <div className="grid gap-6">
         <Breadcrumbs items={[{ href: "/", label: "Главная" }, { label: "Каталог" }]} />
         <div>

@@ -140,6 +140,21 @@ enum SeoEntityType {
   PART_BRAND
 }
 
+enum SeoRobotsMode {
+  AUTO
+  INDEX
+  NOINDEX
+}
+
+enum SemanticClusterIntent {
+  COMMERCIAL_BROAD
+  COMMERCIAL_MID
+  COMMERCIAL_NARROW
+  INFORMATIONAL
+  GEO
+  B2B
+}
+
 enum OfferStatus {
   ACTIVE
   INACTIVE
@@ -859,9 +874,56 @@ model SeoMetadata {
   description   String?
   h1            String?
   canonicalPath String?
+  /// Manual SEO body; template alone is not unique content.
+  seoText       String?
+  robotsMode    SeoRobotsMode @default(AUTO)
+  ogImageUrl    String?
   updatedAt     DateTime      @updatedAt @db.Timestamptz(3)
 
   @@unique([entityType, entityId])
+}
+
+/// Keyword cluster storage. Does NOT auto-generate landing pages.
+model SemanticCluster {
+  id          String                 @id @default(uuid()) @db.Uuid
+  slug        String                 @unique
+  name        String
+  intent      SemanticClusterIntent
+  /// Planned or editorial target path — never invent pages from this alone.
+  targetPath  String?
+  notes       String?
+  isActive    Boolean                @default(true)
+  createdAt   DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime               @updatedAt @db.Timestamptz(3)
+  keywords    SemanticClusterKeyword[]
+
+  @@index([intent, isActive])
+}
+
+model SemanticClusterKeyword {
+  id        String          @id @default(uuid()) @db.Uuid
+  clusterId String          @db.Uuid
+  cluster   SemanticCluster @relation(fields: [clusterId], references: [id], onDelete: Cascade)
+  phrase    String
+  locale    String          @default("ru")
+  createdAt DateTime        @default(now()) @db.Timestamptz(3)
+
+  @@unique([clusterId, phrase])
+  @@index([phrase])
+}
+
+/// Analytics / webmaster verification IDs. Env vars override when set.
+model SeoSettings {
+  id                          String   @id @default(uuid()) @db.Uuid
+  /// Master switch for public indexing; also gated by SEO_INDEXING_ENABLED env.
+  indexingEnabled             Boolean  @default(false)
+  ga4MeasurementId            String?
+  gscVerification             String?
+  yandexMetrikaId             String?
+  yandexWebmasterVerification String?
+  googleMerchantId            String?
+  updatedAt                   DateTime @updatedAt @db.Timestamptz(3)
+  createdAt                   DateTime @default(now()) @db.Timestamptz(3)
 }
 
 /// Staff roles for admin panel RBAC (server-enforced). Better Auth may replace sessions later.
@@ -904,7 +966,7 @@ model CompanySettings {
   createdAt          DateTime @default(now()) @db.Timestamptz(3)
 }
 
-/// Structural redirects for SEO stage; admin CRUD ready, engine later.
+/// 301/alias rules applied at request time by the SEO redirect gate.
 model RedirectRule {
   id        String   @id @default(uuid()) @db.Uuid
   fromPath  String   @unique
