@@ -12,7 +12,7 @@ export default async function AdminRedirectsPage() {
   return (
     <div className="grid gap-8">
       <AdminPageHeader
-        description="CRUD правил готов. Применение редиректов на витрине — SEO-этап."
+        description="301 из RedirectRule применяются на витрине (StorefrontRedirectGate). /parts/{slug} → /product/{slug}."
         title="Redirects"
       />
       <RedirectForm />

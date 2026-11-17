@@ -13,8 +13,14 @@ import {
   productTypeLabels,
 } from "@/modules/catalog/labels";
 import { publicAvailabilityLabels } from "@/modules/catalog/public-dto";
+import { JsonLdScript } from "@/components/seo/json-ld";
+import { InternalLinks } from "@/components/seo/internal-links";
 import { getPublishedProduct } from "@/modules/catalog/repository";
+import { buildSeo } from "@/modules/seo/generator";
+import { linksForProduct } from "@/modules/seo/linking";
 import { readSeoOverlay } from "@/modules/seo/overlay";
+import { isIndexingEnabled } from "@/modules/seo/policy";
+import { breadcrumbJsonLd, productJsonLd } from "@/modules/seo/schema";
 import { closedMetadata } from "@/lib/seo/closed";
 
 function money(amount: string, currency: string): string {
@@ -35,16 +41,29 @@ export async function generateMetadata({
   if (!product) {
     return closedMetadata({ title: "Товар", canonical: "/catalog" });
   }
-  const seo = await readSeoOverlay("PRODUCT", product.id, {
+  const path = `/product/${product.slug}`;
+  const overlay = await readSeoOverlay("PRODUCT", product.id, {
     title: product.name,
     description: product.description,
-    canonicalPath: `/product/${product.slug}`,
+    canonicalPath: path,
   });
-  return closedMetadata({
-    title: seo.title,
-    description: seo.description,
-    canonical: seo.canonicalPath,
-  });
+  const indexingEnabled = await isIndexingEnabled();
+  const hasQualityContent = Boolean(product.price?.amount);
+  return buildSeo({
+    kind: "product",
+    vars: {
+      name: product.name,
+      article: product.article ?? undefined,
+      partBrand: product.partBrand?.name,
+      category: product.category.name,
+    },
+    path,
+    indexingEnabled,
+    hasQualityContent,
+    overlay,
+    ogImageUrl: product.images[0]?.url ?? overlay.ogImageUrl,
+    robotsMode: overlay.robotsMode,
+  }).metadata;
 }
 
 export default async function ProductPage({
@@ -58,11 +77,29 @@ export default async function ProductPage({
   if (!product) {
     notFound();
   }
-  const seo = await readSeoOverlay("PRODUCT", product.id, {
+  const path = `/product/${product.slug}`;
+  const overlay = await readSeoOverlay("PRODUCT", product.id, {
     title: product.name,
     description: product.description,
-    canonicalPath: `/product/${product.slug}`,
+    canonicalPath: path,
   });
+  const indexingEnabled = await isIndexingEnabled();
+  const seo = buildSeo({
+    kind: "product",
+    vars: {
+      name: product.name,
+      article: product.article ?? undefined,
+      partBrand: product.partBrand?.name,
+      category: product.category.name,
+    },
+    path,
+    indexingEnabled,
+    hasQualityContent: Boolean(product.price?.amount),
+    overlay,
+    ogImageUrl: product.images[0]?.url ?? overlay.ogImageUrl,
+    robotsMode: overlay.robotsMode,
+  });
+  const related = await linksForProduct(product);
   const requestParams = new URLSearchParams({ partName: product.name });
   if (product.article) {
     requestParams.set("partNumber", product.article);
@@ -96,6 +133,26 @@ export default async function ProductPage({
 
   return (
     <Container className="grid gap-8 py-10">
+      <JsonLdScript
+        data={[
+          breadcrumbJsonLd([
+            { name: "Главная", path: "/" },
+            { name: "Каталог", path: "/catalog" },
+            { name: product.category.name, path: `/catalog/${product.category.slug}` },
+            { name: product.name, path },
+          ]),
+          productJsonLd({
+            name: product.name,
+            path,
+            description: product.description ?? seo.description,
+            sku: product.article ?? product.oem,
+            brandName: product.partBrand?.name,
+            imageUrl: product.images[0]?.url,
+            price: product.price,
+            availability: product.availability,
+          }),
+        ]}
+      />
       <Breadcrumbs
         items={[
           { href: "/", label: "Главная" },
@@ -249,6 +306,15 @@ export default async function ProductPage({
           </ul>
         </section>
       ) : null}
+      {seo.seoText ? (
+        <section>
+          <h2 className="font-display text-2xl font-semibold">SEO-текст</h2>
+          <p className="mt-3 max-w-3xl whitespace-pre-wrap leading-7 text-ink-muted">
+            {seo.seoText}
+          </p>
+        </section>
+      ) : null}
+      <InternalLinks links={related} />
     </Container>
   );
 }

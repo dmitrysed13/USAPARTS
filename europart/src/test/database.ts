@@ -33,7 +33,10 @@ export async function resetCatalogTables(): Promise<void> {
       "SeoMetadata",
       "RedirectRule",
       "CompanySettings",
-      "StaffUser"
+      "StaffUser",
+      "SemanticClusterKeyword",
+      "SemanticCluster",
+      "SeoSettings"
     RESTART IDENTITY CASCADE
   `);
 }

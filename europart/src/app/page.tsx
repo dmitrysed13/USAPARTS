@@ -3,11 +3,13 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { SearchField } from "@/components/catalog/search-field";
 import { VehiclePicker } from "@/components/catalog/vehicle-picker";
+import { JsonLdScript } from "@/components/seo/json-ld";
 import { buttonClassName } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { company as staticCompany } from "@/config/company";
 import { getStorefrontCompany } from "@/modules/admin/company-settings";
 import { readSelectedVehicle } from "@/modules/fitment/vehicle-http";
+import { organizationJsonLd, websiteJsonLd } from "@/modules/seo/schema";
 
 export const metadata: Metadata = {
   title: "Автозапчасти",
@@ -41,6 +43,11 @@ async function HomeVehiclePicker() {
       }
     />
   );
+}
+
+async function HomeJsonLd() {
+  const company = await getStorefrontCompany();
+  return <JsonLdScript data={[organizationJsonLd(company), websiteJsonLd()]} />;
 }
 
 async function HomeContacts() {
@@ -82,6 +89,9 @@ async function HomeContacts() {
 export default function HomePage() {
   return (
     <>
+      <Suspense fallback={null}>
+        <HomeJsonLd />
+      </Suspense>
       <section className="bg-panel text-panel-foreground">
         <Container className="grid items-center gap-12 py-16 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:py-24">
           <div>

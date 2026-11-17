@@ -493,6 +493,35 @@ export async function getPublishedProduct(slug: string): Promise<PublicProduct |
   return row ? mapProduct(row, true) : null;
 }
 
+/** OEM landing: published products with matching OEM and a priced active offer. */
+export async function listPublishedProductsByOem(oemRaw: string): Promise<{
+  oem: string;
+  items: PublicProduct[];
+}> {
+  const oem = oemRaw.trim();
+  if (!oem) {
+    return { oem, items: [] };
+  }
+  const rows = await withDatabase(() =>
+    db().product.findMany({
+      where: {
+        ...publishedWhere(),
+        oem: { equals: oem, mode: "insensitive" },
+        offers: {
+          some: {
+            status: "ACTIVE",
+            retailPrice: { not: null },
+          },
+        },
+      },
+      include: productInclude,
+      orderBy: { updatedAt: "desc" },
+      take: 48,
+    }),
+  );
+  return { oem, items: rows.map((row) => mapProduct(row, false)) };
+}
+
 export async function listCategoriesForFitment(
   scope: FitmentScopeInput,
 ): Promise<{ name: string; slug: string; description: string | null }[]> {
