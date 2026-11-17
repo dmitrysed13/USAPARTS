@@ -17,6 +17,7 @@ export {
   websiteJsonLd,
   productJsonLd,
   articleJsonLd,
+  faqPageJsonLd,
 } from "@/modules/seo/schema";
 export { linksForProduct, linksForCategory } from "@/modules/seo/linking";
 export { buildSitemapSlice, SITEMAP_IDS } from "@/modules/seo/sitemap";

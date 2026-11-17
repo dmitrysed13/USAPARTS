@@ -123,6 +123,7 @@
 - `Cart`, `CartItem`, `Order`, `OrderItem`, `Payment`, `Delivery`, `Address`. Нет корзины и checkout.
 - `StockMovement` как отдельный журнал движений склада — позже; текущий остаток в `ProductOffer` + `stockUpdatedAt`.
 - `ProductGroup`, варианты и `ProductAlternative`. Кроссы живут в `ProductIdentifier`.
-- `Favorite`, `SearchHistory`, `Review`, `Article`, `Page`, `FaqItem`. Контент и отзывы не публикуются без подтверждения. Страница `/privacy` — статичный текст, не CMS.
+- `Favorite`, `SearchHistory`. Страница `/privacy` — статичный текст, не CMS.
+- CMS (§9): `CmsDocument` (+ images / related products) покрывает Article / Guide / FAQ / Review / category & vehicle content. Отзывы на витрине только при `PUBLISHED` + `reviewConfirmed`. Seed автоспама нет.
 - `SeoTemplate`, `Redirect`. Каноникал уже есть у страниц и в `SeoMetadata`.
 - Полный admin UI и Better Auth — следующие PR; §5 даёт token-gated admin API.

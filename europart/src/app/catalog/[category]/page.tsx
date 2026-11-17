@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { CatalogFilters } from "@/components/catalog/catalog-filters";
 import { Pagination } from "@/components/catalog/pagination";
 import { ProductGrid } from "@/components/catalog/product-card";
+import { CmsSection } from "@/components/content/cms-section";
 import { Container } from "@/components/ui/container";
 import { closedMetadata } from "@/lib/seo/closed";
 import { catalogHref, parseCatalogFilters } from "@/modules/catalog/filters";
@@ -14,6 +15,7 @@ import {
   listPartBrandsForProducts,
   listPublishedProducts,
 } from "@/modules/catalog/repository";
+import { getPublishedCategoryContent } from "@/modules/content/public";
 import { readSeoOverlay } from "@/modules/seo/overlay";
 
 async function loadCategory(slug: string) {
@@ -59,7 +61,7 @@ export default async function CategoryPage({
 
   const filters = parseCatalogFilters(await searchParams);
   const scope = { categoryId: { in: context.categoryIds } };
-  const [page, partBrands, seo] = await Promise.all([
+  const [page, partBrands, seo, cmsContent] = await Promise.all([
     listPublishedProducts(filters, scope),
     listPartBrandsForProducts(scope),
     readSeoOverlay("CATEGORY", context.category.id, {
@@ -67,6 +69,7 @@ export default async function CategoryPage({
       description: context.category.description,
       canonicalPath: `/catalog/${context.category.slug}`,
     }),
+    getPublishedCategoryContent(context.category.id),
   ]);
   const path = `/catalog/${context.category.slug}`;
 
@@ -93,6 +96,9 @@ export default async function CategoryPage({
           </p>
         ) : null}
       </div>
+      {cmsContent ? (
+        <CmsSection body={cmsContent.body} title={cmsContent.title} />
+      ) : null}
       {context.children.length > 0 ? (
         <ul className="flex flex-wrap gap-2">
           {context.children.map((child) => (

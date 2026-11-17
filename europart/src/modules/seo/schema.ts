@@ -107,15 +107,61 @@ export function articleJsonLd(input: {
   path: string;
   description?: string | null;
   datePublished?: string | null;
+  dateModified?: string | null;
+  authorName?: string | null;
+  imageUrl?: string | null;
 }): JsonLd {
-  return {
+  const data: JsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: input.headline,
     url: absoluteUrl(input.path),
-    description: input.description || undefined,
-    datePublished: input.datePublished || undefined,
     inLanguage: "ru-BY",
+  };
+  if (input.description) {
+    data.description = input.description;
+  }
+  if (input.datePublished) {
+    data.datePublished = input.datePublished;
+  }
+  if (input.dateModified) {
+    data.dateModified = input.dateModified;
+  }
+  if (input.authorName) {
+    data.author = { "@type": "Person", name: input.authorName };
+  }
+  if (input.imageUrl) {
+    data.image = [input.imageUrl];
+  }
+  return data;
+}
+
+/**
+ * FAQPage only when real Q&A pairs exist. Empty FAQ must not emit this schema.
+ */
+export function faqPageJsonLd(
+  items: Array<{ question: string; answer: string }>,
+): JsonLd | null {
+  const usable = items
+    .map((item) => ({
+      question: item.question.trim(),
+      answer: item.answer.trim(),
+    }))
+    .filter((item) => item.question.length > 0 && item.answer.length >= 20);
+  if (usable.length === 0) {
+    return null;
+  }
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: usable.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
   };
 }
 

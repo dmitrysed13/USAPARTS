@@ -34,7 +34,7 @@ export const adminNav: AdminNavItem[] = [
   { href: "/admin/import", label: "Excel import", permission: "import" },
   { href: "/admin/integrations", label: "API integrations", permission: "integrations" },
   { href: "/admin/seo", label: "SEO", permission: "seo" },
-  { href: "/admin/articles", label: "Articles", permission: "articles", stub: true },
+  { href: "/admin/articles", label: "Articles", permission: "articles" },
   { href: "/admin/redirects", label: "Redirects", permission: "redirects" },
   { href: "/admin/company", label: "Company settings", permission: "company" },
   { href: "/admin/staff", label: "Staff", permission: "staff" },
