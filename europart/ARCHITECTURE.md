@@ -47,9 +47,9 @@ Cache Components включён. Статичная оболочка стран�
 | imports       | 5    | CSV/XLSX preview → commit, история (§5)                       |
 | integrations  | 5    | SupplierAdapter + порты внешних систем                        |
 | notifications | 4    | Почта и Telegram                                              |
-| content       | 6    | Страницы, FAQ, статьи, отзывы                                 |
-| seo           | 7    | Метаданные, sitemap, canonical                                |
-| admin         | 6    | Операции сотрудников                                          |
+| content       | 9    | CMS: статьи, FAQ, инструкции, отзывы, контент категорий/авто  |
+| seo           | 8    | Метаданные, sitemap, canonical, schema.org                    |
+| admin         | 7    | Операции сотрудников                                          |
 
 Публичный каталог собирает `PublicProduct` и не выбирает `purchasePrice`, `b2bPrice`, `supplierId`, количество и резерв. Если розничной цены нет, карточка показывает ссылку «Уточнить цену». Если предложение не подтвердило наличие, статус остаётся «Наличие не подтверждено».
 

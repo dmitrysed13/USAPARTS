@@ -35,6 +35,15 @@ export async function SiteFooter() {
             aria-label="Служебные страницы"
             className="mt-4 flex flex-wrap gap-x-4 gap-y-2"
           >
+            <Link className="hover:text-white" href="/blog">
+              Статьи
+            </Link>
+            <Link className="hover:text-white" href="/guides">
+              Инструкции
+            </Link>
+            <Link className="hover:text-white" href="/faq">
+              FAQ
+            </Link>
             <Link className="hover:text-white" href="/privacy">
               Данные заявки
             </Link>

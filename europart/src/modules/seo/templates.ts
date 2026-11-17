@@ -10,7 +10,11 @@ export type SeoTemplateKind =
   | "product"
   | "oem"
   | "partBrand"
-  | "geo";
+  | "geo"
+  | "article"
+  | "guide"
+  | "faq"
+  | "review";
 
 export type SeoTemplateVars = {
   category?: string;
@@ -25,6 +29,8 @@ export type SeoTemplateVars = {
   condition?: string;
   oem?: string;
   geo?: string;
+  /** CMS headline / FAQ question. */
+  headline?: string;
 };
 
 export type SeoTemplateResult = {
@@ -130,6 +136,39 @@ export function applySeoTemplate(
         title: `Автозапчасти ${geo} — EUROPART`,
         description: `Автозапчасти с доставкой по ${geo}. Минск в шаблонах не подставляется автоматически.`,
         h1: `Автозапчасти ${geo}`,
+      };
+    case "article": {
+      const headline = clean(vars.headline) || name || "Статья";
+      return {
+        title: `${headline} — EUROPART`,
+        description:
+          clean(vars.headline) || name
+            ? `${headline}. Полезные материалы EUROPART без шаблонного спама.`
+            : "Статьи EUROPART.",
+        h1: headline,
+      };
+    }
+    case "guide": {
+      const headline = clean(vars.headline) || name || "Инструкция";
+      return {
+        title: `${headline} — инструкция | EUROPART`,
+        description: `${headline}. Технические инструкции EUROPART.`,
+        h1: headline,
+      };
+    }
+    case "faq":
+      return {
+        title: "FAQ — EUROPART",
+        description:
+          "Ответы на частые вопросы о подборе, доставке и заказах. Пустой FAQ не индексируется.",
+        h1: "Частые вопросы",
+      };
+    case "review":
+      return {
+        title: "Отзывы — EUROPART",
+        description:
+          "Подтверждённые отзывы клиентов EUROPART. Без выдуманных оценок и AggregateRating.",
+        h1: "Отзывы",
       };
     default:
       return { title: "EUROPART", description: "", h1: "EUROPART" };

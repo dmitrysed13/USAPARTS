@@ -138,6 +138,24 @@ enum SeoEntityType {
   VEHICLE_ENGINE
   PRODUCT
   PART_BRAND
+  /// CMS document (article / guide / FAQ / review / section content).
+  CMS_DOCUMENT
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+/// Editorial content kinds. Empty CMS is OK — no auto-spam seed.
+enum ContentKind {
+  ARTICLE
+  GUIDE
+  FAQ
+  REVIEW
+  CATEGORY_CONTENT
+  VEHICLE_CONTENT
 }
 
 enum SeoRobotsMode {
@@ -228,39 +246,42 @@ model Category {
   isActive    Boolean    @default(true)
   createdAt   DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime   @updatedAt @db.Timestamptz(3)
-  products    Product[]
+  products      Product[]
+  cmsDocuments  CmsDocument[]
 
   @@index([parentId])
   @@index([isActive, sortOrder])
 }
 
 model VehicleBrand {
-  id          String         @id @default(uuid()) @db.Uuid
-  name        String
-  slug        String         @unique
-  logo        String?
-  description String?
-  isActive    Boolean        @default(true)
-  sortOrder   Int            @default(0)
-  createdAt   DateTime       @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime       @updatedAt @db.Timestamptz(3)
-  models      VehicleModel[]
+  id           String         @id @default(uuid()) @db.Uuid
+  name         String
+  slug         String         @unique
+  logo         String?
+  description  String?
+  isActive     Boolean        @default(true)
+  sortOrder    Int            @default(0)
+  createdAt    DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime       @updatedAt @db.Timestamptz(3)
+  models       VehicleModel[]
+  cmsDocuments CmsDocument[]
 
   @@index([isActive, sortOrder])
 }
 
 model VehicleModel {
-  id          String              @id @default(uuid()) @db.Uuid
-  brandId     String              @db.Uuid
-  brand       VehicleBrand        @relation(fields: [brandId], references: [id], onDelete: Restrict)
-  name        String
-  slug        String
-  startYear   Int?
-  endYear     Int?
-  isActive    Boolean             @default(true)
-  createdAt   DateTime            @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime            @updatedAt @db.Timestamptz(3)
-  generations VehicleGeneration[]
+  id           String              @id @default(uuid()) @db.Uuid
+  brandId      String              @db.Uuid
+  brand        VehicleBrand        @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  name         String
+  slug         String
+  startYear    Int?
+  endYear      Int?
+  isActive     Boolean             @default(true)
+  createdAt    DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime            @updatedAt @db.Timestamptz(3)
+  generations  VehicleGeneration[]
+  cmsDocuments CmsDocument[]
 
   @@unique([brandId, slug])
   @@index([brandId, isActive])
@@ -374,6 +395,7 @@ model Product {
   compatibilities   ProductCompatibility[]
   offers            ProductOffer[]
   orderItems        OrderItem[]
+  cmsLinks          CmsDocumentProduct[]
 
   @@index([categoryId, status])
   @@index([partBrandId])
@@ -937,16 +959,79 @@ enum AdminRole {
 }
 
 model StaffUser {
-  id           String    @id @default(uuid()) @db.Uuid
-  email        String    @unique
-  name         String
-  role         AdminRole
-  passwordHash String
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+  id            String        @id @default(uuid()) @db.Uuid
+  email         String        @unique
+  name          String
+  role          AdminRole
+  passwordHash  String
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @db.Timestamptz(3)
+  cmsDocuments  CmsDocument[]
 
   @@index([role, isActive])
+}
+
+/// Editorial CMS document. Publish gate required; reviews also need reviewConfirmed.
+model CmsDocument {
+  id              String        @id @default(uuid()) @db.Uuid
+  kind            ContentKind
+  status          ContentStatus @default(DRAFT)
+  slug            String
+  title           String
+  excerpt         String?
+  /// Plain-text / paragraph body. No auto-generated spam templates.
+  body            String
+  coverImageUrl   String?
+  /// Display author attribution (real editor/staff name — not invented expertise).
+  authorName      String?
+  authorStaffId   String?       @db.Uuid
+  authorStaff     StaffUser?    @relation(fields: [authorStaffId], references: [id], onDelete: SetNull)
+  publishedAt     DateTime?     @db.Timestamptz(3)
+  /// Reviews stay off the storefront until staff confirms authenticity.
+  reviewConfirmed Boolean       @default(false)
+  categoryId      String?       @db.Uuid
+  category        Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  vehicleBrandId  String?       @db.Uuid
+  vehicleBrand    VehicleBrand? @relation(fields: [vehicleBrandId], references: [id], onDelete: SetNull)
+  vehicleModelId  String?       @db.Uuid
+  vehicleModel    VehicleModel? @relation(fields: [vehicleModelId], references: [id], onDelete: SetNull)
+  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime      @updatedAt @db.Timestamptz(3)
+  images          CmsDocumentImage[]
+  relatedProducts CmsDocumentProduct[]
+
+  @@unique([kind, slug])
+  @@index([status, kind, publishedAt])
+  @@index([categoryId, status])
+  @@index([vehicleBrandId, status])
+  @@index([vehicleModelId, status])
+}
+
+model CmsDocumentImage {
+  id         String      @id @default(uuid()) @db.Uuid
+  documentId String      @db.Uuid
+  document   CmsDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  url        String
+  alt        String?
+  sortOrder  Int         @default(0)
+  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
+
+  @@index([documentId, sortOrder])
+}
+
+model CmsDocumentProduct {
+  id         String      @id @default(uuid()) @db.Uuid
+  documentId String      @db.Uuid
+  document   CmsDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  productId  String      @db.Uuid
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sortOrder  Int         @default(0)
+  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
+
+  @@unique([documentId, productId])
+  @@index([productId])
+  @@index([documentId, sortOrder])
 }
 
 /// Singleton company profile for admin. Storefront only reads when publishToStorefront=true.

@@ -23,4 +23,15 @@ describe("SEO templates", () => {
     expect(oem.title).toContain("OEM");
     expect(oem.h1).toContain("1K0 615 301 AA");
   });
+
+  it("builds article and FAQ templates", () => {
+    const article = applySeoTemplate("article", {
+      headline: "Замена тормозных колодок",
+    });
+    expect(article.title).toContain("Замена тормозных колодок");
+    expect(article.h1).toBe("Замена тормозных колодок");
+
+    const faq = applySeoTemplate("faq", {});
+    expect(faq.h1).toBe("Частые вопросы");
+  });
 });

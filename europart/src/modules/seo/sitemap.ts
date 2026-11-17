@@ -3,11 +3,20 @@ import "server-only";
 import type { MetadataRoute } from "next";
 import { getPrismaClient } from "@/lib/db/prisma";
 import { withDatabase } from "@/lib/db/errors";
+import { listCmsSitemapEntries } from "@/modules/content/public";
+import { cmsPublicPath } from "@/modules/content/paths";
 import { absoluteUrl } from "@/modules/seo/canonical";
 import { brandPath, catalogPath, productPath } from "@/modules/seo/paths";
 import { isIndexingEnabled } from "@/modules/seo/policy";
 
-export const SITEMAP_IDS = ["pages", "categories", "brands", "products", "oem"] as const;
+export const SITEMAP_IDS = [
+  "pages",
+  "categories",
+  "brands",
+  "products",
+  "oem",
+  "articles",
+] as const;
 export type SitemapId = (typeof SITEMAP_IDS)[number];
 
 function entry(path: string, lastModified?: Date | null): MetadataRoute.Sitemap[number] {
@@ -38,7 +47,51 @@ export async function buildSitemapSlice(id: SitemapId): Promise<MetadataRoute.Si
   }
 
   if (id === "pages") {
-    return [entry("/"), entry("/catalog"), entry("/brands")];
+    const base = [entry("/"), entry("/catalog"), entry("/brands")];
+    // Index hubs only when they have published quality content.
+    const [cmsRows, faqs, reviews] = await Promise.all([
+      listCmsSitemapEntries(),
+      withDatabase(() =>
+        getPrismaClient().cmsDocument.count({
+          where: { status: "PUBLISHED", kind: "FAQ" },
+        }),
+      ),
+      withDatabase(() =>
+        getPrismaClient().cmsDocument.count({
+          where: {
+            status: "PUBLISHED",
+            kind: "REVIEW",
+            reviewConfirmed: true,
+          },
+        }),
+      ),
+    ]);
+    if (cmsRows.some((row) => row.kind === "ARTICLE")) {
+      base.push(entry("/blog"));
+    }
+    if (cmsRows.some((row) => row.kind === "GUIDE")) {
+      base.push(entry("/guides"));
+    }
+    if (faqs > 0) {
+      base.push(entry("/faq"));
+    }
+    if (reviews > 0) {
+      base.push(entry("/reviews"));
+    }
+    return base;
+  }
+
+  if (id === "articles") {
+    const rows = await listCmsSitemapEntries();
+    return rows
+      .map((row) => {
+        const path = cmsPublicPath(row.kind, row.slug);
+        if (!path || path.includes("#")) {
+          return null;
+        }
+        return entry(path, row.updatedAt ?? row.publishedAt);
+      })
+      .filter((row): row is MetadataRoute.Sitemap[number] => Boolean(row));
   }
 
   if (id === "categories") {
