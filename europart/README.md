@@ -1,6 +1,6 @@
 # EUROPART 3.0
 
-Европейские автозапчасти для Беларуси (Минск-first). App Router SSR-витрина: каталог, поиск по артикулу, заявка по VIN. **§5:** поставщики, предложения, цены BYN (FX + наценка), склады, импорт CSV/XLSX, SupplierAdapter. Корзина и оплата — §6 (ещё не в этом PR). Пустая база — валидное состояние (без фейковых товаров).
+Европейские автозапчасти для Беларуси (Минск-first). App Router SSR-витрина: каталог, поиск по артикулу, заявка по VIN. **§5:** поставщики, предложения, цены BYN, склады, импорт. **§6:** корзина, checkout менеджера, статусы заказа, доставка, PaymentProvider (без фейковой оплаты). Пустая база — валидное состояние.
 
 Иерархия: **Марка → Модель → Поколение → Модификация → Категория → Товар**; у товара много `ProductOffer` (предложения поставщиков/складов).
 
@@ -30,7 +30,9 @@ npm run dev
 
 http://localhost:3000 · health: `/api/health` · дизайн-система: `/design-system` (noindex).
 
-Admin-ready API (Bearer `ADMIN_API_TOKEN`): `/api/admin/suppliers`, `/warehouses`, `/offers`, `/imports`, `/fx-rates`, `/markup-rules`.
+Admin-ready API (Bearer `ADMIN_API_TOKEN`): `/api/admin/suppliers`, `/warehouses`, `/offers`, `/imports`, `/fx-rates`, `/markup-rules`, `/orders`, `/delivery-methods`.
+
+Storefront commerce: `/cart`, `/checkout`, `/order/[token]` · `/api/cart`, `/api/checkout`, `/api/leads`, `/api/payments/*`.
 
 ## Проверки
 

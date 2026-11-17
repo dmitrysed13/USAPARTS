@@ -2,9 +2,9 @@ import type { AppModule } from "@/modules/types";
 
 export const commerceModule = {
   id: "commerce",
-  stage: 5,
+  stage: 6,
   summary:
-    "Розница BYN: закупка → курс → наценка → допы. Закупка и маржа клиенту не показываются. Корзина — этап §6.",
+    "Корзина, checkout менеджера, статусы заказа, доставка и PaymentProvider. Без фейковой оплаты.",
 } satisfies AppModule;
 
 export {
@@ -28,3 +28,10 @@ export {
   toManagerPriceView,
 } from "@/modules/commerce/retail-pricing";
 export { toPublicStock, importStockFlags, isStockConfirmed } from "@/modules/commerce/stock";
+export {
+  canTransitionOrderStatus,
+  orderStatusLabels,
+  orderStatuses,
+} from "@/modules/commerce/order-status";
+export { placeOrder } from "@/modules/commerce/checkout";
+export { resolvePaymentProvider, paymentProviderStatus } from "@/modules/commerce/payment/provider";

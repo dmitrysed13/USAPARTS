@@ -2,7 +2,14 @@ import type { AppModule } from "@/modules/types";
 
 export const notificationsModule = {
   id: "notifications",
-  stage: 4,
+  stage: 6,
   summary:
-    "Письма и Telegram менеджеру. Отправка не считается успешной без настроенного канала.",
+    "Письма и Telegram по заказам/заявкам. Без SMTP/бота отправка не считается успешной.",
 } satisfies AppModule;
+
+export { sendNotification } from "@/modules/notifications/channels";
+export {
+  managerOrderCreatedTemplate,
+  customerOrderCreatedTemplate,
+  managerLeadTemplate,
+} from "@/modules/notifications/templates";
