@@ -2,8 +2,9 @@ import type { AppModule } from "@/modules/types";
 
 export const commerceModule = {
   id: "commerce",
-  stage: 4,
-  summary: "Цены для витрины, корзина и заказы. Закупка и маржа клиенту не показываются.",
+  stage: 5,
+  summary:
+    "Розница BYN: закупка → курс → наценка → допы. Закупка и маржа клиенту не показываются. Корзина — этап §6.",
 } satisfies AppModule;
 
 export {
@@ -20,3 +21,10 @@ export {
   type OrganizationStatus,
   type PublicOffer,
 } from "@/modules/commerce/pricing";
+export {
+  computeRetailPrice,
+  convertToByn,
+  selectMarkupRule,
+  toManagerPriceView,
+} from "@/modules/commerce/retail-pricing";
+export { toPublicStock, importStockFlags, isStockConfirmed } from "@/modules/commerce/stock";

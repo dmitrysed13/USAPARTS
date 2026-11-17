@@ -5,6 +5,7 @@ import { commerceModule } from "@/modules/commerce";
 import { contentModule } from "@/modules/content";
 import { fitmentModule } from "@/modules/fitment";
 import { identityModule } from "@/modules/identity";
+import { importsModule } from "@/modules/imports";
 import { integrationsModule } from "@/modules/integrations";
 import { inventoryModule } from "@/modules/inventory";
 import { notificationsModule } from "@/modules/notifications";
@@ -20,6 +21,7 @@ export const appModules = [
   identityModule,
   b2bModule,
   inventoryModule,
+  importsModule,
   integrationsModule,
   notificationsModule,
   contentModule,

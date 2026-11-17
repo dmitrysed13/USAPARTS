@@ -2,8 +2,9 @@ import type { AppModule } from "@/modules/types";
 
 export const integrationsModule = {
   id: "integrations",
-  stage: 6,
-  summary: "Адаптеры поставщиков, TecDoc, VIN, доставки, оплаты, почты и 1С.",
+  stage: 5,
+  summary:
+    "Порты поставщиков (SupplierAdapter), TecDoc, VIN, доставки, оплаты, почты и 1С. Без ключей — fail closed.",
 } satisfies AppModule;
 
 export {
@@ -14,3 +15,11 @@ export {
   type SupplierCatalogPort,
   type SupplierSearchHit,
 } from "@/modules/integrations/ports";
+export {
+  resolveSupplierAdapter,
+  runSupplierSync,
+  unconfiguredSupplierAdapter,
+  withRetry,
+  takeRateToken,
+  type SupplierAdapter,
+} from "@/modules/integrations/supplier-adapter";

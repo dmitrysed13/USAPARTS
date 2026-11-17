@@ -65,17 +65,28 @@
 
 Совместимость не создаётся из совпадения названия автомобиля.
 
-### Supplier и Warehouse
+### Supplier и Warehouse (§5)
 
-Минимальные справочники, чтобы у предложения были настоящие внешние ключи. Контакты поставщика и движения склада сюда не входят. Строк-примеров нет. Имя поставщика на витрину не выбирается.
+Поставщик: контакты, `currency`, `importFormat` (CSV/XLSX/API/MANUAL), `apiEnabled`, `apiBaseUrl`, `credentialsEnvKey` (имя env, не секрет), `terms`, `isActive`. Строк-примеров нет. Имя поставщика на витрину не выбирается.
 
-### ProductOffer
+Склад: `type` OWN/SUPPLIER, `city`, `address`, `isActive`, `stockUpdatedAt`. Складу поставщика обязателен `supplierId`.
 
-`sourceType`: `OWN_STOCK` или `SUPPLIER`. Поставщик и склад необязательны. Проверки: количество и резерв не отрицательные, резерв не больше количества.
+### ProductOffer (§5 — supplier offers)
 
-`availabilityStatus` включает `UNKNOWN`. Нет предложения или статус неизвестен — витрина не пишет «В наличии». Срок скрывается, пока статус `UNKNOWN`.
+Один `Product` — много предложений. Поля: `externalId`, `condition`, `status` (ACTIVE/INACTIVE/ARCHIVED), закупка + `purchaseCurrency`, розница/опт BYN, `extrasAmount`, количество/резерв, `availabilityStatus`, `stockSource` (WAREHOUSE/SUPPLIER/ON_ORDER), `stockConfirmed`, `stockUpdatedAt`, `leadTime`.
 
-Отдельной таблицы остатка нет. Количество живёт в предложении. История движений, прайс-листы и правила скидок отложены вместе с заказами: без заказа они нечего не проводят.
+Проверки: количество и резерв ≥ 0, резерв ≤ количества. Публичная витрина: только `ACTIVE`; при `stockConfirmed=false` или `UNKNOWN` не пишет «В наличии» и не отдаёт срок как подтверждённый. Закупка/маржа — только manager API.
+
+### Pricing / FX / markup (§5)
+
+- `FxRate` — ручные курсы с историей (`effectiveFrom`/`effectiveTo`). Без строки курса авто-конвертация EUR→BYN не выполняется.
+- `MarkupRule` — PERCENT/FIXED, scope GLOBAL/CATEGORY/SUPPLIER/PART_BRAND, опционально `b2bValue`, `priority`.
+- `OfferPriceHistory` — снимок расчёта/изменения цены предложения.
+- Пайплайн: purchase → FX → markup → extras → retail BYN.
+
+### Import / sync / audit (§5)
+
+`ImportTemplate`, `ImportJob`, `ImportRow`, `SupplierSyncLog`, `AuditLog`. Импорт: upload → preview → commit/rollback. Пустые ячейки не затирают поля.
 
 ### VinRequest
 
@@ -110,8 +121,8 @@
 - `User`, `Session`, `Account`, `Verification`, роли и организации. Вход — этап 4. Свои таблицы сейчас пересеклись бы с Better Auth.
 - Автомобиль в гараже покупателя. Нет кабинета.
 - `Cart`, `CartItem`, `Order`, `OrderItem`, `Payment`, `Delivery`, `Address`. Нет корзины и checkout.
-- `Stock`, `StockMovement`, `PriceList`, `PriceRule`, `PriceChange`. Остаток этапа 2 — это `ProductOffer`. История и именные прайсы нужны вместе со складом и B2B.
+- `StockMovement` как отдельный журнал движений склада — позже; текущий остаток в `ProductOffer` + `stockUpdatedAt`.
 - `ProductGroup`, варианты и `ProductAlternative`. Кроссы живут в `ProductIdentifier`.
-- `Lead`, `Favorite`, `SearchHistory`, `Review`, `Article`, `Page`, `FaqItem`. Контент и отзывы не публикуются без подтверждения. Страница `/privacy` — статичный текст, не CMS.
-- `SeoTemplate`, `Redirect`. Каноникал уже есть у страниц и в `SeoMetadata`. Шаблоны, которые подставляют пустой текст, не используются.
-- `AuditLog`, `ImportJob`. Журнал и загрузчик прайса — этап админки. Шаблон колонок лежит в `imports/`, без исполняемого импорта.
+- `Favorite`, `SearchHistory`, `Review`, `Article`, `Page`, `FaqItem`. Контент и отзывы не публикуются без подтверждения. Страница `/privacy` — статичный текст, не CMS.
+- `SeoTemplate`, `Redirect`. Каноникал уже есть у страниц и в `SeoMetadata`.
+- Полный admin UI и Better Auth — следующие PR; §5 даёт token-gated admin API.

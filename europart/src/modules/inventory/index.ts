@@ -2,6 +2,26 @@ import type { AppModule } from "@/modules/types";
 
 export const inventoryModule = {
   id: "inventory",
-  stage: 6,
-  summary: "Склады, остатки, резерв и поставщики. Закупочные цены наружу не отдаются.",
+  stage: 5,
+  summary:
+    "Склады, остатки, поставщики и предложения. Неподтверждённый остаток на витрину не отдаётся.",
 } satisfies AppModule;
+
+export {
+  createSupplier,
+  deactivateSupplier,
+  getSupplier,
+  listSuppliers,
+  supplierError,
+  updateSupplier,
+} from "@/modules/inventory/suppliers";
+export {
+  createWarehouse,
+  deactivateWarehouse,
+  listWarehouses,
+} from "@/modules/inventory/warehouses";
+export {
+  getManagerOffer,
+  listOffers,
+  upsertOffer,
+} from "@/modules/inventory/offers";
