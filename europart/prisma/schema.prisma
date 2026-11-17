@@ -786,6 +786,15 @@ model Order {
   deliveryCents                Int           @default(0)
   totalCents                   Int
   currency                     String        @default("BYN") @db.Char(3)
+  /// Last-touch UTM at checkout (marketing attribution only — never store customer PII here).
+  utmSource                    String?
+  utmMedium                    String?
+  utmCampaign                  String?
+  utmContent                   String?
+  utmTerm                      String?
+  firstTouchSource             String?
+  lastTouchSource              String?
+  attributionCapturedAt        DateTime?     @db.Timestamptz(3)
   createdAt                    DateTime      @default(now()) @db.Timestamptz(3)
   updatedAt                    DateTime      @updatedAt @db.Timestamptz(3)
   items                        OrderItem[]
@@ -794,6 +803,9 @@ model Order {
 
   @@index([status, createdAt])
   @@index([deliveryMethodId])
+  @@index([utmSource, createdAt])
+  @@index([firstTouchSource, createdAt])
+  @@index([lastTouchSource, createdAt])
 }
 
 model OrderItem {
@@ -882,10 +894,22 @@ model Lead {
   vin       String?
   article   String?
   ip        String?
+  /// Last-touch UTM at lead submit (marketing attribution only — never store customer PII here).
+  utmSource             String?
+  utmMedium             String?
+  utmCampaign           String?
+  utmContent            String?
+  utmTerm               String?
+  firstTouchSource      String?
+  lastTouchSource       String?
+  attributionCapturedAt DateTime? @db.Timestamptz(3)
   createdAt DateTime   @default(now()) @db.Timestamptz(3)
   updatedAt DateTime   @updatedAt @db.Timestamptz(3)
 
   @@index([type, status, createdAt])
+  @@index([utmSource, createdAt])
+  @@index([firstTouchSource, createdAt])
+  @@index([lastTouchSource, createdAt])
 }
 
 model SeoMetadata {

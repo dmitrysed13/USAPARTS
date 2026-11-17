@@ -4,11 +4,28 @@ import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
 import { getPrismaClient } from "@/lib/db/prisma";
+import {
+  attributionToPrisma,
+  buildAttributionSnapshot,
+  type AttributionSnapshot,
+} from "@/modules/analytics/attribution";
 import type { CartLine } from "@/modules/commerce/cart-cookie";
 import { resolveCartLines } from "@/modules/commerce/cart-service";
 import { quoteDeliveryMethod } from "@/modules/commerce/delivery";
 import { paymentProviderStatus } from "@/modules/commerce/payment/provider";
 import { notifyOrderCreated } from "@/modules/notifications/order-notify";
+
+const attributionSchema = z
+  .object({
+    utmSource: z.string().trim().max(80).optional().nullable(),
+    utmMedium: z.string().trim().max(80).optional().nullable(),
+    utmCampaign: z.string().trim().max(120).optional().nullable(),
+    utmContent: z.string().trim().max(120).optional().nullable(),
+    utmTerm: z.string().trim().max(120).optional().nullable(),
+    firstTouchSource: z.string().trim().max(120).optional().nullable(),
+    lastTouchSource: z.string().trim().max(120).optional().nullable(),
+  })
+  .optional();
 
 const checkoutSchema = z.object({
   name: z.string().trim().min(2).max(120),
@@ -19,9 +36,13 @@ const checkoutSchema = z.object({
   comment: z.string().trim().max(2000).optional(),
   deliveryMethodId: z.string().uuid(),
   checkoutMode: z.enum(["MANAGER", "ONLINE"]).default("MANAGER"),
+  attribution: attributionSchema,
 });
 
-export type CheckoutInput = z.input<typeof checkoutSchema> & { lines: CartLine[] };
+export type CheckoutInput = z.input<typeof checkoutSchema> & {
+  lines: CartLine[];
+  attributionCookies?: { first?: string | null; last?: string | null };
+};
 
 export type CheckoutResult = {
   orderId: string;
@@ -97,6 +118,13 @@ export async function placeOrder(input: CheckoutInput): Promise<CheckoutResult> 
       : payStatus.message;
   }
 
+  const attribution: AttributionSnapshot = buildAttributionSnapshot({
+    firstCookie: input.attributionCookies?.first,
+    lastCookie: input.attributionCookies?.last,
+    body: parsed.attribution,
+  });
+  const attributionFields = attributionToPrisma(attribution);
+
   // Re-read offers inside transaction for freshness (price + updatedAt).
   const result = await prisma.$transaction(async (tx) => {
     const offerIds = cart.lines.map((line) => line.offerId);
@@ -159,6 +187,7 @@ export async function placeOrder(input: CheckoutInput): Promise<CheckoutResult> 
         deliveryCents,
         totalCents,
         currency: "BYN",
+        ...attributionFields,
         items: {
           create: cart.lines.map((line) => ({
             productId: line.productId,

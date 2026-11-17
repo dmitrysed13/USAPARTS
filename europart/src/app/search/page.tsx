@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { TrackOnMount } from "@/components/analytics/track-on-mount";
 import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { Pagination } from "@/components/catalog/pagination";
 import { ProductGrid } from "@/components/catalog/product-card";
@@ -81,6 +82,15 @@ async function SearchResults({ q, page }: { q: string; page: number }) {
   const result = await searchPublishedProducts({ q, page, pageSize: 12 });
   return (
     <>
+      <TrackOnMount
+        name="search"
+        params={{
+          // Article/OEM queries are not customer PII; still truncated.
+          search_term: q.slice(0, 80),
+          result_count: result.total,
+          page: result.page,
+        }}
+      />
       <ProductGrid
         emptyDescription="Проверьте номер или оставьте заявку по VIN — автоматической подстановки выдуманных позиций нет."
         emptyTitle="Ничего не найдено"

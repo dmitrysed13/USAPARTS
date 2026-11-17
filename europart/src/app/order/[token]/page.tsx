@@ -2,6 +2,7 @@ import { connection } from "next/server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { PurchaseTracker } from "@/components/analytics/purchase-tracker";
 import { Container } from "@/components/ui/container";
 import { closedMetadata } from "@/lib/seo/closed";
 import { getOrderByAccessToken } from "@/modules/commerce/orders";
@@ -41,6 +42,15 @@ export default async function OrderPage({
 
   return (
     <Container className="grid gap-8 py-10">
+      <PurchaseTracker
+        order={{
+          number: order.number,
+          totalCents: order.totalCents,
+          currency: order.currency,
+          paymentState: order.paymentState,
+          status: order.status,
+        }}
+      />
       <div>
         <p className="text-sm text-ink-muted">Заказ принят</p>
         <h1 className="mt-2 font-display text-3xl font-semibold">{order.number}</h1>

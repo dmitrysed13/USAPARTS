@@ -1,4 +1,5 @@
 import { adminModule } from "@/modules/admin";
+import { analyticsModule } from "@/modules/analytics";
 import { b2bModule } from "@/modules/b2b";
 import { catalogModule } from "@/modules/catalog";
 import { commerceModule } from "@/modules/commerce";
@@ -26,5 +27,6 @@ export const appModules = [
   notificationsModule,
   contentModule,
   seoModule,
+  analyticsModule,
   adminModule,
 ] as const satisfies readonly AppModule[];

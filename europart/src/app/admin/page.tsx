@@ -9,6 +9,7 @@ export default async function AdminDashboardPage() {
   await requireAdminSession("dashboard");
   const counts = await getAdminDashboardCounts();
   const cards = [
+    { href: "/admin/analytics", label: "Analytics KPI", value: "→" },
     { href: "/admin/products", label: "Товары", value: `${counts.publishedProducts}/${counts.products}` },
     { href: "/admin/categories", label: "Категории", value: String(counts.categories) },
     { href: "/admin/vehicles/makes", label: "Марки", value: String(counts.brands) },
@@ -23,7 +24,7 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       <AdminPageHeader
-        description="Сводка по реальным данным из базы. Пустые значения — норма, пока ассортимент не загружен."
+        description="Сводка по реальным данным из базы. Пустые значения — норма, пока ассортимент не загружен. Детальные KPI — в Analytics."
         title="Dashboard"
       />
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

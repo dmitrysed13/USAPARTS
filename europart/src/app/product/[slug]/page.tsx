@@ -2,6 +2,7 @@ import { connection } from "next/server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { TrackOnMount } from "@/components/analytics/track-on-mount";
 import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { AddToCartButton } from "@/components/commerce/add-to-cart-button";
 import { buttonClassName } from "@/components/ui/button";
@@ -131,8 +132,20 @@ export default async function ProductPage({
     }))
     .filter((group) => group.values.length > 0);
 
+  const itemId = product.article ?? product.oem ?? product.slug;
+  const priceValue = product.price ? Number(product.price.amount) : null;
+
   return (
     <Container className="grid gap-8 py-10">
+      <TrackOnMount
+        name="product_view"
+        params={{
+          item_id: itemId.slice(0, 64),
+          item_name: product.name.slice(0, 120),
+          value: priceValue ?? undefined,
+          currency: "BYN",
+        }}
+      />
       <JsonLdScript
         data={[
           breadcrumbJsonLd([
@@ -232,7 +245,10 @@ export default async function ProductPage({
                 ? null
                 : "Без розничной цены доступен только запрос менеджеру."
             }
+            itemId={itemId}
+            itemName={product.name}
             offerId={product.price ? product.offerId : null}
+            price={priceValue}
           />
           <Link
             className={buttonClassName("secondary")}
