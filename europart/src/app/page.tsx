@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { SearchField } from "@/components/catalog/search-field";
+import { VehiclePicker } from "@/components/catalog/vehicle-picker";
 import { buttonClassName } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { company, formatAddress } from "@/config/company";
+import { readSelectedVehicle } from "@/modules/fitment/vehicle-http";
 
 export const metadata: Metadata = {
   title: "Автозапчасти",
@@ -20,6 +23,25 @@ const currentSteps = [
   "Забираете в Бресте или получаете доставкой",
 ];
 
+async function HomeVehiclePicker() {
+  const selected = await readSelectedVehicle();
+  return (
+    <VehiclePicker
+      initial={
+        selected
+          ? {
+              brandSlug: selected.brandSlug,
+              modelSlug: selected.modelSlug,
+              generationSlug: selected.generationSlug,
+              modificationSlug: selected.modificationSlug,
+              engineSlug: selected.engineSlug,
+            }
+          : undefined
+      }
+    />
+  );
+}
+
 export default function HomePage() {
   return (
     <>
@@ -31,7 +53,7 @@ export default function HomePage() {
               EUROPART
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-panel-foreground/78">
-              Европейские автозапчасти для рынка Беларуси. Поиск по артикулу и VIN.
+              Европейские автозапчасти для рынка Беларуси. Поиск по OEM/артикулу и VIN.
               Товары, цены и наличие появятся после загрузки реального ассортимента —
               без выдуманных данных.
             </p>
@@ -79,6 +101,14 @@ export default function HomePage() {
               />
             </svg>
           </div>
+        </Container>
+      </section>
+
+      <section className="border-b border-line py-12">
+        <Container>
+          <Suspense fallback={null}>
+            <HomeVehiclePicker />
+          </Suspense>
         </Container>
       </section>
 

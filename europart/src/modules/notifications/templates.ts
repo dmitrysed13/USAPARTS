@@ -95,3 +95,37 @@ export function managerLeadTemplate(input: {
     ].join("\n"),
   };
 }
+
+export function managerVinRequestTemplate(input: {
+  id: string;
+  vin: string;
+  vinIsStandard: boolean;
+  customerName: string;
+  phone: string | null;
+  email: string | null;
+  comment: string | null;
+  partName: string | null;
+  partNumber: string | null;
+  vehicleBrand: string | null;
+  vehicleModel: string | null;
+  vehicleYear: number | null;
+}) {
+  return {
+    subject: `EUROPART: VIN-заявка ${input.vin}`,
+    text: [
+      `ID: ${input.id}`,
+      `VIN: ${input.vin}`,
+      `Стандартный VIN: ${input.vinIsStandard ? "да" : "нет (ручная проверка)"}`,
+      `Клиент: ${input.customerName}`,
+      `Телефон: ${input.phone ?? "—"}`,
+      `Email: ${input.email ?? "—"}`,
+      `Авто: ${[input.vehicleBrand, input.vehicleModel, input.vehicleYear]
+        .filter(Boolean)
+        .join(" ") || "—"}`,
+      `Запчасть: ${input.partName ?? "—"}`,
+      `Артикул/OEM: ${input.partNumber ?? "—"}`,
+      `Комментарий: ${input.comment ?? "—"}`,
+      "Автоматической расшифровки VIN нет.",
+    ].join("\n"),
+  };
+}

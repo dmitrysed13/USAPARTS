@@ -69,7 +69,7 @@ export async function handleVinRequest(request: Request): Promise<Response> {
         id: saved.id,
         status: saved.status,
         message:
-          "Заявка сохранена. Менеджер свяжется с вами. Письмо и Telegram не отправляются, пока эти каналы не подключены.",
+          "Заявка сохранена. Менеджер получит уведомление, если каналы подключены; иначе заявка остаётся в базе со статусом «новая».",
         vinNotice: saved.notice,
       },
       { status: 201, headers: noStore },

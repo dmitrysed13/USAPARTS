@@ -32,6 +32,9 @@ export type PublicCompatibility = {
   yearTo: number | null;
 };
 
+/** Public offer origin — never includes supplier name or purchase terms. */
+export type PublicOfferSource = "own_stock" | "supplier";
+
 export type PublicProduct = {
   id: string;
   name: string;
@@ -39,6 +42,7 @@ export type PublicProduct = {
   description: string | null;
   article: string | null;
   oem: string | null;
+  mpn: string | null;
   condition: "NEW" | "USED";
   productType: "ORIGINAL" | "ANALOG";
   weightKg: string | null;
@@ -46,12 +50,16 @@ export type PublicProduct = {
   partBrand: { name: string; slug: string; country: string | null } | null;
   images: { url: string; alt: string }[];
   identifiers: PublicIdentifier[];
+  /** Analog / cross numbers from identifiers when present. */
+  analogs: string[];
   compatibility: PublicCompatibility[];
   price: { amount: string; currency: string } | null;
   /** Selected sellable offer for cart; null when no public price/offer. */
   offerId: string | null;
   availability: PublicAvailability;
   leadTimeDays: number | null;
+  /** OWN_STOCK vs SUPPLIER label only — no supplier identity. */
+  offerSource: PublicOfferSource | null;
 };
 
 export type InternalOfferView = {
@@ -63,6 +71,7 @@ export type InternalOfferView = {
   /** When false / missing, storefront treats availability as unconfirmed. */
   stockConfirmed?: boolean;
   status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+  sourceType?: "OWN_STOCK" | "SUPPLIER";
   purchasePrice?: MoneyValue | null;
   b2bPrice?: MoneyValue | null;
   supplierId?: string | null;
@@ -122,10 +131,17 @@ export function selectPublicOffer(offers: InternalOfferView[]): {
   offerId: string | null;
   availability: PublicAvailability;
   leadTimeDays: number | null;
+  offerSource: PublicOfferSource | null;
 } {
   const active = offers.filter((offer) => !offer.status || offer.status === "ACTIVE");
   if (active.length === 0) {
-    return { price: null, offerId: null, availability: "unknown", leadTimeDays: null };
+    return {
+      price: null,
+      offerId: null,
+      availability: "unknown",
+      leadTimeDays: null,
+      offerSource: null,
+    };
   }
 
   const ranked = [...active].sort((left, right) => {
@@ -154,6 +170,12 @@ export function selectPublicOffer(offers: InternalOfferView[]): {
     offerId: chosen.offerId ?? null,
     availability: publicAvailability[status],
     leadTimeDays: status === "UNKNOWN" ? null : chosen.leadTime,
+    offerSource:
+      chosen.sourceType === "OWN_STOCK"
+        ? "own_stock"
+        : chosen.sourceType === "SUPPLIER"
+          ? "supplier"
+          : null,
   };
 }
 
@@ -168,6 +190,7 @@ export function toPublicProduct(input: {
   description: string | null;
   article: string | null;
   oem: string | null;
+  mpn?: string | null;
   condition: "NEW" | "USED";
   productType: "ORIGINAL" | "ANALOG";
   weight: MoneyValue | null;
@@ -182,6 +205,9 @@ export function toPublicProduct(input: {
     (identifier) => identifier.type === "OEM" && identifier.isPrimary,
   );
   const offer = selectPublicOffer(input.offers);
+  const analogs = input.identifiers
+    .filter((identifier) => identifier.type === "ANALOG" || identifier.type === "CROSS_REFERENCE")
+    .map((identifier) => identifier.value);
   return {
     id: input.id,
     name: input.name,
@@ -189,6 +215,7 @@ export function toPublicProduct(input: {
     description: input.description,
     article: input.article,
     oem: primaryOem?.value ?? input.oem,
+    mpn: input.mpn?.trim() || null,
     condition: input.condition,
     productType: input.productType,
     weightKg: input.weight ? input.weight.toFixed(3) : null,
@@ -202,6 +229,7 @@ export function toPublicProduct(input: {
       type: identifier.type,
       isPrimary: identifier.isPrimary,
     })),
+    analogs,
     compatibility: input.compatibility
       .filter((row) => row.confidence === "VERIFIED")
       .map((row) => ({
@@ -222,5 +250,6 @@ export function toPublicProduct(input: {
     offerId: offer.offerId,
     availability: offer.availability,
     leadTimeDays: offer.leadTimeDays,
+    offerSource: offer.offerSource,
   };
 }

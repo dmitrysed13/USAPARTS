@@ -3,6 +3,7 @@ import {
   customerOrderCreatedTemplate,
   managerLeadTemplate,
   managerOrderCreatedTemplate,
+  managerVinRequestTemplate,
 } from "@/modules/notifications/templates";
 
 describe("notification templates", () => {
@@ -32,5 +33,25 @@ describe("notification templates", () => {
     });
     expect(lead.text).toContain("GDB1");
     expect(lead.subject).toContain("PRICE_REQUEST");
+  });
+
+  it("builds VIN request template without claiming decode", () => {
+    const vin = managerVinRequestTemplate({
+      id: "vin-1",
+      vin: "WVWZZZ3CZWE123456",
+      vinIsStandard: true,
+      customerName: "Иван",
+      phone: "+375291112233",
+      email: null,
+      comment: "Нужны колодки",
+      partName: "Колодки",
+      partNumber: "1K0615301AA",
+      vehicleBrand: "VW",
+      vehicleModel: "Golf",
+      vehicleYear: 2015,
+    });
+    expect(vin.subject).toContain("WVWZZZ3CZWE123456");
+    expect(vin.text).toMatch(/Автоматической расшифровки VIN нет/);
+    expect(vin.text).not.toMatch(/расшифрован успешно/i);
   });
 });

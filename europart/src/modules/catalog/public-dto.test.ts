@@ -61,6 +61,7 @@ describe("public product DTO", () => {
     expect(product.offerId).toBeNull();
     expect(product.availability).toBe("in_stock");
     expect(product.oem).toBe("1K0 615 301 AA");
+    expect(product.analogs).toEqual(["SECRET-CROSS"]);
     expect(product.compatibility).toHaveLength(1);
     expect(product.compatibility[0]?.brandName).toBe("Volkswagen");
     expect(serialized).not.toContain("12345.67");
@@ -87,12 +88,14 @@ describe("public product DTO", () => {
       offerId: null,
       availability: "unknown",
       leadTimeDays: null,
+      offerSource: null,
     });
     expect(selectPublicOffer([])).toEqual({
       price: null,
       offerId: null,
       availability: "unknown",
       leadTimeDays: null,
+      offerSource: null,
     });
   });
 
@@ -107,6 +110,7 @@ describe("public product DTO", () => {
           leadTime: 1,
           stockConfirmed: false,
           status: "ACTIVE",
+          sourceType: "OWN_STOCK",
         },
       ]),
     ).toEqual({
@@ -114,6 +118,7 @@ describe("public product DTO", () => {
       offerId: "offer-1",
       availability: "unknown",
       leadTimeDays: null,
+      offerSource: "own_stock",
     });
   });
 });

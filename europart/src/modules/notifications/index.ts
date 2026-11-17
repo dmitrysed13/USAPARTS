@@ -12,4 +12,5 @@ export {
   managerOrderCreatedTemplate,
   customerOrderCreatedTemplate,
   managerLeadTemplate,
+  managerVinRequestTemplate,
 } from "@/modules/notifications/templates";
