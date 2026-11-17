@@ -39,16 +39,29 @@ async function createCategoryTree() {
 
 describe("catalog database", () => {
   it("creates a category and nests a child", async () => {
-    const { parent } = await createCategoryTree();
+    const { parent, child } = await createCategoryTree();
     const tree = await listCategoryTree();
     expect(tree).toHaveLength(1);
     expect(tree[0]?.id).toBe(parent.id);
     expect(tree[0]?.children.map((item) => item.slug)).toEqual(["kolodki"]);
+    expect(await getCategoryPageContext("tormoznaya-sistema")).toBeNull();
+
+    const prisma = getPrismaClient();
+    await prisma.product.create({
+      data: {
+        name: "Колодки тест",
+        slug: "kolodki-test-empty-guard",
+        categoryId: child.id,
+        condition: "NEW",
+        productType: "ANALOG",
+        status: "PUBLISHED",
+      },
+    });
     const page = await getCategoryPageContext("tormoznaya-sistema");
-    expect(page?.categoryIds.sort()).toEqual([parent.id, page?.children[0]?.id].sort());
+    expect(page?.categoryIds.sort()).toEqual([parent.id, child.id].sort());
   });
 
-  it("creates a brand, model, generation and modification", async () => {
+  it("creates a brand, model, generation, modification and engine", async () => {
     const prisma = getPrismaClient();
     const brand = await prisma.vehicleBrand.create({
       data: { name: "Volkswagen", slug: "volkswagen" },
@@ -71,12 +84,29 @@ describe("catalog database", () => {
         endYear: 2019,
       },
     });
-    await prisma.vehicleModification.create({
-      data: { generationId: generation.id, name: "1.4 TSI", engineCode: "CZCA" },
+    const modification = await prisma.vehicleModification.create({
+      data: {
+        generationId: generation.id,
+        name: "1.4 TSI",
+        slug: "1-4-tsi",
+        engineCode: "CZCA",
+      },
+    });
+    await prisma.vehicleEngine.create({
+      data: {
+        modificationId: modification.id,
+        name: "CZCA 1.4",
+        slug: "czca",
+        code: "CZCA",
+        fuelType: "бензин",
+      },
     });
     const loaded = await getVehicleModel("volkswagen", "golf");
     expect(loaded?.brand.name).toBe("Volkswagen");
     expect(loaded?.generations[0]?.name).toBe("VII");
+    const { getVehicleEngine } = await import("@/modules/fitment/repository");
+    const engine = await getVehicleEngine("volkswagen", "golf", "vii", "1-4-tsi", "czca");
+    expect(engine?.code).toBe("CZCA");
   });
 
   it("stores several identifiers and a verified modification link", async () => {
@@ -95,7 +125,7 @@ describe("catalog database", () => {
       data: { modelId: model.id, name: "VII", slug: "vii" },
     });
     const modification = await prisma.vehicleModification.create({
-      data: { generationId: generation.id, name: "1.4 TSI" },
+      data: { generationId: generation.id, name: "1.4 TSI", slug: "1-4-tsi" },
     });
     const product = await prisma.product.create({
       data: {
@@ -139,7 +169,11 @@ describe("catalog database", () => {
             {
               vehicleModificationId: (
                 await prisma.vehicleModification.create({
-                  data: { generationId: generation.id, name: "2.0 TDI" },
+                  data: {
+                    generationId: generation.id,
+                    name: "2.0 TDI",
+                    slug: "2-0-tdi",
+                  },
                 })
               ).id,
               compatibilitySource: "MANUAL",

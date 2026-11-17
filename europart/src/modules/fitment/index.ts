@@ -4,5 +4,5 @@ export const fitmentModule = {
   id: "fitment",
   stage: 2,
   summary:
-    "Марки, модели и модификации. Совместимость показывается только после подтверждения.",
+    "Make→Model→Generation→Modification→Engine, выбор авто в cookie, совместимость только после подтверждения.",
 } satisfies AppModule;

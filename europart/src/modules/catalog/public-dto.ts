@@ -25,6 +25,9 @@ export type PublicCompatibility = {
   generationName?: string;
   generationSlug?: string;
   modificationName: string;
+  modificationSlug?: string;
+  engineName?: string;
+  engineSlug?: string;
   yearFrom: number | null;
   yearTo: number | null;
 };
@@ -209,6 +212,9 @@ export function toPublicProduct(input: {
         generationName: row.generationName,
         generationSlug: row.generationSlug,
         modificationName: row.modificationName,
+        modificationSlug: row.modificationSlug,
+        engineName: row.engineName,
+        engineSlug: row.engineSlug,
         yearFrom: row.yearFrom,
         yearTo: row.yearTo,
       })),

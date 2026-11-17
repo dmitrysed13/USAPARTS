@@ -134,6 +134,8 @@ enum SeoEntityType {
   VEHICLE_BRAND
   VEHICLE_MODEL
   VEHICLE_GENERATION
+  VEHICLE_MODIFICATION
+  VEHICLE_ENGINE
   PRODUCT
   PART_BRAND
 }
@@ -271,9 +273,10 @@ model VehicleModification {
   generationId    String                 @db.Uuid
   generation      VehicleGeneration      @relation(fields: [generationId], references: [id], onDelete: Restrict)
   name            String
-  slug            String?
+  slug            String
   yearFrom        Int?
   yearTo          Int?
+  /// Legacy denormalized engine label — prefer VehicleEngine rows when present.
   engine          String?
   engineCode      String?
   fuelType        String?
@@ -282,12 +285,36 @@ model VehicleModification {
   bodyType        String?
   transmission    String?
   driveType       String?
+  isActive        Boolean                @default(true)
   createdAt       DateTime               @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime               @updatedAt @db.Timestamptz(3)
+  engines         VehicleEngine[]
   compatibilities ProductCompatibility[]
 
-  @@index([generationId])
+  @@unique([generationId, slug])
+  @@index([generationId, isActive])
   @@index([engineCode])
+}
+
+/// Engine under a modification (Make→Model→Generation→Modification→Engine).
+model VehicleEngine {
+  id               String                 @id @default(uuid()) @db.Uuid
+  modificationId   String                 @db.Uuid
+  modification     VehicleModification    @relation(fields: [modificationId], references: [id], onDelete: Restrict)
+  name             String
+  slug             String
+  code             String?
+  fuelType         String?
+  displacement     Decimal?               @db.Decimal(4, 2)
+  power            Int?
+  isActive         Boolean                @default(true)
+  createdAt        DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime               @updatedAt @db.Timestamptz(3)
+  compatibilities  ProductCompatibility[]
+
+  @@unique([modificationId, slug])
+  @@index([modificationId, isActive])
+  @@index([code])
 }
 
 model PartBrand {
@@ -387,6 +414,9 @@ model ProductCompatibility {
   product               Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
   vehicleModificationId String                  @db.Uuid
   vehicleModification   VehicleModification     @relation(fields: [vehicleModificationId], references: [id], onDelete: Restrict)
+  /// Optional engine refinement under the modification.
+  vehicleEngineId       String?                 @db.Uuid
+  vehicleEngine         VehicleEngine?          @relation(fields: [vehicleEngineId], references: [id], onDelete: Restrict)
   compatibilitySource   CompatibilitySource
   confidence            CompatibilityConfidence @default(UNVERIFIED)
   note                  String?
@@ -395,6 +425,7 @@ model ProductCompatibility {
 
   @@unique([productId, vehicleModificationId])
   @@index([vehicleModificationId, confidence])
+  @@index([vehicleEngineId, confidence])
   @@index([productId, confidence])
 }
 

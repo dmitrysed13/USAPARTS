@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/state";
 import { closedMetadata } from "@/lib/seo/closed";
+import { SelectVehicleButton } from "@/components/catalog/select-vehicle-button";
 import { listCategoriesForFitment } from "@/modules/catalog/repository";
 import { getVehicleBrand } from "@/modules/fitment/repository";
 import { readSeoOverlay } from "@/modules/seo/overlay";
@@ -75,13 +76,16 @@ export default async function BrandPage({
           { label: brand.name },
         ]}
       />
-      <div>
+      <div className="grid gap-4">
         <h1 className="break-words font-display text-4xl font-semibold tracking-tight">
           {seo.h1}
         </h1>
         {brand.description ? (
-          <p className="mt-3 max-w-3xl leading-7 text-ink-muted">{brand.description}</p>
+          <p className="max-w-3xl leading-7 text-ink-muted">{brand.description}</p>
         ) : null}
+        <SelectVehicleButton
+          vehicle={{ brandSlug: brand.slug, brandName: brand.name }}
+        />
       </div>
       <section className="grid gap-4">
         <h2 className="font-display text-2xl font-semibold">Модели</h2>

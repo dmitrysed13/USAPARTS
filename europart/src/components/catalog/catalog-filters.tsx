@@ -17,10 +17,14 @@ export function CatalogFilters({
   action,
   filters,
   partBrands,
+  categories = [],
+  showVehicleFilters = false,
 }: {
   action: string;
   filters: CatalogFilters;
   partBrands: { name: string; slug: string }[];
+  categories?: { name: string; slug: string }[];
+  showVehicleFilters?: boolean;
 }) {
   return (
     <form
@@ -29,6 +33,23 @@ export function CatalogFilters({
       method="get"
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {categories.length > 0 ? (
+          <label className="grid gap-2 text-sm font-medium">
+            Категория
+            <select
+              className={controlClassName}
+              defaultValue={filters.category ?? ""}
+              name="category"
+            >
+              <option value="">Все</option>
+              {categories.map((category) => (
+                <option key={category.slug} value={category.slug}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
         <label className="grid gap-2 text-sm font-medium">
           Состояние
           <select
@@ -116,6 +137,47 @@ export function CatalogFilters({
             <option value="newest">Сначала новые</option>
           </select>
         </label>
+        {showVehicleFilters ? (
+          <>
+            <label className="grid gap-2 text-sm font-medium">
+              Год от
+              <input
+                className={controlClassName}
+                defaultValue={filters.yearFrom ?? ""}
+                inputMode="numeric"
+                max="2100"
+                min="1950"
+                name="yearFrom"
+                step="1"
+                type="number"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-medium">
+              Год до
+              <input
+                className={controlClassName}
+                defaultValue={filters.yearTo ?? ""}
+                inputMode="numeric"
+                max="2100"
+                min="1950"
+                name="yearTo"
+                step="1"
+                type="number"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-medium">
+              Топливо
+              <input
+                className={controlClassName}
+                defaultValue={filters.fuelType ?? ""}
+                maxLength={40}
+                name="fuelType"
+                placeholder="бензин, дизель…"
+                type="text"
+              />
+            </label>
+          </>
+        ) : null}
       </div>
       <div className="flex flex-wrap gap-3">
         <button className={buttonClassName("primary")} type="submit">

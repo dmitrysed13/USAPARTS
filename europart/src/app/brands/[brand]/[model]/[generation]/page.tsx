@@ -6,10 +6,12 @@ import { Breadcrumbs } from "@/components/catalog/breadcrumbs";
 import { CatalogFilters } from "@/components/catalog/catalog-filters";
 import { Pagination } from "@/components/catalog/pagination";
 import { ProductGrid } from "@/components/catalog/product-card";
+import { SelectVehicleButton } from "@/components/catalog/select-vehicle-button";
 import { Container } from "@/components/ui/container";
 import { closedMetadata } from "@/lib/seo/closed";
 import { catalogHref, parseCatalogFilters } from "@/modules/catalog/filters";
 import {
+  fitmentProductWhere,
   listCategoriesForFitment,
   listPartBrandsForProducts,
   listPublishedProducts,
@@ -85,14 +87,12 @@ export default async function GenerationPage({
     notFound();
   }
   const filters = parseCatalogFilters(await searchParams);
-  const scope = {
-    compatibilities: {
-      some: {
-        confidence: "VERIFIED" as const,
-        vehicleModification: { generationId: vehicle.id },
-      },
-    },
-  };
+  const scope = fitmentProductWhere({
+    generationId: vehicle.id,
+    yearFrom: filters.yearFrom,
+    yearTo: filters.yearTo,
+    fuelType: filters.fuelType,
+  });
   const path = `/brands/${vehicle.brand.slug}/${vehicle.model.slug}/${vehicle.slug}`;
   const [categories, page, partBrands, seo] = await Promise.all([
     listCategoriesForFitment({ generationId: vehicle.id }),
@@ -104,6 +104,11 @@ export default async function GenerationPage({
       canonicalPath: path,
     }),
   ]);
+
+  if (filters.category && page.total === 0) {
+    notFound();
+  }
+
   const span = years(vehicle.startYear, vehicle.endYear);
 
   return (
@@ -120,11 +125,21 @@ export default async function GenerationPage({
           { label: vehicle.name },
         ]}
       />
-      <div>
+      <div className="grid gap-4">
         <h1 className="break-words font-display text-4xl font-semibold tracking-tight">
           {seo.h1}
         </h1>
-        {span ? <p className="mt-3 text-ink-muted">{span}</p> : null}
+        {span ? <p className="text-ink-muted">{span}</p> : null}
+        <SelectVehicleButton
+          vehicle={{
+            brandSlug: vehicle.brand.slug,
+            brandName: vehicle.brand.name,
+            modelSlug: vehicle.model.slug,
+            modelName: vehicle.model.name,
+            generationSlug: vehicle.slug,
+            generationName: vehicle.name,
+          }}
+        />
       </div>
       <section className="grid gap-4">
         <h2 className="font-display text-2xl font-semibold">Модификации</h2>
@@ -136,7 +151,12 @@ export default async function GenerationPage({
               const facts = modificationFacts(item);
               return (
                 <li className="rounded-2xl border border-line p-4" key={item.id}>
-                  <p className="break-words font-semibold">{item.name}</p>
+                  <Link
+                    className="break-words font-semibold hover:text-brand"
+                    href={`${path}/${item.slug}`}
+                  >
+                    {item.name}
+                  </Link>
                   {facts.length > 0 ? (
                     <dl className="mt-3 grid gap-2 sm:grid-cols-2">
                       {facts.map((fact) => (
@@ -163,7 +183,7 @@ export default async function GenerationPage({
               <li key={category.slug}>
                 <Link
                   className="inline-flex rounded-full border border-line px-3 py-2 text-sm font-semibold hover:border-brand"
-                  href={`/catalog/${category.slug}`}
+                  href={catalogHref(path, { ...filters, category: category.slug, page: 1 }, 1)}
                 >
                   {category.name}
                 </Link>
@@ -174,7 +194,13 @@ export default async function GenerationPage({
       </section>
       <section className="grid gap-4">
         <h2 className="font-display text-2xl font-semibold">Подходящие товары</h2>
-        <CatalogFilters action={path} filters={filters} partBrands={partBrands} />
+        <CatalogFilters
+          action={path}
+          categories={categories}
+          filters={filters}
+          partBrands={partBrands}
+          showVehicleFilters
+        />
         <ProductGrid
           emptyDescription="Для этого поколения нет опубликованных товаров с подтверждённой совместимостью."
           emptyTitle="Подходящих товаров нет"

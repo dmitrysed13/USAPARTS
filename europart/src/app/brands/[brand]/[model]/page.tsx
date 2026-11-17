@@ -10,11 +10,13 @@ import { Container } from "@/components/ui/container";
 import { closedMetadata } from "@/lib/seo/closed";
 import { catalogHref, parseCatalogFilters } from "@/modules/catalog/filters";
 import {
+  fitmentProductWhere,
   listCategoriesForFitment,
   listPartBrandsForProducts,
   listPublishedProducts,
 } from "@/modules/catalog/repository";
 import { getVehicleModel } from "@/modules/fitment/repository";
+import { SelectVehicleButton } from "@/components/catalog/select-vehicle-button";
 import { readSeoOverlay } from "@/modules/seo/overlay";
 
 function years(start: number | null, end: number | null): string | null {
@@ -67,16 +69,12 @@ export default async function ModelPage({
     notFound();
   }
   const filters = parseCatalogFilters(await searchParams);
-  const scope = {
-    compatibilities: {
-      some: {
-        confidence: "VERIFIED" as const,
-        vehicleModification: {
-          generation: { modelId: vehicle.id, isActive: true },
-        },
-      },
-    },
-  };
+  const scope = fitmentProductWhere({
+    modelId: vehicle.id,
+    yearFrom: filters.yearFrom,
+    yearTo: filters.yearTo,
+    fuelType: filters.fuelType,
+  });
   const path = `/brands/${vehicle.brand.slug}/${vehicle.slug}`;
   const [categories, page, partBrands, seo] = await Promise.all([
     listCategoriesForFitment({ modelId: vehicle.id }),
@@ -88,6 +86,9 @@ export default async function ModelPage({
       canonicalPath: path,
     }),
   ]);
+  if (filters.category && page.total === 0) {
+    notFound();
+  }
   const span = years(vehicle.startYear, vehicle.endYear);
 
   return (
@@ -100,11 +101,19 @@ export default async function ModelPage({
           { label: vehicle.name },
         ]}
       />
-      <div>
+      <div className="grid gap-4">
         <h1 className="break-words font-display text-4xl font-semibold tracking-tight">
           {seo.h1}
         </h1>
-        {span ? <p className="mt-3 text-ink-muted">{span}</p> : null}
+        {span ? <p className="text-ink-muted">{span}</p> : null}
+        <SelectVehicleButton
+          vehicle={{
+            brandSlug: vehicle.brand.slug,
+            brandName: vehicle.brand.name,
+            modelSlug: vehicle.slug,
+            modelName: vehicle.name,
+          }}
+        />
       </div>
       <section className="grid gap-4">
         <h2 className="font-display text-2xl font-semibold">Поколения</h2>
@@ -158,7 +167,13 @@ export default async function ModelPage({
           В списке только товары с подтверждённой совместимостью. Совпадение названия
           модели само по себе товар сюда не добавляет.
         </p>
-        <CatalogFilters action={path} filters={filters} partBrands={partBrands} />
+        <CatalogFilters
+          action={path}
+          categories={categories}
+          filters={filters}
+          partBrands={partBrands}
+          showVehicleFilters
+        />
         <ProductGrid
           emptyDescription="Для этой модели нет опубликованных товаров с подтверждённой совместимостью."
           emptyTitle="Подходящих товаров нет"
