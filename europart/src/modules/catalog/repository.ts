@@ -43,6 +43,8 @@ const publicOfferSelect = {
   currency: true,
   availabilityStatus: true,
   leadTime: true,
+  stockConfirmed: true,
+  status: true,
 } as const;
 
 const productInclude = {
@@ -50,7 +52,10 @@ const productInclude = {
   partBrand: { select: { name: true, slug: true, country: true, isActive: true } },
   images: { select: { url: true, alt: true, sortOrder: true } },
   identifiers: { select: { value: true, type: true, isPrimary: true } },
-  offers: { select: publicOfferSelect },
+  offers: {
+    where: { status: "ACTIVE" },
+    select: publicOfferSelect,
+  },
 } satisfies Prisma.ProductInclude;
 
 const productDetailInclude = {
@@ -145,6 +150,8 @@ function mapProduct(
       currency: offer.currency,
       availabilityStatus: offer.availabilityStatus,
       leadTime: offer.leadTime,
+      stockConfirmed: offer.stockConfirmed,
+      status: offer.status,
     })),
   });
 }

@@ -43,8 +43,9 @@ Cache Components включён. Статичная оболочка стран�
 | commerce      | 4    | Витринная цена, корзина, заказ                                |
 | identity      | 4    | Сессия и роли сотрудников                                     |
 | b2b           | 5    | Организация, сотрудники, индивидуальные цены                  |
-| inventory     | 6    | Склады, резерв, поставщики                                    |
-| integrations  | 6    | Порты внешних систем                                          |
+| inventory     | 5    | Склады, резерв, поставщики, предложения (§5)                  |
+| imports       | 5    | CSV/XLSX preview → commit, история (§5)                       |
+| integrations  | 5    | SupplierAdapter + порты внешних систем                        |
 | notifications | 4    | Почта и Telegram                                              |
 | content       | 6    | Страницы, FAQ, статьи, отзывы                                 |
 | seo           | 7    | Метаданные, sitemap, canonical                                |
@@ -62,15 +63,15 @@ Cache Components включён. Статичная оболочка стран�
 
 ```text
 europart/
-  prisma/migrations/     init_europart3_schema (vehicles + offers + orders draft)
-  imports/                пустой шаблон CSV/XLSX будущего каталога
-  src/app/                маршруты App Router (+ generation)
+  prisma/migrations/     init + offers_suppliers_prices_stock (§5)
+  imports/                шаблон CSV/XLSX
+  src/app/                маршруты App Router (+ api/admin §5)
   src/components/ui/      дизайн-система
   src/components/layout/  шапка и подвал
   src/config/             публичные сведения о компании
   src/design/             токены
-  src/lib/                окружение, Prisma, Redis
-  src/modules/            границы доменов
+  src/lib/                окружение, Prisma, Redis, slug
+  src/modules/            границы доменов (inventory, imports, pricing, adapter)
 ```
 
 Сгенерированный клиент Prisma лежит в `src/generated` и не коммитится. `npm run build` вызывает `prisma generate`.

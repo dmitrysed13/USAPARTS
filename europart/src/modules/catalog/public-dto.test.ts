@@ -92,4 +92,23 @@ describe("public product DTO", () => {
       leadTimeDays: null,
     });
   });
+
+  it("does not treat unconfirmed stock as in stock", () => {
+    expect(
+      selectPublicOffer([
+        {
+          retailPrice: { toFixed: () => "22.00" },
+          currency: "BYN",
+          availabilityStatus: "IN_STOCK",
+          leadTime: 1,
+          stockConfirmed: false,
+          status: "ACTIVE",
+        },
+      ]),
+    ).toEqual({
+      price: { amount: "22.00", currency: "BYN" },
+      availability: "unknown",
+      leadTimeDays: null,
+    });
+  });
 });

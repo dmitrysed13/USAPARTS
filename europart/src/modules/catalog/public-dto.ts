@@ -54,11 +54,25 @@ export type InternalOfferView = {
   currency: string;
   availabilityStatus: OfferAvailability;
   leadTime: number | null;
+  /** When false / missing, storefront treats availability as unconfirmed. */
+  stockConfirmed?: boolean;
+  status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
   purchasePrice?: MoneyValue | null;
   b2bPrice?: MoneyValue | null;
   supplierId?: string | null;
   supplierName?: string | null;
 };
+
+function effectiveAvailability(offer: InternalOfferView): OfferAvailability {
+  if (offer.status && offer.status !== "ACTIVE") {
+    return "UNKNOWN";
+  }
+  // Explicit false = unconfirmed; never claim warehouse/supplier stock on the storefront.
+  if (offer.stockConfirmed === false) {
+    return "UNKNOWN";
+  }
+  return offer.availabilityStatus;
+}
 
 const availabilityRank: Record<OfferAvailability, number> = {
   IN_STOCK: 0,
@@ -102,14 +116,15 @@ export function selectPublicOffer(offers: InternalOfferView[]): {
   availability: PublicAvailability;
   leadTimeDays: number | null;
 } {
-  if (offers.length === 0) {
+  const active = offers.filter((offer) => !offer.status || offer.status === "ACTIVE");
+  if (active.length === 0) {
     return { price: null, availability: "unknown", leadTimeDays: null };
   }
 
-  const ranked = [...offers].sort((left, right) => {
+  const ranked = [...active].sort((left, right) => {
     const byStatus =
-      availabilityRank[left.availabilityStatus] -
-      availabilityRank[right.availabilityStatus];
+      availabilityRank[effectiveAvailability(left)] -
+      availabilityRank[effectiveAvailability(right)];
     if (byStatus !== 0) {
       return byStatus;
     }
@@ -124,12 +139,13 @@ export function selectPublicOffer(offers: InternalOfferView[]): {
     return leftPrice - rightPrice;
   });
 
-  const chosen = ranked[0];
+  const chosen = ranked[0]!;
+  const status = effectiveAvailability(chosen);
   const amount = chosen.retailPrice ? chosen.retailPrice.toFixed(2) : null;
   return {
     price: amount ? { amount, currency: chosen.currency.trim() || "BYN" } : null,
-    availability: publicAvailability[chosen.availabilityStatus],
-    leadTimeDays: chosen.availabilityStatus === "UNKNOWN" ? null : chosen.leadTime,
+    availability: publicAvailability[status],
+    leadTimeDays: status === "UNKNOWN" ? null : chosen.leadTime,
   };
 }
 
