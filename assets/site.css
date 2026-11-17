@@ -1,16 +1,16 @@
 body {
-  background-color: #ffffff;
+  background-color: #eaeded;
   background-image:
-    radial-gradient(ellipse 900px 480px at 12% -10%, rgba(5, 150, 105, 0.08), transparent 60%),
-    radial-gradient(ellipse 700px 420px at 90% 8%, rgba(2, 132, 199, 0.07), transparent 55%),
-    linear-gradient(180deg, #ffffff 0%, #f8fafc 48%, #ffffff 100%);
+    radial-gradient(ellipse 900px 480px at 12% -10%, rgba(255, 153, 0, 0.12), transparent 60%),
+    radial-gradient(ellipse 700px 420px at 90% 8%, rgba(35, 47, 62, 0.08), transparent 55%),
+    linear-gradient(180deg, #eaeded 0%, #f3f4f4 48%, #eaeded 100%);
 }
 
 .input-field {
   margin-top: 0.5rem;
   width: 100%;
   border-radius: 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #d5d9d9;
   background: #ffffff;
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
@@ -20,14 +20,14 @@ body {
 }
 .input-field::placeholder { color: #94a3b8; }
 .input-field:focus {
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+  border-color: #ff9900;
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.25);
 }
 
 .step-tab[aria-selected="true"] {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #a7f3d0;
+  background: #fff4e5;
+  color: #b36b00;
+  border-color: #ffd699;
 }
 
 @keyframes rise-in {

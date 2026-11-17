@@ -371,13 +371,13 @@ def product_schema(product: dict) -> dict:
 
 def nav_html() -> str:
     return """
-        <nav class="hidden items-center gap-6 text-sm font-medium text-mute lg:flex">
-          <a href="/parts/" class="transition hover:text-ink">Каталог</a>
-          <a href="/parts/chevrolet/" class="transition hover:text-ink">Chevrolet</a>
-          <a href="/parts/toyota/" class="transition hover:text-ink">Toyota</a>
-          <a href="/parts/tesla/" class="transition hover:text-ink">Tesla</a>
-          <a href="/parts/ford/" class="transition hover:text-ink">Ford</a>
-          <a href="/contacts/" class="transition hover:text-ink">Контакты</a>
+        <nav class="hidden items-center gap-6 text-sm font-medium text-white/75 lg:flex">
+          <a href="/parts/" class="transition hover:text-accent">Каталог</a>
+          <a href="/parts/chevrolet/" class="transition hover:text-accent">Chevrolet</a>
+          <a href="/parts/toyota/" class="transition hover:text-accent">Toyota</a>
+          <a href="/parts/tesla/" class="transition hover:text-accent">Tesla</a>
+          <a href="/parts/ford/" class="transition hover:text-accent">Ford</a>
+          <a href="/contacts/" class="transition hover:text-accent">Контакты</a>
         </nav>
     """
 
@@ -506,12 +506,13 @@ def layout(
             }},
             colors: {{
               surface: "#FFFFFF",
-              mist: "#F8FAFC",
-              panel: "#F1F5F9",
+              mist: "#EAEDED",
+              panel: "#F3F4F4",
               ink: "#0F172A",
-              mute: "#64748B",
-              accent: {{ DEFAULT: "#059669", hover: "#047857", soft: "#ECFDF5" }},
-              skytech: "#0284C7",
+              mute: "#565959",
+              navy: {{ DEFAULT: "#131921", soft: "#232F3E" }},
+              accent: {{ DEFAULT: "#FF9900", hover: "#E88B00", soft: "#FFF4E5" }},
+              skytech: "#00A8E1",
             }},
             boxShadow: {{
               soft: "0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06)",
@@ -526,18 +527,18 @@ def layout(
     {schema_tags}
     {extra_head}
   </head>
-  <body class="min-h-screen bg-surface font-sans text-ink antialiased">
-    <header class="sticky top-0 z-40 border-b border-slate-100/80 bg-white/85 backdrop-blur-xl">
+  <body class="min-h-screen bg-mist font-sans text-ink antialiased">
+    <header class="sticky top-0 z-40 border-b border-navy-soft bg-navy text-white">
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
         <a href="/" class="group inline-flex items-center gap-3">
           <img src="/assets/logo.svg" alt="USAPARTS" class="h-11 w-11 rounded-2xl" />
           <div class="leading-tight">
-            <div class="font-display text-base font-bold tracking-tight text-ink">USAPARTS <span class="font-sans text-sm font-medium text-mute">· USA → BY</span></div>
-            <div class="text-xs text-mute">OEM и аналоги из США</div>
+            <div class="font-display text-base font-bold tracking-tight text-white">USAPARTS <span class="font-sans text-sm font-medium text-white/70">· USA → BY</span></div>
+            <div class="text-xs text-white/60">OEM и аналоги из США</div>
           </div>
         </a>
         {nav_html()}
-        <a class="hidden items-center gap-2 rounded-xl border border-slate-100 bg-mist px-3.5 py-2.5 text-sm font-semibold text-ink sm:inline-flex" href="tel:{PHONE_E164}">
+        <a class="hidden items-center gap-2 rounded-xl border border-white/15 bg-navy-soft px-3.5 py-2.5 text-sm font-semibold text-white sm:inline-flex" href="tel:{PHONE_E164}">
           <i data-lucide="phone" class="h-4 w-4 text-accent"></i>{PHONE}
         </a>
       </div>
