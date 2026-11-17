@@ -51,9 +51,39 @@ export function ProductCard({ product }: { product: PublicProduct }) {
           {product.article ? (
             <p className="mt-2 break-all text-sm">Артикул {product.article}</p>
           ) : null}
+          {product.oem ? (
+            <p className="mt-1 break-all text-sm text-ink-muted">OEM {product.oem}</p>
+          ) : null}
+          {product.mpn ? (
+            <p className="mt-1 break-all text-sm text-ink-muted">MPN {product.mpn}</p>
+          ) : null}
+          {product.analogs.length > 0 ? (
+            <p className="mt-1 break-all text-sm text-ink-muted">
+              Аналоги/кросс: {product.analogs.slice(0, 4).join(", ")}
+              {product.analogs.length > 4 ? "…" : ""}
+            </p>
+          ) : null}
+          {product.compatibility.length > 0 ? (
+            <p className="mt-1 text-sm text-ink-muted">
+              Совместимость:{" "}
+              {product.compatibility
+                .slice(0, 2)
+                .map(
+                  (row) =>
+                    `${row.brandName} ${row.modelName}${row.modificationName ? ` ${row.modificationName}` : ""}`,
+                )
+                .join("; ")}
+              {product.compatibility.length > 2 ? "…" : ""}
+            </p>
+          ) : null}
         </div>
         <p className="text-sm text-ink-muted">
           {publicAvailabilityLabels[product.availability]}
+          {product.offerSource === "own_stock"
+            ? " · свой склад"
+            : product.offerSource === "supplier"
+              ? " · поставщик"
+              : ""}
         </p>
         <div className="mt-auto">
           {product.price ? (

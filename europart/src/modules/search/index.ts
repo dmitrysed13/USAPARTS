@@ -2,9 +2,9 @@ import type { AppModule } from "@/modules/types";
 
 export const searchModule = {
   id: "search",
-  stage: 2,
+  stage: 3,
   summary:
-    "Поиск по артикулу, OEM, кроссу и названию. VIN сохраняется заявкой, без расшифровки.",
+    "OEM/MPN/кросс/аналоги, нормализация пробелов и дефисов; VIN — заявка + VinCatalog без фейковой расшифровки.",
 } satisfies AppModule;
 
 export { normalizeArticle } from "@/modules/search/normalize-article";

@@ -26,6 +26,7 @@ export async function resetCatalogTables(): Promise<void> {
       "VehicleBrand",
       "PartBrand",
       "Category",
+      "VinRequestHistory",
       "VinRequest",
       "Warehouse",
       "Supplier",

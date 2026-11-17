@@ -50,6 +50,7 @@ const publicOfferSelect = {
   leadTime: true,
   stockConfirmed: true,
   status: true,
+  sourceType: true,
 } as const;
 
 const productInclude = {
@@ -151,6 +152,7 @@ function mapProduct(
     description: row.description,
     article: row.article,
     oem: row.oem,
+    mpn: row.mpn,
     condition: row.condition,
     productType: row.productType,
     weight: row.weight,
@@ -173,6 +175,7 @@ function mapProduct(
       leadTime: offer.leadTime,
       stockConfirmed: offer.stockConfirmed,
       status: offer.status,
+      sourceType: offer.sourceType,
     })),
   });
 }
@@ -535,18 +538,28 @@ export async function hasPublishedFitmentProducts(
   return count > 0;
 }
 
+/** SQL-side article compacting mirrors normalizeArticle (spaces/dashes/dots/slashes). */
 function scoreExpression(
   normalized: string,
   prefix: string,
   contains: string,
   literal: string,
 ): Prisma.Sql {
+  const compact = (column: Prisma.Sql) => Prisma.sql`
+    UPPER(
+      REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(${column}, ''), ' ', ''), '-', ''), '.', ''), '/', ''), '\\', '')
+    )
+  `;
   return Prisma.sql`
     CASE
       WHEN ${normalized.length > 0} AND pi."normalizedValue" = ${normalized} THEN 100
       WHEN ${normalized.length > 0} AND p."articleNormalized" = ${normalized} THEN 100
+      WHEN ${normalized.length > 0} AND ${compact(Prisma.sql`p.mpn`)} = ${normalized} THEN 100
+      WHEN ${normalized.length > 0} AND ${compact(Prisma.sql`p.oem`)} = ${normalized} THEN 100
       WHEN ${normalized.length > 0} AND pi."normalizedValue" LIKE ${prefix} THEN 70
       WHEN ${normalized.length > 0} AND p."articleNormalized" LIKE ${prefix} THEN 70
+      WHEN ${normalized.length > 0} AND ${compact(Prisma.sql`p.mpn`)} LIKE ${prefix} THEN 70
+      WHEN ${normalized.length > 0} AND ${compact(Prisma.sql`p.oem`)} LIKE ${prefix} THEN 70
       WHEN ${literal.length >= 2} AND p.name ILIKE ${contains} THEN 40
       WHEN ${literal.length >= 2} AND pb.name ILIKE ${contains} THEN 40
       ELSE 0
@@ -608,13 +621,14 @@ export async function searchPublishedProducts(query: SearchQuery): Promise<Produ
   const rows = await withDatabase(() =>
     db().product.findMany({
       where: { id: { in: ids }, status: "PUBLISHED" },
-      include: productInclude,
+      include: productDetailInclude,
     }),
   );
   const byId = new Map(rows.map((row) => [row.id, row]));
   const items = ids.flatMap((id) => {
     const row = byId.get(id);
-    return row ? [mapProduct(row, false)] : [];
+    // Article search surfaces verified fitment + analogs when present.
+    return row ? [mapProduct(row, true)] : [];
   });
 
   return { items, total, page: query.page, pageSize: query.pageSize };
