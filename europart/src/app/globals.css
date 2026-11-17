@@ -79,3 +79,8 @@ body {
 .skip-link:focus {
   top: 1rem;
 }
+
+/* Admin shell marks the tree; hide storefront chrome without reading pathname in root layout. */
+body:has([data-admin-shell]) .site-storefront-chrome {
+  display: none;
+}

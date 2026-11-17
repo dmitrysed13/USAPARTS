@@ -58,14 +58,20 @@ export default function RootLayout({
         <a className="skip-link" href="#content">
           К содержанию
         </a>
-        <SiteHeader />
-        <Suspense fallback={null}>
-          <SelectedVehicleBanner />
-        </Suspense>
+        <div className="site-storefront-chrome">
+          <SiteHeader />
+          <Suspense fallback={null}>
+            <SelectedVehicleBanner />
+          </Suspense>
+        </div>
         <main id="content" className="flex-1">
           {children}
         </main>
-        <SiteFooter />
+        <div className="site-storefront-chrome">
+          <Suspense fallback={null}>
+            <SiteFooter />
+          </Suspense>
+        </div>
       </body>
     </html>
   );

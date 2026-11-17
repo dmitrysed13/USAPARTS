@@ -1,5 +1,5 @@
 import { connection } from "next/server";
-import { requireAdminApi } from "@/modules/admin/guard";
+import { requireAdminApiAsync } from "@/modules/admin/guard";
 import { adminJson, fail, publicError } from "@/modules/admin/respond";
 import { ImportService } from "@/modules/imports/service";
 import { ImportReportService } from "@/modules/imports/report";
@@ -9,7 +9,7 @@ type Params = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, { params }: Params) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "import");
   if (!gate.ok) {
     return gate.response;
   }
@@ -54,7 +54,7 @@ export async function GET(request: Request, { params }: Params) {
 
 export async function POST(request: Request, { params }: Params) {
   await connection();
-  const gate = requireAdminApi(request);
+  const gate = await requireAdminApiAsync(request, "import");
   if (!gate.ok) {
     return gate.response;
   }
