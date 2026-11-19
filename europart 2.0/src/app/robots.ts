@@ -1,14 +1,18 @@
 import type { MetadataRoute } from "next";
+import { getSiteUrl } from "@/lib/env";
 
 /**
- * The storefront has no indexable catalog yet.
- * Stage 7 replaces this with the public crawl policy from SEO_SPECIFICATION.md.
+ * Crawl is open only so indexable landings can be found.
+ * Admin, API, the design system and search URLs stay out.
+ * Empty catalog, drafts and withheld landings send noindex themselves.
  */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      disallow: "/",
+      allow: "/",
+      disallow: ["/admin", "/api", "/design-system", "/search"],
     },
+    sitemap: `${getSiteUrl()}/sitemap.xml`,
   };
 }

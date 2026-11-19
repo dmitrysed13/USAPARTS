@@ -28,7 +28,8 @@ export async function resetCatalogTables(): Promise<void> {
       "VinRequest",
       "Warehouse",
       "Supplier",
-      "SeoMetadata"
+      "SeoMetadata",
+      "SeoLandingContent"
     RESTART IDENTITY CASCADE
   `);
 }

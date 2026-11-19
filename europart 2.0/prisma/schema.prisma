@@ -345,6 +345,23 @@ model SeoMetadata {
   @@unique([entityType, entityId])
 }
 
+/// Editable copy for a commercial landing. Null fields keep the text from code.
+model SeoLandingContent {
+  slug                 String   @id
+  h1                   String?
+  title                String?
+  description          String?
+  intro                String?
+  body                 String?
+  faq                  Json?
+  canonicalPath        String?
+  indexable            Boolean?
+  published            Boolean  @default(true)
+  relatedProductSlugs  String[] @default([])
+  relatedCategorySlugs String[] @default([])
+  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+}
+
 enum ImportJobStatus {
   UPLOADED
   READY

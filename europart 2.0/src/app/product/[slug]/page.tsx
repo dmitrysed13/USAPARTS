@@ -15,6 +15,12 @@ import { publicAvailabilityLabels } from "@/modules/catalog/public-dto";
 import { getPublishedProduct } from "@/modules/catalog/repository";
 import { readSeoOverlay } from "@/modules/seo/overlay";
 import { closedMetadata } from "@/lib/seo/closed";
+import { JsonLd } from "@/components/seo/json-ld";
+import { getSiteUrl } from "@/lib/env";
+import {
+  breadcrumbStructuredData,
+  productStructuredData,
+} from "@/modules/seo/structured-data";
 
 function money(amount: string, currency: string): string {
   return `${new Intl.NumberFormat("ru-BY", {
@@ -93,16 +99,18 @@ export default async function ProductPage({
     }))
     .filter((group) => group.values.length > 0);
 
+  const crumbs = [
+    { href: "/", label: "Главная" },
+    { href: "/catalog", label: "Каталог" },
+    { href: `/catalog/${product.category.slug}`, label: product.category.name },
+    { label: product.name },
+  ];
+
   return (
     <Container className="grid gap-8 py-10">
-      <Breadcrumbs
-        items={[
-          { href: "/", label: "Главная" },
-          { href: "/catalog", label: "Каталог" },
-          { href: `/catalog/${product.category.slug}`, label: product.category.name },
-          { label: product.name },
-        ]}
-      />
+      <JsonLd data={breadcrumbStructuredData(crumbs, getSiteUrl())} />
+      <JsonLd data={productStructuredData(product, getSiteUrl())} />
+      <Breadcrumbs items={crumbs} />
       <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div>
           {product.images.length > 0 ? (
