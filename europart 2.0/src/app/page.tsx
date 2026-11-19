@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SearchField } from "@/components/catalog/search-field";
+import { JsonLd } from "@/components/seo/json-ld";
 import { buttonClassName } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { company, formatAddress } from "@/config/company";
+import { getSiteUrl } from "@/lib/env";
+import { defaultEditorialLinks } from "@/modules/seo/landings";
+import {
+  organizationStructuredData,
+  websiteStructuredData,
+} from "@/modules/seo/structured-data";
 
 export const metadata: Metadata = {
   title: "Автозапчасти",
   description:
     "EUROPART, ООО «БелТРЭК», Брест. Каталог открыт и ждёт реальный ассортимент. Корзины и онлайн-оплаты пока нет.",
   alternates: { canonical: "/" },
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
 };
 
 const currentSteps = [
@@ -21,8 +28,11 @@ const currentSteps = [
 ];
 
 export default function HomePage() {
+  const siteUrl = getSiteUrl();
   return (
     <>
+      <JsonLd data={organizationStructuredData(siteUrl)} />
+      <JsonLd data={websiteStructuredData(siteUrl)} />
       <section className="bg-panel text-panel-foreground">
         <Container className="grid items-center gap-12 py-16 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:py-24">
           <div>
@@ -103,6 +113,24 @@ export default function HomePage() {
               </li>
             ))}
           </ol>
+        </Container>
+      </section>
+
+      <section className="pb-16">
+        <Container className="grid gap-4">
+          <h2 className="font-display text-3xl font-semibold tracking-tight">Разделы</h2>
+          <ul className="flex flex-wrap gap-3">
+            {defaultEditorialLinks().map((link) => (
+              <li key={link.href}>
+                <Link
+                  className="inline-block rounded-2xl border border-line px-4 py-2 text-sm font-semibold hover:border-brand"
+                  href={link.href}
+                >
+                  {link.anchor}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </Container>
       </section>
 
